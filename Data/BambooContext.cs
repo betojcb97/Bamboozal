@@ -1,9 +1,10 @@
 ﻿using Bamboo.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bamboo.Data
 {
-    public class BambooContext : DbContext
+    public class BambooContext : IdentityDbContext<User>
     {
         public BambooContext(DbContextOptions<BambooContext> opts) : base(opts)
         {
@@ -13,6 +14,5 @@ namespace Bamboo.Data
         public DbSet<Business> Businesses { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Product> Products { get; set; }
-        public DbSet<User> Users { get; set; }
     }
 }

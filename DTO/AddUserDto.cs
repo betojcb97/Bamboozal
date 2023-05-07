@@ -29,7 +29,6 @@ namespace Bamboo.DTO
         [MaxLength(20, ErrorMessage = "The size of the userLastName must not exceed 20 characters")]
         public string userLastName { get; set; }
 
-        [Required(ErrorMessage = "The address must be provided")]
         public Guid? addressID { get; set; }
 
         public bool isActive { get; set; }

@@ -1,4 +1,7 @@
 using Bamboo.Data;
+using Bamboo.Models;
+using Bamboo.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,7 +9,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<BambooContext>(opts => 
 opts.UseSqlServer(builder.Configuration.GetConnectionString("BambooConnection")));
 
+builder.Services.AddIdentity<User, IdentityRole>().
+    AddEntityFrameworkStores<BambooContext>()
+    .AddDefaultTokenProviders();
+
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+builder.Services.AddScoped<RegisterUser>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

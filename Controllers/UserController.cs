@@ -2,6 +2,8 @@
 using Bamboo.Data;
 using Bamboo.DTO;
 using Bamboo.Models;
+using Bamboo.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Bamboo.Controllers
@@ -12,21 +14,20 @@ namespace Bamboo.Controllers
     {
         private BambooContext db;
         private IMapper _mapper;
-        public UserController(BambooContext context, IMapper mapper)
+        private RegisterUser _registerUserService;
+
+        public UserController(BambooContext context, IMapper mapper, RegisterUser registerUserService)
         {
             db = context;
             _mapper = mapper;
+            _registerUserService = registerUserService;
         }
 
         [HttpPost]
-        public IActionResult AddUser([FromBody] AddUserDto userDto)
+        public async Task<IActionResult> AddUser([FromBody] AddUserDto userDto)
         {
-            User user = _mapper.Map<User>(userDto);
-            User exists = db.Users.Where(b => b.userName == user.userName).FirstOrDefault();
-            if (exists != null) { return StatusCode(StatusCodes.Status406NotAcceptable); }
-            db.Users.Add(user);
-            db.SaveChanges();
-            return CreatedAtAction(nameof(user), user);
+            await _registerUserService.RegisterAsync(userDto);
+            return Ok();
         }
 
         [HttpGet]
@@ -37,7 +38,7 @@ namespace Bamboo.Controllers
         [HttpGet("{id}")]
         public IActionResult GetUserById(Guid id)
         {
-            var user = db.Users.FirstOrDefault(b => b.userID.Equals(id));
+            var user = db.Users.FirstOrDefault(b => b.Id.Equals(id));
             if (user == null) { return NotFound(); }
             return Ok(user);
         }
