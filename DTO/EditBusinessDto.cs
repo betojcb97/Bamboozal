@@ -4,8 +4,6 @@ namespace Bamboo.DTO
 {
     public class EditBusinessDto
     {
-        [Required]
-        public Guid businessId { get; set; }
         [MaxLength(50, ErrorMessage = "The size of the name must not exceed 50 characters")]
         public string name { get; set; }
 

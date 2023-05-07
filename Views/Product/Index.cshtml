@@ -1,0 +1,180 @@
+﻿@{
+    ViewBag.Title = "List Products";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Businesses</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .page-container {
+            min-height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-container d-flex flex-column">
+        <div class="container">
+            <h1>List of Products</h1>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addProductsModal">Add Product</button>
+            <div id="alertContainer"></div>
+            <table class="table table-hover mt-3">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Image</th>
+                        <th>Business</th>
+                        <th>Active</th>
+                    </tr>
+                </thead>
+                <tbody id="productsTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addProductModalLabel">Add Product</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="addProductForm">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" maxlength="50" required>
+                            <div class="invalid-feedback">The name of the product must be provided and not exceed 50 characters.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea class="form-control" id="description" name="description"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="price">Price</label>
+                            <input type="number" class="form-control" id="price" name="price" maxlength="70" required>
+                            <div class="invalid-feedback">The price of the product must be provided.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="imageUrl">ImageUrl</label>
+                            <input type="text" class="form-control" id="imageUrl" name="imageUrl" maxlength="20" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="businessId">Business ID</label>
+                            <input type="text" class="form-control" id="businessId" name="businessId">
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="isActive" name="isActive">
+                            <label class="form-check-label" for="isActive">Active</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="sendBtn">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '/Product/ListProducts',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                let tableBody = $('#productsTableBody');
+                data.forEach(function (product) {
+                        let isActive = product.isActive ? 'Yes' : 'No';
+                        let image = product.imageUrl ? `<img src="${product.imageUrl}" alt="Image" width="50">` : 'N/A';
+
+                    tableBody.append(
+                    `<tr>
+                        <td>${product.name}</td>
+                        <td>${product.description}</td>
+                        <td>${product.price}</td>
+                        <td>${image}</td>
+                        <td>${product.businessName}</td>
+                        <td>${isActive}</td>
+                    </tr>`
+                    );
+                });
+            },
+            error: function (xhr, status, error) {
+                alert('Error: ' + error);
+            }
+        });
+    });
+
+    $('#sendBtn').on('click', function (event) {
+        // Trigger form validation
+        let form = $('#addProductForm')[0];
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+
+        // If the form is valid, send the AJAX request
+        if (form.checkValidity() === true) {
+            // Serialize form data, convert it to JSON and send an AJAX request
+                let formData = $('#addProductForm').serializeArray();
+            let jsonData = {};
+            formData.forEach(function (item) {
+                if (item.name === "businessID" && item.value === "") {
+                    jsonData[item.name] = null; // Set null value for empty addressID
+                } else if (item.name === "isActive") {
+                    jsonData[item.name] = item.value === "on" ? true : false; // Convert "on" to true, otherwise set false
+                } else {
+                    jsonData[item.name] = item.value;
+                }
+            });
+            event.preventDefault();
+            $.ajax({
+                url: '/Product/AddProductForm',
+                type: 'POST',
+                data: JSON.stringify(jsonData), // Send JSON data
+                contentType: 'application/json', // Set content-type to 'application/json'
+                success: function (response) {
+                    let successAlert = `
+                            <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                                Product added successfully!
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>`;
+                    $('#alertContainer').html(successAlert);
+
+                    // Close the modal
+                    $('#addBusinessModal').modal('hide');
+                },
+                error: function (xhr, status, error) {
+                    // Handle error response, e.g., show an error message
+                }
+            });
+        }
+    });
+
+
+
+</script>
+
+</body>
+</html>

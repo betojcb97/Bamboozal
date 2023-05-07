@@ -2,7 +2,7 @@
 
 namespace Bamboo.Models
 {
-    public class Business
+    public class Business 
     {
         [Key]
         [Required]

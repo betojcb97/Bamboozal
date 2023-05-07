@@ -33,7 +33,7 @@ namespace Bamboo.Controllers
         }
 
         [HttpPost("AddBusinessForm")]
-        public IActionResult AddBusinessForm([FromForm] AddBusinessDto businessDto)
+        public IActionResult AddBusinessForm([FromBody] AddBusinessDto businessDto)
         {
             Business business = _mapper.Map<Business>(businessDto);
             Business exists = db.Businesses.Where(b => b.name == business.name).FirstOrDefault();
@@ -43,10 +43,10 @@ namespace Bamboo.Controllers
             return CreatedAtAction(nameof(business), business);
         }
 
-        [HttpPost("EditBusiness")]
-        public IActionResult EditBusiness([FromBody] EditBusinessDto businessDto)
+        [HttpPost("EditBusiness/{businessId}")]
+        public IActionResult EditBusiness(Guid businessId,[FromBody] EditBusinessDto businessDto)
         {
-            Business dbBusiness = db.Businesses.Where(b => b.businessID == businessDto.businessId).FirstOrDefault();
+            Business dbBusiness = db.Businesses.Where(b => b.businessID == businessId).FirstOrDefault();
             if (dbBusiness == null) return NotFound();
             Business businessNewInfo = _mapper.Map<Business>(businessDto);
 
