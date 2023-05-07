@@ -14,20 +14,27 @@ namespace Bamboo.Controllers
     {
         private BambooContext db;
         private IMapper _mapper;
-        private RegisterUser _registerUserService;
+        private UserService _userService;
 
-        public UserController(BambooContext context, IMapper mapper, RegisterUser registerUserService)
+        public UserController(BambooContext context, IMapper mapper, UserService userService)
         {
             db = context;
             _mapper = mapper;
-            _registerUserService = registerUserService;
+            _userService = userService;
         }
 
-        [HttpPost]
+        [HttpPost("Register")]
         public async Task<IActionResult> AddUser([FromBody] AddUserDto userDto)
         {
-            await _registerUserService.RegisterAsync(userDto);
+            await _userService.RegisterAsync(userDto);
             return Ok();
+        }
+
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login(LoginUserDto userDto)
+        {
+            var token = await _userService.LoginAsync(userDto);
+            return Ok(token);        
         }
 
         [HttpGet]
