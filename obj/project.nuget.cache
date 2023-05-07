@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "adDsX8uh4quPCzqWSwuCfpnTClkHUCKeMpkJgiRNjx/i9Xkt4n2vH5crtrdeHFp85qkToU5085ccvEtm+52quA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\alber\\source\\repos\\Bamboo\\Bamboo.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\alber\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.17.2\\microsoft.visualstudio.azure.containers.tools.targets.1.17.2.nupkg.sha512"
+  ],
+  "logs": []
+}
