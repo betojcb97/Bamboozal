@@ -1,4 +1,12 @@
+using Bamboo.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<BambooContext>(opts => 
+opts.UseSqlServer(builder.Configuration.GetConnectionString("BambooConnection")));
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
