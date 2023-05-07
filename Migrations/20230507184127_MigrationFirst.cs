@@ -43,6 +43,23 @@ namespace Bamboo.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Products",
+                columns: table => new
+                {
+                    productID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    description = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    imageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    businessID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    isActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Products", x => x.productID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetUsers",
                 columns: table => new
                 {
@@ -72,6 +89,11 @@ namespace Bamboo.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Addresses_addressID",
+                        column: x => x.addressID,
+                        principalTable: "Addresses",
+                        principalColumn: "addressID");
                 });
 
             migrationBuilder.CreateTable(
@@ -84,31 +106,18 @@ namespace Bamboo.Migrations
                     email = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
                     phone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     addressID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    city = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    isActive = table.Column<bool>(type: "bit", nullable: false),
+                    isActive = table.Column<bool>(type: "bit", nullable: true),
                     dateOfRegister = table.Column<DateTime>(type: "datetime2", nullable: true),
                     logoUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Businesses", x => x.businessID);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Products",
-                columns: table => new
-                {
-                    productID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    description = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    imageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    businessID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    isActive = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Products", x => x.productID);
+                    table.ForeignKey(
+                        name: "FK_Businesses_Addresses_addressID",
+                        column: x => x.addressID,
+                        principalTable: "Addresses",
+                        principalColumn: "addressID");
                 });
 
             migrationBuilder.CreateTable(
@@ -250,19 +259,26 @@ namespace Bamboo.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_addressID",
+                table: "AspNetUsers",
+                column: "addressID");
+
+            migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Businesses_addressID",
+                table: "Businesses",
+                column: "addressID");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Addresses");
-
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -289,6 +305,9 @@ namespace Bamboo.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Addresses");
         }
     }
 }

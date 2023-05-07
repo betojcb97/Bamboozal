@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bamboo.Migrations
 {
     [DbContext(typeof(BambooContext))]
-    [Migration("20230507042015_MigrationFirst")]
-    partial class MigrationFirst
+    [Migration("20230507184340_Migrationfix")]
+    partial class Migrationfix
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,6 +21,9 @@ namespace Bamboo.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "7.0.5")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -73,11 +76,6 @@ namespace Bamboo.Migrations
                     b.Property<Guid?>("addressID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("city")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
                     b.Property<DateTime?>("dateOfRegister")
                         .HasColumnType("datetime2");
 
@@ -90,7 +88,7 @@ namespace Bamboo.Migrations
                         .HasMaxLength(70)
                         .HasColumnType("nvarchar(70)");
 
-                    b.Property<bool>("isActive")
+                    b.Property<bool?>("isActive")
                         .HasColumnType("bit");
 
                     b.Property<string>("logoUrl")
@@ -108,6 +106,8 @@ namespace Bamboo.Migrations
 
                     b.HasKey("businessID");
 
+                    b.HasIndex("addressID");
+
                     b.ToTable("Businesses");
                 });
 
@@ -117,7 +117,8 @@ namespace Bamboo.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("businessID")
+                    b.Property<Guid?>("businessID")
+                        .IsRequired()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("description")
@@ -126,7 +127,6 @@ namespace Bamboo.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("imageUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("isActive")
@@ -231,6 +231,8 @@ namespace Bamboo.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("addressID");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -366,6 +368,24 @@ namespace Bamboo.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Bamboo.Models.Business", b =>
+                {
+                    b.HasOne("Bamboo.Models.Address", "address")
+                        .WithMany()
+                        .HasForeignKey("addressID");
+
+                    b.Navigation("address");
+                });
+
+            modelBuilder.Entity("Bamboo.Models.User", b =>
+                {
+                    b.HasOne("Bamboo.Models.Address", "address")
+                        .WithMany()
+                        .HasForeignKey("addressID");
+
+                    b.Navigation("address");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

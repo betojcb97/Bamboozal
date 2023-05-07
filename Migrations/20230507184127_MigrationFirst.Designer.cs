@@ -4,6 +4,7 @@ using Bamboo.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bamboo.Migrations
 {
     [DbContext(typeof(BambooContext))]
-    partial class BambooContextModelSnapshot : ModelSnapshot
+    [Migration("20230507184127_MigrationFirst")]
+    partial class MigrationFirst
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -124,6 +127,7 @@ namespace Bamboo.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("imageUrl")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("isActive")
@@ -138,8 +142,6 @@ namespace Bamboo.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("productID");
-
-                    b.HasIndex("businessID");
 
                     b.ToTable("Products");
                 });
@@ -376,17 +378,6 @@ namespace Bamboo.Migrations
                         .HasForeignKey("addressID");
 
                     b.Navigation("address");
-                });
-
-            modelBuilder.Entity("Bamboo.Models.Product", b =>
-                {
-                    b.HasOne("Bamboo.Models.Business", "business")
-                        .WithMany()
-                        .HasForeignKey("businessID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("business");
                 });
 
             modelBuilder.Entity("Bamboo.Models.User", b =>

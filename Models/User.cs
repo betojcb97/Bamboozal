@@ -16,6 +16,8 @@ namespace Bamboo.Models
 
         public Guid? addressID { get; set; }
 
+        public virtual Address? address { get; set; }
+
         public bool isActive { get; set; }
 
         public Guid? ownerOfBusinessID { get; set; }

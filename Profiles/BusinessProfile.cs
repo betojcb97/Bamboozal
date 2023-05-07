@@ -10,6 +10,12 @@ namespace Bamboo.Profiles
         public BusinessProfile() 
         {
             CreateMap<AddBusinessDto, Business>();
+
+            CreateMap<Business, ReadBusinessDto>().ForMember(businessDto => businessDto.addressDto,
+                opt => opt.MapFrom(business => business.address));
+
+            CreateMap<EditBusinessDto, Business>();
+
         }
     }
 }

@@ -23,12 +23,9 @@ namespace Bamboo.Models
         public string phone { get; set; }
 
         public Guid? addressID { get; set; }
+        public virtual Address address { get; set; }
 
-        [Required(ErrorMessage = "The city of the business must be provided")]
-        [MaxLength(20, ErrorMessage = "The size of the phone must not exceed 20 characters")]
-        public string city { get; set; }
-
-        public bool isActive { get; set; }
+        public bool? isActive { get; set; }
 
         public DateTime? dateOfRegister { get; set; }
 

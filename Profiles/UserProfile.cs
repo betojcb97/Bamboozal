@@ -11,6 +11,10 @@ namespace Bamboo.Profiles
         {
             CreateMap<AddUserDto, User>();
 
+            CreateMap<User, ReadUserDto>()
+                .ForMember(userDto => userDto.addressDto,
+                opt => opt.MapFrom(user => user.address));
+
         }
     }
 }

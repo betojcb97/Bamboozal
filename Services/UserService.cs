@@ -5,6 +5,10 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Bamboo.Data;
 using Microsoft.AspNetCore.Mvc;
+using Azure.Core;
+using Castle.Core.Smtp;
+using System.Text.Encodings.Web;
+using System;
 
 namespace Bamboo.Services
 {

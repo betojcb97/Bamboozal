@@ -3,12 +3,14 @@ using Bamboo.Data;
 using Bamboo.DTO;
 using Bamboo.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace Bamboo.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class BusinessController : ControllerBase
+    public class BusinessController : Controller
     {
 
         private BambooContext db;
@@ -19,7 +21,7 @@ namespace Bamboo.Controllers
             _mapper = mapper;
         }
 
-        [HttpPost]
+        [HttpPost("AddBusiness")]
         public IActionResult AddBusiness([FromBody] AddBusinessDto businessDto)
         {
             Business business = _mapper.Map<Business>(businessDto);
@@ -27,15 +29,53 @@ namespace Bamboo.Controllers
             if (exists != null) { return StatusCode(StatusCodes.Status406NotAcceptable); }
             db.Businesses.Add(business);
             db.SaveChanges();
-            Console.WriteLine(business);
             return CreatedAtAction(nameof(business), business);
         }
 
-        [HttpGet]
+        [HttpPost("AddBusinessForm")]
+        public IActionResult AddBusinessForm([FromForm] AddBusinessDto businessDto)
+        {
+            Business business = _mapper.Map<Business>(businessDto);
+            Business exists = db.Businesses.Where(b => b.name == business.name).FirstOrDefault();
+            if (exists != null) { return StatusCode(StatusCodes.Status406NotAcceptable); }
+            db.Businesses.Add(business);
+            db.SaveChanges();
+            return CreatedAtAction(nameof(business), business);
+        }
+
+        [HttpPost("EditBusiness")]
+        public IActionResult EditBusiness([FromBody] EditBusinessDto businessDto)
+        {
+            Business dbBusiness = db.Businesses.Where(b => b.businessID == businessDto.businessId).FirstOrDefault();
+            if (dbBusiness == null) return NotFound();
+            Business businessNewInfo = _mapper.Map<Business>(businessDto);
+
+            dbBusiness.name = businessNewInfo.name ?? businessDto.name;
+            dbBusiness.description = businessNewInfo.description ?? businessDto.description;
+            dbBusiness.email = businessNewInfo.email ?? businessDto.email;
+            dbBusiness.phone = businessNewInfo.phone ?? businessDto.phone;
+            dbBusiness.addressID = businessNewInfo.addressID ?? businessDto.addressID;
+            dbBusiness.isActive = businessNewInfo.isActive ?? businessDto.isActive;
+            dbBusiness.logoUrl = businessNewInfo.logoUrl ?? businessDto.logoUrl;
+
+            db.Entry(dbBusiness).State = EntityState.Modified;
+            db.SaveChanges();
+            return CreatedAtAction(nameof(dbBusiness), dbBusiness);
+        }
+
+        [HttpGet("GetBusinesses")]
         public IActionResult GetBusinesses()
         {
             return Ok(db.Businesses);
         }
+
+        [HttpGet("ListBusinesses")]
+        public IActionResult ListBusinesses()
+        {
+            List<ReadBusinessDto> readBusinessDtos = _mapper.Map<List<ReadBusinessDto>>(db.Businesses.ToList());
+            return Json(readBusinessDtos);
+        }
+
         [HttpGet("{id}")]
         public IActionResult GetBusinessById(Guid id)
         {
@@ -43,5 +83,12 @@ namespace Bamboo.Controllers
             if (business == null) { return NotFound(); }
             return Ok(business);
         }
+
+        [HttpGet("Index")]
+        public IActionResult Index()
+        {
+            return View();
+        }
+
     }
 }

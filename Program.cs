@@ -12,7 +12,7 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<BambooContext>(opts => 
-opts.UseSqlServer(builder.Configuration.GetConnectionString("BambooConnection")));
+opts.UseLazyLoadingProxies().UseSqlServer(builder.Configuration.GetConnectionString("BambooConnection")));
 
 builder.Services.AddIdentity<User, IdentityRole>().
     AddEntityFrameworkStores<BambooContext>()

@@ -1,0 +1,178 @@
+﻿@{
+    ViewBag.Title = "List Businesses";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Businesses</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .page-container {
+            min-height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-container d-flex flex-column">
+        <div class="container">
+            <h1>List of Businesses</h1>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addBusinessModal">
+                Add Business
+            </button>
+            <div id="alertContainer"></div>
+            <table class="table table-hover mt-3">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>City</th>
+                    <th>Active</th>
+                    <th>Logo</th>
+                </tr>
+            </thead>
+            <tbody id="businessesTableBody">
+            </tbody>
+        </table>
+    </div>
+
+        <div class="modal fade" id="addBusinessModal" tabindex="-1" role="dialog" aria-labelledby="addBusinessModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addBusinessModalLabel">Add Business</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addBusinessForm">
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" class="form-control" id="name" name="name" maxlength="50" required>
+                                <div class="invalid-feedback">The name of the business must be provided and not exceed 50 characters.</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea class="form-control" id="description" name="description"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" maxlength="70" required>
+                                <div class="invalid-feedback">The email of the business must be provided and not exceed 70 characters.</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone</label>
+                                <input type="text" class="form-control" id="phone" name="phone" maxlength="20" required>
+                                <div class="invalid-feedback">The phone of the business must be provided and not exceed 20 characters.</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="addressID">Address ID</label>
+                                <input type="text" class="form-control" id="addressID" name="addressID">
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="isActive" name="isActive">
+                                <label class="form-check-label" for="isActive">Active</label>
+                            </div>
+                            <div class="form-group">
+                                <label for="logoUrl">Logo URL</label>
+                                <input type="url" class="form-control" id="logoUrl" name="logoUrl">
+                            </div>
+
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="sendBtn">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            $(document).ready(function () {
+                $.ajax({
+                    url: '/Business/ListBusinesses',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        let tableBody = $('#businessesTableBody');
+                        data.forEach(function (business) {
+                            let isActive = business.isActive ? 'Yes' : 'No';
+                            let address = business.addressDto ? `${business.addressDto.street}, ${business.addressDto.city}, ${business.addressDto.state}, ${business.addressDto.zipCode}` : 'N/A';
+                            let logo = business.logoUrl ? `<img src="${business.logoUrl}" alt="Logo" width="50">` : 'N/A';
+
+                            tableBody.append(
+                                `<tr>
+                                                <td>${business.name}</td>
+                                                <td>${business.description}</td>
+                                                <td>${business.email}</td>
+                                                <td>${business.phone}</td>
+                                                <td>${address}</td>
+                                                <td>${business.city}</td>
+                                                <td>${isActive}</td>
+                                                <td>${logo}</td>
+                                     </tr>`
+                            );
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Error: ' + error);
+                    }
+                });
+            });
+
+            $('#sendBtn').on('click', function (event) { // Added 'event' parameter here
+                // Trigger form validation
+                let form = $('#addBusinessForm')[0];
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+
+                // If the form is valid, send the AJAX request
+                if (form.checkValidity() === true) {
+                    // Serialize form data and send an AJAX request
+                    let formData = $('#addBusinessForm').serialize();
+                    $.ajax({
+                        url: '/Business/AddBusinessForm',
+                        type: 'POST',
+                        data: formData,
+                        success: function (response) {
+                            let successAlert = `
+                                    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                                        Business added successfully!
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>`;
+                            $('#alertContainer').html(successAlert);
+
+                            // Close the modal
+                            $('#addBusinessModal').modal('hide');
+                        },
+                        error: function (xhr, status, error) {
+                            // Handle error response, e.g., show an error message
+                        }
+                    });
+                }
+            });
+
+        </script>
+
+</body>
+</html>
