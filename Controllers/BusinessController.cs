@@ -5,6 +5,7 @@ using Bamboo.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using System.Reflection;
 
 namespace Bamboo.Controllers
 {
@@ -50,13 +51,15 @@ namespace Bamboo.Controllers
             if (dbBusiness == null) return NotFound();
             Business businessNewInfo = _mapper.Map<Business>(businessDto);
 
-            dbBusiness.name = businessNewInfo.name ?? businessDto.name;
-            dbBusiness.description = businessNewInfo.description ?? businessDto.description;
-            dbBusiness.email = businessNewInfo.email ?? businessDto.email;
-            dbBusiness.phone = businessNewInfo.phone ?? businessDto.phone;
-            dbBusiness.addressID = businessNewInfo.addressID ?? businessDto.addressID;
-            dbBusiness.isActive = businessNewInfo.isActive ?? businessDto.isActive;
-            dbBusiness.logoUrl = businessNewInfo.logoUrl ?? businessDto.logoUrl;
+            PropertyInfo[] properties = businessNewInfo.GetType().GetProperties();
+
+            foreach(PropertyInfo property in properties)
+            {
+                if (property.GetValue(businessNewInfo) != null && property.Name != "businessID")
+                {
+                    property.SetValue(dbBusiness, property.GetValue(businessNewInfo));
+                }
+            }
 
             db.Entry(dbBusiness).State = EntityState.Modified;
             db.SaveChanges();

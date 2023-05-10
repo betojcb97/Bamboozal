@@ -4,6 +4,7 @@ using Bamboo.DTO;
 using Bamboo.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace Bamboo.Controllers
 {
@@ -36,11 +37,15 @@ namespace Bamboo.Controllers
             if (dbAddress == null) return NotFound();
             Address addressNewInfo = _mapper.Map<Address>(addressDto);
 
-            dbAddress.street = addressNewInfo.street ?? addressNewInfo.street;
-            dbAddress.number = addressNewInfo.number ?? addressNewInfo.number;
-            dbAddress.country = addressNewInfo.country ?? addressNewInfo.country;
-            dbAddress.city = addressNewInfo.city ?? addressNewInfo.city;
-            dbAddress.postalCode = addressNewInfo.postalCode ?? addressNewInfo.postalCode;
+            PropertyInfo[] properties = addressNewInfo.GetType().GetProperties();
+
+            foreach (PropertyInfo property in properties)
+            {
+                if (property.GetValue(addressNewInfo) != null && property.Name != "addressID")
+                {
+                    property.SetValue(dbAddress, property.GetValue(addressNewInfo));
+                }
+            }
 
             db.Entry(dbAddress).State = EntityState.Modified;
             db.SaveChanges();

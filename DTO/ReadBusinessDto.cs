@@ -4,6 +4,7 @@ namespace Bamboo.DTO
 {
     public class ReadBusinessDto
     {
+        public Guid businessID { get; set; }
         public string name { get; set; }
 
         public string description { get; set; }

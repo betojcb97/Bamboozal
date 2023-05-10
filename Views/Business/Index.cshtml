@@ -8,7 +8,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>List Businesses</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -17,7 +16,6 @@
         body {
             height: 100%;
         }
-
         .page-container {
             min-height: 100%;
         }
@@ -44,8 +42,7 @@
                         <th>Logo</th>
                     </tr>
                 </thead>
-                <tbody id="businessesTableBody">
-                </tbody>
+                <tbody id="businessesTableBody"></tbody>
             </table>
         </div>
     </div>
@@ -90,12 +87,11 @@
                             <label for="logoUrl">Logo URL</label>
                             <input type="url" class="form-control" id="logoUrl" name="logoUrl">
                         </div>
-
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="sendBtn">Send</button>
+                    <button type="button" class="btn btn-primary" id="sendBtnAdd">Send</button>
                 </div>
             </div>
         </div>
@@ -114,7 +110,7 @@
                     <form id="editBusinessForm">
                         <div class="form-group">
                             <label for="name">Name</label>
-                            <input type="text" class="form-control" id="name" name="name" maxlength="50" required>
+                            <input type="text" class="form-control" id="name" name="name" maxlength="50">
                             <div class="invalid-feedback">The name of the business must be provided and not exceed 50 characters.</div>
                         </div>
                         <div class="form-group">
@@ -123,12 +119,12 @@
                         </div>
                         <div class="form-group">
                             <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" maxlength="70" required>
+                            <input type="email" class="form-control" id="email" name="email" maxlength="70">
                             <div class="invalid-feedback">The email of the business must be provided and not exceed 70 characters.</div>
                         </div>
                         <div class="form-group">
                             <label for="phone">Phone</label>
-                            <input type="text" class="form-control" id="phone" name="phone" maxlength="20" required>
+                            <input type="text" class="form-control" id="phone" name="phone" maxlength="20">
                             <div class="invalid-feedback">The phone of the business must be provided and not exceed 20 characters.</div>
                         </div>
                         <div class="form-group">
@@ -147,12 +143,18 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="sendBtn">Send</button>
+                    <button type="button" class="btn btn-primary" id="sendBtnEdit">Send</button>
                 </div>
             </div>
         </div>
     </div>
+
+</body>
+</html>
+
 <script>
+
+    let selectedBusinessId;
     $(document).ready(function () {
         $.ajax({
             url: '/Business/ListBusinesses',
@@ -179,19 +181,19 @@
                     }
 
                     let logo = business.logoUrl ? `<img src="${business.logoUrl}" alt="Logo" width="50">` : 'N/A';
-                    tableBody.append(
-                        `<tr data-business-id="${business.id}">
-                        <td><input type="checkbox" class="business-checkbox"></td>
-                        <td>${business.name}</td>
-                        <td>${business.description}</td>
-                        <td>${business.email}</td>
-                        <td>${business.phone}</td>
-                        <td>${address}</td>
-                        <td>${isActive}</td>
-                        <td>${logo}</td>
-                        </tr>`
-                    );
 
+                    tableBody.append(
+                        `<tr data-business-id="${business.businessID}">
+                            <td><input type="checkbox" class="business-checkbox"></td>
+                            <td>${business.name}</td>
+                            <td>${business.description}</td>
+                            <td>${business.email}</td>
+                            <td>${business.phone}</td>
+                            <td>${address}</td>
+                            <td>${isActive}</td>
+                            <td>${logo}</td>
+                            </tr>`
+                    );
                 });
             },
             error: function (xhr, status, error) {
@@ -200,52 +202,74 @@
         });
     });
 
-    $(document).on('click', '.business-checkbox', function () {
-        const selectedCheckboxes = $('.business-checkbox:checked');
-        if (selectedCheckboxes.length > 0) {
-            $('#editBusinessBtn').removeAttr('disabled');
-        } else {
-            $('#editBusinessBtn').attr('disabled', 'disabled');
+    $('#sendBtnAdd').on('click', function (event) {
+        let form = $('#addBusinessForm')[0];
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+        if (form.checkValidity() === true) {
+            let formData = $('#addBusinessForm').serializeArray();
+            let jsonData = {};
+            formData.forEach(function (item) {
+                if (item.name === "addressID" && item.value === "") {
+                    jsonData[item.name] = null;
+                } else if (item.name === "isActive") {
+                    jsonData[item.name] = item.value === "on" ? true : false;
+                } else if (item.value === "") {
+                    jsonData[item.name] = null;
+                } else {
+                    jsonData[item.name] = item.value;
+                }
+            });
+            event.preventDefault();
+            $.ajax({
+                url: '/Business/AddBusinessForm',
+                type: 'POST',
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json',
+                success: function (response) {
+                    let successAlert = `
+                                <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                                    Business added successfully!
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>`;
+                    $('#alertContainer').html(successAlert);
+
+                    $('#addBusinessModal').modal('hide');
+                },
+                error: function (xhr, status, error) {
+                    let errorAlert = `
+                                        <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
+                                            Error adding business!
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>`;
+                    $('#alertContainer').html(errorAlert);
+                    $('#addBusinessModal').modal('hide');
+                }
+            });
         }
     });
 
-
-    function getSelectedBusinessId() {
-        const selectedCheckbox = $('.business-checkbox:checked');
-        if (selectedCheckbox.length > 0) {
-            return selectedCheckbox.data('business-id');
+    $('button[data-target="#editBusinessModal"]').on('click', function () {
+        let selectedRow = $('input.business-checkbox:checked').closest('tr');
+        if (selectedRow.length === 0) {
+            alert('Please select a business to edit.');
+            return false;
         }
-        return null;
-    }
-
-    $('#editBusinessBtn').on('click', function () {
-        const selectedRow = $('.business-checkbox:checked').closest('tr');
-        let businessId = selectedRow.data('business-id');
-        if (selectedRow.length > 0) {
-            const businessId = selectedRow.data('business-id');
-            const rowData = {
-                name: selectedRow.find('td:eq(1)').text(),
-                description: selectedRow.find('td:eq(2)').text(),
-                email: selectedRow.find('td:eq(3)').text(),
-                phone: selectedRow.find('td:eq(4)').text(),
-                address: selectedRow.find('td:eq(5)').text(),
-                isActive: selectedRow.find('td:eq(6)').text() === 'Yes',
-                logoUrl: selectedRow.find('td:eq(7) img').attr('src')
-            };
-
-            $('#editBusinessModal #name').val(rowData.name);
-            $('#editBusinessModal #description').val(rowData.description);
-            $('#editBusinessModal #email').val(rowData.email);
-            $('#editBusinessModal #phone').val(rowData.phone);
-            $('#editBusinessModal #address').val(rowData.address);
-            $('#editBusinessModal #isActive').prop('checked', rowData.isActive);
-            $('#editBusinessModal #logoUrl').val(rowData.logoUrl);
-
+        if (selectedRow.length > 1) {
+            alert('Please select only one business to edit.');
+            return false;
         }
+        selectedBusinessId = selectedRow.attr('data-business-id');
     });
 
-
-    $('#editBusinessModal #sendBtn').on('click', function (event) {
+    $('#sendBtnEdit').on('click', function (event) {
         let form = $('#editBusinessForm')[0];
         if (form.checkValidity() === false) {
             event.preventDefault();
@@ -257,76 +281,45 @@
             let jsonData = {};
             formData.forEach(function (item) {
                 if (item.name === "addressID" && item.value === "") {
-                    jsonData[item.name] = null; // Set null value for empty addressID
+                    jsonData[item.name] = null;
                 } else if (item.name === "isActive") {
-                    jsonData[item.name] = item.value === "on" ? true : false; // Convert "on" to true, otherwise set false
+                    jsonData[item.name] = item.value === "on" ? true : false;
+                } else if (item.value === "") {
+                    jsonData[item.name] = null;
                 } else {
                     jsonData[item.name] = item.value;
                 }
             });
             event.preventDefault();
             $.ajax({
-                url: '/Business/EditBusiness/' + businessId,
+                url: '/Business/EditBusiness/' + selectedBusinessId,
                 type: 'POST',
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
-            });
-        }
-    });
-
-
-    $('#sendBtn').on('click', function (event) {
-        // Trigger form validation
-        let form = $('#addBusinessForm')[0];
-        if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-        form.classList.add('was-validated');
-
-        // If the form is valid, send the AJAX request
-        if (form.checkValidity() === true) {
-            // Serialize form data, convert it to JSON and send an AJAX request
-            let formData = $('#addBusinessForm').serializeArray();
-            let jsonData = {};
-            formData.forEach(function (item) {
-                if (item.name === "addressID" && item.value === "") {
-                    jsonData[item.name] = null; // Set null value for empty addressID
-                } else if (item.name === "isActive") {
-                    jsonData[item.name] = item.value === "on" ? true : false; // Convert "on" to true, otherwise set false
-                } else {
-                    jsonData[item.name] = item.value;
-                }
-            });
-            event.preventDefault();
-            $.ajax({
-                url: '/Business/AddBusinessForm',
-                type: 'POST',
-                data: JSON.stringify(jsonData), // Send JSON data
-                contentType: 'application/json', // Set content-type to 'application/json'
                 success: function (response) {
                     let successAlert = `
-                            <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                                Business added successfully!
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>`;
+                                <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                                    Business updated successfully!
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>`;
                     $('#alertContainer').html(successAlert);
 
-                    // Close the modal
-                    $('#addBusinessModal').modal('hide');
+                    $('#editBusinessModal').modal('hide');
                 },
                 error: function (xhr, status, error) {
-                    // Handle error response, e.g., show an error message
+                    let errorAlert = `
+                                        <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
+                                            Error updating business!
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>`;
+                    $('#alertContainer').html(errorAlert);
+                    $('#editBusinessModal').modal('hide');
                 }
             });
         }
     });
-
-
-
 </script>
-
-</body>
-</html>

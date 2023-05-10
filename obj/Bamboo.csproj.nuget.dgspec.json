@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\alber\\source\\repos\\Bamboo\\Bamboo.csproj": {}
+    "C:\\Users\\alber\\source\\repos\\bamboo\\Bamboo.csproj": {}
   },
   "projects": {
-    "C:\\Users\\alber\\source\\repos\\Bamboo\\Bamboo.csproj": {
+    "C:\\Users\\alber\\source\\repos\\bamboo\\Bamboo.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\alber\\source\\repos\\Bamboo\\Bamboo.csproj",
+        "projectUniqueName": "C:\\Users\\alber\\source\\repos\\bamboo\\Bamboo.csproj",
         "projectName": "Bamboo",
-        "projectPath": "C:\\Users\\alber\\source\\repos\\Bamboo\\Bamboo.csproj",
+        "projectPath": "C:\\Users\\alber\\source\\repos\\bamboo\\Bamboo.csproj",
         "packagesPath": "C:\\Users\\alber\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\alber\\source\\repos\\Bamboo\\obj\\",
+        "outputPath": "C:\\Users\\alber\\source\\repos\\bamboo\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

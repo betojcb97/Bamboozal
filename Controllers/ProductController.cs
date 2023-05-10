@@ -4,6 +4,8 @@ using Bamboo.DTO;
 using Bamboo.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
+using System.Reflection;
 
 namespace Bamboo.Controllers
 {
@@ -49,11 +51,15 @@ namespace Bamboo.Controllers
             if (dbProduct == null) return NotFound();
             Product productNewInfo = _mapper.Map<Product>(productDto);
 
-            dbProduct.name = productNewInfo.name ?? productNewInfo.name;
-            dbProduct.description = productNewInfo.description ?? productNewInfo.description;
-            dbProduct.price = productNewInfo.price > 0 ? productNewInfo.price : dbProduct.price;
-            dbProduct.imageUrl = productNewInfo.imageUrl ?? productNewInfo.imageUrl;
-            dbProduct.businessID = productNewInfo.businessID ?? productNewInfo.businessID;
+            PropertyInfo[] properties = productNewInfo.GetType().GetProperties();
+
+            foreach (PropertyInfo property in properties)
+            {
+                if (property.GetValue(productNewInfo) != null && property.Name != "addressID")
+                {
+                    property.SetValue(dbProduct, property.GetValue(productNewInfo));
+                }
+            }
 
             db.Entry(dbProduct).State = EntityState.Modified;
             db.SaveChanges();
