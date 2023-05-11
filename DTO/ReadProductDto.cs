@@ -9,6 +9,9 @@ namespace Bamboo.DTO
         public string name { get; set; }
         public string description { get; set; }
         public decimal price { get; set; }
+        public decimal cost { get; set; }
+        public decimal tax { get; set; }
+        public decimal discount { get; set; }
         public string imageUrl { get; set; }
         public Guid businessID { get; set; }
         public virtual ReadBusinessDto? businessDto { get; set; }

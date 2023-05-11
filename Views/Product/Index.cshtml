@@ -28,14 +28,20 @@
     <div class="page-container d-flex flex-column">
         <div class="container">
             <h1>List of Products</h1>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addProductsModal">Add Product</button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addProductModal" style="background-color: green; color: black; font-weight: bold;">Add Product</button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editProductModal" style="background-color: yellow; color: black; font-weight: bold;">Edit Product</button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#removeProductModal" style="background-color: red; color: black; font-weight: bold;">Remove Product</button>
             <div id="alertContainer"></div>
             <table class="table table-hover mt-3">
                 <thead>
                     <tr>
+                        <th></th>
                         <th>Name</th>
                         <th>Description</th>
                         <th>Price</th>
+                        <th>Cost</th>
+                        <th>Tax</th>
+                        <th>Discount</th>
                         <th>Image</th>
                         <th>Business</th>
                         <th>Active</th>
@@ -69,16 +75,29 @@
                         </div>
                         <div class="form-group">
                             <label for="price">Price</label>
-                            <input type="number" class="form-control" id="price" name="price" maxlength="70" required>
+                            <input type="number" class="form-control" id="price" name="price" maxlength="70" step="0.01" required>
                             <div class="invalid-feedback">The price of the product must be provided.</div>
                         </div>
                         <div class="form-group">
-                            <label for="imageUrl">ImageUrl</label>
-                            <input type="text" class="form-control" id="imageUrl" name="imageUrl" maxlength="20" required>
+                            <label for="cost">Cost</label>
+                            <input type="number" class="form-control" id="cost" name="cost" maxlength="70" step="0.01">
                         </div>
                         <div class="form-group">
-                            <label for="businessId">Business ID</label>
-                            <input type="text" class="form-control" id="businessId" name="businessId">
+                            <label for="tax">Tax</label>
+                            <input type="number" class="form-control" id="tax" name="tax" maxlength="70" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="discount">Discount</label>
+                            <input type="number" class="form-control" id="discount" name="discount" maxlength="70" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="imageUrl">ImageUrl</label>
+                            <input type="text" class="form-control" id="imageUrl" name="imageUrl" maxlength="20">
+                        </div>
+                        <div class="form-group">
+                            <label for="businessID">Business ID</label>
+                            <select class="form-control" id="businessID" name="businessID" required>
+                            </select>
                         </div>
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" id="isActive" name="isActive">
@@ -88,13 +107,73 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="sendBtn">Send</button>
+                    <button type="button" class="btn btn-primary" id="sendBtnAdd">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="editProductModal" tabindex="-1" role="dialog" aria-labelledby="editProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="editProductForm">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" maxlength="50">
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea class="form-control" id="description" name="description"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="price">Price</label>
+                            <input type="number" class="form-control" id="price" name="price" maxlength="70" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="cost">Cost</label>
+                            <input type="number" class="form-control" id="cost" name="cost" maxlength="70" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="tax">Tax</label>
+                            <input type="number" class="form-control" id="tax" name="tax" maxlength="70" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="discount">Discount</label>
+                            <input type="number" class="form-control" id="discount" name="discount" maxlength="70" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="imageUrl">ImageUrl</label>
+                            <input type="text" class="form-control" id="imageUrl" name="imageUrl" maxlength="20">
+                        </div>
+                        <div class="form-group">
+                            <label for="businessID">Business ID</label>
+                            <select class="form-control" id="businessID" name="businessID">
+                            </select>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="isActive" name="isActive">
+                            <label class="form-check-label" for="isActive">Active</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="sendBtnEdit">Send</button>
                 </div>
             </div>
         </div>
     </div>
 <script>
+    let selectedProductId;
+    const decimals = ["price", "cost", "tax", "discount"];
     $(document).ready(function () {
+        fetchBusinesses();
         $.ajax({
             url: '/Product/ListProducts',
             type: 'GET',
@@ -106,10 +185,14 @@
                         let image = product.imageUrl ? `<img src="${product.imageUrl}" alt="Image" width="50">` : 'N/A';
 
                     tableBody.append(
-                    `<tr>
+                    `<tr data-product-id="${product.productID}">
+                        <td><input type="checkbox" class="product-checkbox"></td>
                         <td>${product.name}</td>
                         <td>${product.description}</td>
                         <td>${product.price}</td>
+                        <td>${product.cost}</td>
+                        <td>${product.tax}</td>
+                        <td>${product.discount}</td>
                         <td>${image}</td>
                         <td>${product.businessName}</td>
                         <td>${isActive}</td>
@@ -123,35 +206,40 @@
         });
     });
 
-    $('#sendBtn').on('click', function (event) {
-        // Trigger form validation
+    $('#sendBtnAdd').on('click', function (event) {
         let form = $('#addProductForm')[0];
         if (form.checkValidity() === false) {
             event.preventDefault();
             event.stopPropagation();
         }
         form.classList.add('was-validated');
-
-        // If the form is valid, send the AJAX request
         if (form.checkValidity() === true) {
-            // Serialize form data, convert it to JSON and send an AJAX request
-                let formData = $('#addProductForm').serializeArray();
+            let formData = $('#addProductForm').serializeArray();
             let jsonData = {};
             formData.forEach(function (item) {
                 if (item.name === "businessID" && item.value === "") {
-                    jsonData[item.name] = null; // Set null value for empty addressID
+                    jsonData[item.name] = null;
                 } else if (item.name === "isActive") {
-                    jsonData[item.name] = item.value === "on" ? true : false; // Convert "on" to true, otherwise set false
+                    jsonData[item.name] = item.value === "on" ? true : false;
+                } else if (decimals.includes(item.name)) {
+                    if (item.value === "") {
+                        jsonData[item.name] = 0;
+                    }
+                    else {
+                        jsonData[item.name] = parseFloat(item.value);
+                    }
+                } else if (item.value === "") {
+                    jsonData[item.name] = null;
                 } else {
                     jsonData[item.name] = item.value;
                 }
             });
             event.preventDefault();
             $.ajax({
-                url: '/Product/AddProductForm',
+                url: '/Product/AddProduct',
                 type: 'POST',
-                data: JSON.stringify(jsonData), // Send JSON data
-                contentType: 'application/json', // Set content-type to 'application/json'
+                data: JSON.stringify(jsonData), 
+                contentType: 'application/json', 
                 success: function (response) {
                     let successAlert = `
                             <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
@@ -161,17 +249,146 @@
                                 </button>
                             </div>`;
                     $('#alertContainer').html(successAlert);
-
-                    // Close the modal
-                    $('#addBusinessModal').modal('hide');
+                    $('#addProductModal').modal('hide');
                 },
                 error: function (xhr, status, error) {
-                    // Handle error response, e.g., show an error message
                 }
             });
         }
     });
 
+    $('button[data-target="#removeProductModal"]').on('click', function () {
+        let selectedRow = $('input.product-checkbox:checked').closest('tr');
+        if (selectedRow.length === 0) {
+            alert('Please select a product to remove.');
+            return false;
+        }
+        if (selectedRow.length > 1) {
+            alert('Please select only one product to remove.');
+            return false;
+        }
+        selectedProductId = selectedRow.attr('data-product-id');
+        $.ajax({
+            url: '/Product/RemoveProduct/' + selectedProductId,
+            type: 'POST',
+            contentType: 'application/json',
+            success: function (response) {
+                let successAlert = `
+                                        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                                            Product removed successfully!
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>`;
+                $('#alertContainer').html(successAlert);
+
+                $('#editProductModal').modal('hide');
+            },
+            error: function (xhr, status, error) {
+                let errorAlert = `
+                    <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
+                        Error removing product!
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>`;
+                $('#alertContainer').html(errorAlert);
+                    $('#editProductModal').modal('hide');
+            }
+        });
+    });
+
+    $('button[data-target="#editProductModal"]').on('click', function () {
+        let selectedRow = $('input.product-checkbox:checked').closest('tr');
+        if (selectedRow.length === 0) {
+            alert('Please select a product to edit.');
+            return false;
+        }
+        if (selectedRow.length > 1) {
+            alert('Please select only one product to edit.');
+            return false;
+        }
+        selectedProductId = selectedRow.attr('data-product-id');
+    });
+
+    $('#sendBtnEdit').on('click', function (event) {
+        let form = $('#editProductForm')[0];
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+        if (form.checkValidity() === true) {
+            let formData = $('#editProductForm').serializeArray();
+            let jsonData = {};
+            formData.forEach(function (item) {
+                if (item.name === "businessID" && item.value === "") {
+                    jsonData[item.name] = null;
+                } else if (item.name === "isActive") {
+                    jsonData[item.name] = item.value === "on" ? true : false;
+                } else if (decimals.includes(item.name)){
+                    if (item.value === ""){
+                        jsonData[item.name] = 0;
+                    }
+                    else{
+                        jsonData[item.name] = parseFloat(item.value);
+                    }
+                } else if (item.value === "") {
+                    jsonData[item.name] = null;
+                } else {
+                    jsonData[item.name] = item.value;
+                }
+            });
+            event.preventDefault();
+            $.ajax({
+                url: '/Product/EditProduct/' + selectedProductId,
+                type: 'POST',
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json',
+                success: function (response) {
+                    let successAlert = `
+                                    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                                        Product updated successfully!
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>`;
+                    $('#alertContainer').html(successAlert);
+
+                    $('#editProductModal').modal('hide');
+                },
+                error: function (xhr, status, error) {
+                    let errorAlert = `
+                                            <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
+                                                Error updating product!
+                                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>`;
+                    $('#alertContainer').html(errorAlert);
+                        $('#editProductModal').modal('hide');
+                }
+            });
+        }
+    });
+
+    function fetchBusinesses() {
+        $.ajax({
+            url: '/Business/ListBusinesses',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                let businessDropdowns = $('select[name="businessID"]');
+                data.forEach(function (business) {
+                    businessDropdowns.append(`<option value="${business.businessID}">${business.name}</option>`);
+                });
+                businessDropdowns.append(`<option value="null">Null</option>`);
+            },
+            error: function (xhr, status, error) {
+                alert('Error: ' + error);
+            }
+        });
+    }
 
 
 </script>

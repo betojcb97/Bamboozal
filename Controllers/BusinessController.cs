@@ -33,21 +33,20 @@ namespace Bamboo.Controllers
             return CreatedAtAction(nameof(business), business);
         }
 
-        [HttpPost("AddBusinessForm")]
-        public IActionResult AddBusinessForm([FromBody] AddBusinessDto businessDto)
+        [HttpPost("RemoveBusiness/{businessID}")]
+        public IActionResult RemoveBusiness(Guid businessID)
         {
-            Business business = _mapper.Map<Business>(businessDto);
-            Business exists = db.Businesses.Where(b => b.name == business.name).FirstOrDefault();
-            if (exists != null) { return StatusCode(StatusCodes.Status406NotAcceptable); }
-            db.Businesses.Add(business);
+            Business dbBusiness = db.Businesses.Where(a => a.businessID.Equals(businessID)).FirstOrDefault();
+            if (dbBusiness == null) { return Ok(); }
+            db.Businesses.Remove(dbBusiness);
             db.SaveChanges();
-            return CreatedAtAction(nameof(business), business);
+            return Ok();
         }
 
         [HttpPost("EditBusiness/{businessId}")]
-        public IActionResult EditBusiness(Guid businessId,[FromBody] EditBusinessDto businessDto)
+        public IActionResult EditBusiness(Guid businessID,[FromBody] EditBusinessDto businessDto)
         {
-            Business dbBusiness = db.Businesses.Where(b => b.businessID == businessId).FirstOrDefault();
+            Business dbBusiness = db.Businesses.Where(b => b.businessID == businessID).FirstOrDefault();
             if (dbBusiness == null) return NotFound();
             Business businessNewInfo = _mapper.Map<Business>(businessDto);
 

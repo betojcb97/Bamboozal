@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "List Businesses";
+    ViewBag.Title = "List Addresses";
 }
 
 <!DOCTYPE html>
@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>List Businesses</title>
+    <title>List Addresses</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -25,70 +25,68 @@
 <body>
     <div class="page-container d-flex flex-column">
         <div class="container">
-            <h1>List of Businesses</h1>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addBusinessModal" style="background-color: green; color: black; font-weight: bold;" color>Add Business</button>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editBusinessModal" style="background-color: yellow; color: black; font-weight: bold;">Edit Business</button>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#removeBusinessModal" style="background-color: red; color: black; font-weight: bold;">Remove Business</button>
+            <h1>List of Addresses</h1>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addAddressModal" style="background-color: green; color: black; font-weight: bold;" color>Add Address</button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editAddressModal" style="background-color: yellow; color: black; font-weight: bold;">Edit Address</button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#removeAddressModal" style="background-color: red; color: black; font-weight: bold;">Remove Address</button>
             <div id="alertContainer"></div>
             <table class="table table-hover mt-3">
                 <thead>
                     <tr>
                         <th></th>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Address</th>
-                        <th>Active</th>
-                        <th>Logo</th>
+                        <th>Street</th>
+                        <th>Number</th>
+                        <th>City</th>
+                        <th>State</th>
+                        <th>Country</th>
+                        <th>Postal Code</th>
                     </tr>
                 </thead>
-                <tbody id="businessesTableBody"></tbody>
+                <tbody id="addressesTableBody"></tbody>
             </table>
         </div>
     </div>
 
-    <div class="modal fade" id="addBusinessModal" tabindex="-1" role="dialog" aria-labelledby="addBusinessModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addAddressModal" tabindex="-1" role="dialog" aria-labelledby="addAddressModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addBusinessModalLabel">Add Business</h5>
+                    <h5 class="modal-title" id="addAddressModalLabel">Add Address</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> </button>
                 </div>
                 <div class="modal-body">
-                    <form id="addBusinessForm">
+                    <form id="addAddressForm">
                         <div class="form-group">
-                            <label for="name">Name</label>
-                            <input type="text" class="form-control" id="name" name="name" maxlength="50" required>
-                            <div class="invalid-feedback">The name of the business must be provided and not exceed 50 characters.</div>
-                        </div>
-                        <div class="form-group">
-                            <label for="description">Description</label>
-                            <textarea class="form-control" id="description" name="description"></textarea>
+                            <label for="street">Street</label>
+                            <input type="text" class="form-control" id="street" name="street" maxlength="70" required>
+                            <div class="invalid-feedback">The street of the business must be provided and not exceed 70 characters.</div>
                         </div>
                         <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" maxlength="70" required>
-                            <div class="invalid-feedback">The email of the business must be provided and not exceed 70 characters.</div>
+                            <label for="number">Number</label>
+                            <input type="text" class="form-control" id="number" name="number" maxlength="10" required>
+                            <div class="invalid-feedback">The number of the business must be provided and not exceed 10 characters.</div>
                         </div>
                         <div class="form-group">
-                            <label for="phone">Phone</label>
-                            <input type="text" class="form-control" id="phone" name="phone" maxlength="20" required>
-                            <div class="invalid-feedback">The phone of the business must be provided and not exceed 20 characters.</div>
+                            <label for="city">City</label>
+                            <input type="text" class="form-control" id="city" name="city" maxlength="20" required>
+                            <div class="invalid-feedback">The city of the business must be provided and not exceed 20 characters.</div>
                         </div>
                         <div class="form-group">
-                            <label for="addressID">Address ID</label>
-                            <select class="form-control" id="addressID" name="addressID">
-                            </select>
-                        </div>
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="isActive" name="isActive">
-                            <label class="form-check-label" for="isActive">Active</label>
+                            <label for="country">Country</label>
+                            <input type="text" class="form-control" id="country" name="country" maxlength="20" required>
+                            <div class="invalid-feedback">The country of the business must be provided and not exceed 20 characters.</div>
                         </div>
                         <div class="form-group">
-                            <label for="logoUrl">Logo URL</label>
-                            <input type="url" class="form-control" id="logoUrl" name="logoUrl">
+                            <label for="state">State</label>
+                            <input type="text" class="form-control" id="state" name="state" maxlength="20" required>
+                            <div class="invalid-feedback">The state of the business must be provided and not exceed 20 characters.</div>
                         </div>
+                        <div class="form-group">
+                            <label for="postalCode">Postal Code</label>
+                            <input type="text" class="form-control" id="postalCode" name="postalCode" maxlength="8" required>
+                            <div class="invalid-feedback">The postal code of the business must be provided and not exceed 8 characters.</div>
+                        </div>
+
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -99,48 +97,40 @@
         </div>
     </div>
 
-    <div class="modal fade" id="editBusinessModal" tabindex="-1" role="dialog" aria-labelledby="editBusinessModal" aria-hidden="true">
+    <div class="modal fade" id="editAddressModal" tabindex="-1" role="dialog" aria-labelledby="editAddressModal" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editBusinessModalLabel">Edit Business</h5>
+                    <h5 class="modal-title" id="editAddressModalLabel">Edit Address</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="editBusinessForm">
+                    <form id="editAddressForm">
                         <div class="form-group">
-                            <label for="name">Name</label>
-                            <input type="text" class="form-control" id="name" name="name" maxlength="50">
-                            <div class="invalid-feedback">The name of the business must be provided and not exceed 50 characters.</div>
+                            <label for="street">Street</label>
+                            <input type="text" class="form-control" id="street" name="street" maxlength="70">
                         </div>
                         <div class="form-group">
-                            <label for="description">Description</label>
-                            <textarea class="form-control" id="description" name="description"></textarea>
+                            <label for="number">Number</label>
+                            <input type="text" class="form-control" id="number" name="number" maxlength="10">
                         </div>
                         <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" maxlength="70">
-                            <div class="invalid-feedback">The email of the business must be provided and not exceed 70 characters.</div>
+                            <label for="city">City</label>
+                            <input type="text" class="form-control" id="city" name="city" maxlength="20">
                         </div>
                         <div class="form-group">
-                            <label for="phone">Phone</label>
-                            <input type="text" class="form-control" id="phone" name="phone" maxlength="20">
-                            <div class="invalid-feedback">The phone of the business must be provided and not exceed 20 characters.</div>
+                            <label for="country">Country</label>
+                            <input type="text" class="form-control" id="country" name="country" maxlength="20">
                         </div>
                         <div class="form-group">
-                            <label for="addressID">Address ID</label>
-                            <select class="form-control" id="addressID" name="addressID">
-                            </select>
-                        </div>
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="isActive" name="isActive">
-                            <label class="form-check-label" for="isActive">Active</label>
+                            <label for="state">State</label>
+                            <input type="text" class="form-control" id="state" name="state" maxlength="20">
                         </div>
                         <div class="form-group">
-                            <label for="logoUrl">Logo URL</label>
-                            <input type="url" class="form-control" id="logoUrl" name="logoUrl">
+                            <label for="postalCode">Postal Code</label>
+                            <input type="text" class="form-control" id="postalCode" name="postalCode" maxlength="8">
                         </div>
                     </form>
                 </div>
@@ -157,45 +147,24 @@
 
 <script>
 
-    let selectedBusinessId;
+    let selectedAddressId;
     $(document).ready(function () {
-        fetchAddresses();
         $.ajax({
-            url: '/Business/ListBusinesses',
+            url: '/Address/ListAddresses',
             type: 'GET',
             dataType: 'json',
             success: function (data) {
-                let tableBody = $('#businessesTableBody');
-                data.forEach(function (business) {
-                    let isActive = business.isActive ? 'Yes' : 'No';
-                    let address = '';
-                    if (business.addressDto) {
-                        if (business.addressDto.street) {
-                            address += `${business.addressDto.street}`;
-                        }
-                        if (business.addressDto.city) {
-                            address += `, ${business.addressDto.city}`;
-                        }
-                        if (business.addressDto.zipCode) {
-                            address += `, ${business.addressDto.postalCode}`;
-                        }
-                    }
-                    if (address === '') {
-                        address = 'N/A';
-                    }
-
-                    let logo = business.logoUrl ? `<img src="${business.logoUrl}" alt="Logo" width="50">` : 'N/A';
-
+                let tableBody = $('#addressesTableBody');
+                data.forEach(function (address) {
                     tableBody.append(
-                        `<tr data-business-id="${business.businessID}">
-                            <td><input type="checkbox" class="business-checkbox"></td>
-                            <td>${business.name}</td>
-                            <td>${business.description}</td>
-                            <td>${business.email}</td>
-                            <td>${business.phone}</td>
-                            <td>${address}</td>
-                            <td>${isActive}</td>
-                            <td>${logo}</td>
+                        `<tr data-address-id="${address.addressID}">
+                            <td><input type="checkbox" class="address-checkbox"></td>
+                            <td>${address.street}</td>
+                            <td>${address.number}</td>
+                            <td>${address.city}</td>
+                            <td>${address.state}</td>
+                            <td>${address.country}</td>
+                            <td>${address.postalCode}</td>
                             </tr>`
                     );
                 });
@@ -207,14 +176,14 @@
     });
 
     $('#sendBtnAdd').on('click', function (event) {
-        let form = $('#addBusinessForm')[0];
+        let form = $('#addAddressForm')[0];
         if (form.checkValidity() === false) {
             event.preventDefault();
             event.stopPropagation();
         }
         form.classList.add('was-validated');
         if (form.checkValidity() === true) {
-            let formData = $('#addBusinessForm').serializeArray();
+            let formData = $('#addAddressForm').serializeArray();
             let jsonData = {};
             formData.forEach(function (item) {
                 if (item.name === "addressID" && item.value === "") {
@@ -229,100 +198,100 @@
             });
             event.preventDefault();
             $.ajax({
-                url: '/Business/AddBusiness',
+                url: '/Address/AddAddress',
                 type: 'POST',
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
                 success: function (response) {
                     let successAlert = `
                                 <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                                    Business added successfully!
+                                    Address added successfully!
                                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>`;
                     $('#alertContainer').html(successAlert);
 
-                    $('#addBusinessModal').modal('hide');
+                    $('#addAddressModal').modal('hide');
                 },
                 error: function (xhr, status, error) {
                     let errorAlert = `
                                         <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
-                                            Error adding business!
+                                            Error adding address!
                                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>`;
                     $('#alertContainer').html(errorAlert);
-                    $('#addBusinessModal').modal('hide');
+                    $('#addAddressModal').modal('hide');
                 }
             });
         }
     });
 
-    $('button[data-target="#editBusinessModal"]').on('click', function () {
-        let selectedRow = $('input.business-checkbox:checked').closest('tr');
+    $('button[data-target="#editAddressModal"]').on('click', function () {
+        let selectedRow = $('input.address-checkbox:checked').closest('tr');
         if (selectedRow.length === 0) {
-            alert('Please select a business to edit.');
+            alert('Please select a address to edit.');
             return false;
         }
         if (selectedRow.length > 1) {
-            alert('Please select only one business to edit.');
+            alert('Please select only one address to edit.');
             return false;
         }
-        selectedBusinessId = selectedRow.attr('data-business-id');
+        selectedAddressId = selectedRow.attr('data-address-id');
     });
 
-    $('button[data-target="#removeBusinessModal"]').on('click', function () {
-        let selectedRow = $('input.business-checkbox:checked').closest('tr');
+    $('button[data-target="#removeAddressModal"]').on('click', function () {
+        let selectedRow = $('input.address-checkbox:checked').closest('tr');
         if (selectedRow.length === 0) {
-            alert('Please select a business to remove.');
+            alert('Please select a address to remove.');
             return false;
         }
         if (selectedRow.length > 1) {
-            alert('Please select only one business to remove.');
+            alert('Please select only one address to remove.');
             return false;
         }
-        selectedBusinessId = selectedRow.attr('data-business-id');
+        selectedAddressId = selectedRow.attr('data-address-id');
         $.ajax({
-            url: '/Business/RemoveBusiness/' + selectedBusinessId,
+            url: '/Address/RemoveAddress/' + selectedAddressId,
             type: 'POST',
             contentType: 'application/json',
             success: function (response) {
                 let successAlert = `
                                     <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                                        Business removed successfully!
+                                        Address removed successfully!
                                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
                                     </div>`;
                 $('#alertContainer').html(successAlert);
 
-                $('#editBusinessModal').modal('hide');
+                $('#editAddressModal').modal('hide');
             },
             error: function (xhr, status, error) {
                 let errorAlert = `
                                             <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
-                                                Error removing business!
+                                                Error removing address!
                                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>`;
                 $('#alertContainer').html(errorAlert);
-                $('#editBusinessModal').modal('hide');
+                $('#editAddressModal').modal('hide');
             }
         });
     });
 
     $('#sendBtnEdit').on('click', function (event) {
-        let form = $('#editBusinessForm')[0];
+        let form = $('#editAddressForm')[0];
         if (form.checkValidity() === false) {
             event.preventDefault();
             event.stopPropagation();
         }
         form.classList.add('was-validated');
         if (form.checkValidity() === true) {
-            let formData = $('#editBusinessForm').serializeArray();
+            let formData = $('#editAddressForm').serializeArray();
             let jsonData = {};
             formData.forEach(function (item) {
                 if (item.name === "addressID" && item.value === "") {
@@ -337,52 +306,35 @@
             });
             event.preventDefault();
             $.ajax({
-                url: '/Business/EditBusiness/' + selectedBusinessId,
+                url: '/Address/EditAddress/' + selectedAddressId,
                 type: 'POST',
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
                 success: function (response) {
                     let successAlert = `
                                 <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                                    Business updated successfully!
+                                    Address updated successfully!
                                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>`;
                     $('#alertContainer').html(successAlert);
 
-                    $('#editBusinessModal').modal('hide');
+                    $('#editAddressModal').modal('hide');
                 },
                 error: function (xhr, status, error) {
                     let errorAlert = `
                                         <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
-                                            Error updating business!
+                                            Error updating address!
                                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>`;
                     $('#alertContainer').html(errorAlert);
-                    $('#editBusinessModal').modal('hide');
+                    $('#editAddressModal').modal('hide');
                 }
             });
         }
     });
 
-    function fetchAddresses() {
-        $.ajax({
-            url: '/Address/ListAddresses',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                let addressDropdowns = $('select[name="addressID"]');
-                data.forEach(function (address) {
-                    addressDropdowns.append(`<option value="${address.addressID}">${address.street}</option>`);
-                });
-                addressDropdowns.append(`<option value="null">Null</option>`);
-            },
-            error: function (xhr, status, error) {
-                alert('Error: ' + error);
-            }
-        });
-    }
 </script>

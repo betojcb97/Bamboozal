@@ -33,21 +33,20 @@ namespace Bamboo.Controllers
             return CreatedAtAction(nameof(product), product);
         }
 
-        [HttpPost("AddProductForm")]
-        public IActionResult AddProductForm([FromBody] AddProductDto productDto)
+        [HttpPost("RemoveProduct/{productID}")]
+        public IActionResult RemoveProduct(Guid productID)
         {
-            Product product = _mapper.Map<Product>(productDto);
-            Product exists = db.Products.Where(p => p.name == product.name).FirstOrDefault();
-            if (exists != null) { return StatusCode(StatusCodes.Status406NotAcceptable); }
-            db.Products.Add(product);
+            Product dbProduct = db.Products.Where(a => a.productID.Equals(productID)).FirstOrDefault();
+            if (dbProduct == null) { return Ok(); }
+            db.Products.Remove(dbProduct);
             db.SaveChanges();
-            return CreatedAtAction(nameof(product), product);
+            return Ok();
         }
 
-        [HttpPost("EditProduct")]
-        public IActionResult EditProduct([FromBody] EditProductDto productDto)
+        [HttpPost("EditProduct/{productID}")]
+        public IActionResult EditProduct(Guid productID,[FromBody] EditProductDto productDto)
         {
-            Product dbProduct = db.Products.Where(p => p.productID == productDto.productId).FirstOrDefault();
+            Product dbProduct = db.Products.Where(p => p.productID == productID).FirstOrDefault();
             if (dbProduct == null) return NotFound();
             Product productNewInfo = _mapper.Map<Product>(productDto);
 
@@ -55,7 +54,7 @@ namespace Bamboo.Controllers
 
             foreach (PropertyInfo property in properties)
             {
-                if (property.GetValue(productNewInfo) != null && property.Name != "addressID")
+                if (property.GetValue(productNewInfo) != null && property.Name != "productID")
                 {
                     property.SetValue(dbProduct, property.GetValue(productNewInfo));
                 }

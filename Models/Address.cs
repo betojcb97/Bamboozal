@@ -28,6 +28,11 @@ namespace Bamboo.Models
         [MinLength(2, ErrorMessage = "The size of the country must be at least 2 characters")]
         public string country { get; set; }
 
+        [Required(ErrorMessage = "The state of the business must be provided")]
+        [MaxLength(20, ErrorMessage = "The size of the state must not exceed 20 characters")]
+        [MinLength(2, ErrorMessage = "The size of the state must be at least 2 characters")]
+        public string state { get; set; }
+
         [Required(ErrorMessage = "The postalCode of the business must be provided")]
         [MaxLength(8, ErrorMessage = "The size of the postalCode must not exceed 8 characters")]
         [MinLength(8, ErrorMessage = "The size of the postalCode must be at least 8 characters")]

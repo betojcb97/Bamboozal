@@ -4,13 +4,14 @@ using Bamboo.DTO;
 using Bamboo.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 using System.Reflection;
 
 namespace Bamboo.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class AddressController : ControllerBase
+    public class AddressController : Controller
     {
 
         private BambooContext db;
@@ -30,10 +31,20 @@ namespace Bamboo.Controllers
             return CreatedAtAction(nameof(address), address);
         }
 
-        [HttpPost("EditAddress")]
-        public IActionResult EditAddress([FromBody] EditAddressDto addressDto)
+        [HttpPost("RemoveAddress/{addressID}")]
+        public IActionResult RemoveAddress(Guid addressID)
         {
-            Address dbAddress = db.Addresses.Where(a => a.addressID.Equals(addressDto.addressId)).FirstOrDefault();
+            Address dbAddress = db.Addresses.Where(a => a.addressID.Equals(addressID)).FirstOrDefault();
+            if (dbAddress == null) { return Ok(); }
+            db.Addresses.Remove(dbAddress);
+            db.SaveChanges();
+            return Ok();
+        }
+
+        [HttpPost("EditAddress/{addressID}")]
+        public IActionResult EditAddress(Guid addressID, [FromBody] EditAddressDto addressDto)
+        {
+            Address dbAddress = db.Addresses.Where(a => a.addressID.Equals(addressID)).FirstOrDefault();
             if (dbAddress == null) return NotFound();
             Address addressNewInfo = _mapper.Map<Address>(addressDto);
 
@@ -52,10 +63,11 @@ namespace Bamboo.Controllers
             return CreatedAtAction(nameof(dbAddress), dbAddress);
         }
 
-        [HttpGet("GetAddresses")]
-        public IActionResult GetAddresses()
+        [HttpGet("ListAddresses")]
+        public IActionResult ListAddresses()
         {
-            return Ok(db.Addresses);
+            List<ReadAddressDto> readAddressDtos = _mapper.Map<List<ReadAddressDto>>(db.Addresses.ToList());
+            return Json(readAddressDtos);
         }
 
         [HttpGet("{id}")]
@@ -64,6 +76,12 @@ namespace Bamboo.Controllers
             var address = db.Addresses.FirstOrDefault(a => a.addressID.Equals(id));
             if (address == null) { return NotFound(); }
             return Ok(address);
+        }
+
+        [HttpGet("Index")]
+        public IActionResult Index()
+        {
+            return View();
         }
     }
 }

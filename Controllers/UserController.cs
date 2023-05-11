@@ -10,7 +10,7 @@ namespace Bamboo.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class UserController : ControllerBase
+    public class UserController : Controller
     {
         private BambooContext db;
         private IMapper _mapper;
