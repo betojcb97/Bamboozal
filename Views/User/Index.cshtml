@@ -22,7 +22,7 @@
                     <span asp-validation-for="userPassword" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Log in</button>
+                    <button type="submit" id="submit" class="btn btn-primary">Log in</button>
                 </div>
             </form>
         </section>
@@ -33,13 +33,12 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
-            debugger;
-            $("#account").on('click',function (event) {
+            $("#submit").on('click', function (event) {
                 event.preventDefault();
 
                 var userName = $("#userName").val();
                 var userPassword = $("#userPassword").val();
-
+                debugger;
                 $.ajax({
                     url: '/User/Login',
                     type: 'POST',
@@ -50,10 +49,13 @@
                         userPassword: userPassword
                     }),
                     success: function (response) {
+                        debugger;
                         console.log(response);
                         localStorage.setItem('authToken', response);
+                        window.location.href = '/Business/Index';
                     },
                     error: function (error) {
+                        debugger;
                         console.log(error);
                         // Handle error here, e.g., display an error message
                     }

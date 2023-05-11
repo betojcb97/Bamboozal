@@ -34,7 +34,7 @@ namespace Bamboo.Controllers
         public async Task<IActionResult> Login(LoginUserDto userDto)
         {
             var token = await _userService.LoginAsync(userDto);
-            return Ok(token);        
+            return Json(token);        
         }
 
         [HttpPost("Logoff")]

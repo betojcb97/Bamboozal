@@ -197,11 +197,16 @@
                 }
             });
             event.preventDefault();
+            debugger;
             $.ajax({
                 url: '/Address/AddAddress',
                 type: 'POST',
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
+                beforeSend: function (xhr) {
+                    var authToken = localStorage.getItem('authToken');
+                    xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                },
                 success: function (response) {
                     let successAlert = `
                                 <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
