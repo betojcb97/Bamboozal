@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "1Qdt9uVPbk9OflTGlc9UYZ+WasUEeRlg1X+8uTnM3hzXMPel462kmm/Z0ShCbwShRAsifd0EhJFFjly6kKJbJQ==",
+  "dgSpecHash": "nC3m7UOcbCKAEN7iNjkVSEpfbS1b9fRlyweODpsO+l8vJRHXwOvumuYeHVRZAk5f6AKSUIHx/asifXvIqZcnHw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\alber\\source\\repos\\bamboo\\Bamboo.csproj",
+  "projectFilePath": "C:\\Users\\alber\\source\\repos\\Bamboo\\Bamboo.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\alber\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\alber\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",

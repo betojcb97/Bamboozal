@@ -37,6 +37,13 @@ namespace Bamboo.Controllers
             return Ok(token);        
         }
 
+        [HttpPost("Logoff")]
+        public async Task<IActionResult> Logoff()
+        {
+            bool result = await _userService.LogoffAsync();
+            return Ok(result);
+        }
+
         [HttpGet]
         public IActionResult GetUsers()
         {
@@ -50,5 +57,10 @@ namespace Bamboo.Controllers
             return Ok(user);
         }
 
+        [HttpGet("Index")]
+        public IActionResult Index()
+        {
+            return View();
+        }
     }
 }

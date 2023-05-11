@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using static Bamboo.Models.User;
 
 namespace Bamboo.DTO
 {

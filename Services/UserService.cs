@@ -12,7 +12,7 @@ using System;
 
 namespace Bamboo.Services
 {
-    public class UserService
+    public class UserService : Controller
     {
         private BambooContext db;
         private IMapper _mapper;
@@ -48,6 +48,12 @@ namespace Bamboo.Services
 
             var token = _tokenService.GenerateToken(user);
             return token;
+        }
+
+        public async Task<bool> LogoffAsync()
+        {
+            await _signInManager.SignOutAsync();
+            return true;
         }
     }
 }

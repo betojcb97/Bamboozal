@@ -6,7 +6,9 @@ namespace Bamboo.DTO
     {
         [Required]
         public string userName { get; set; }
+
         [Required]
+        [DataType(DataType.Password)]
         public string userPassword { get; set; }
     }
 }
