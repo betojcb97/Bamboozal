@@ -25,51 +25,76 @@ namespace Bamboo.Controllers
         }
 
         [HttpPost("AddBusiness")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public IActionResult AddBusiness([FromBody] AddBusinessDto businessDto)
         {
-            Business business = _mapper.Map<Business>(businessDto);
-            Business exists = db.Businesses.Where(b => b.name == business.name).FirstOrDefault();
-            if (exists != null) { return StatusCode(StatusCodes.Status406NotAcceptable); }
-            db.Businesses.Add(business);
-            db.SaveChanges();
-            return CreatedAtAction(nameof(business), business);
+            if (Request.Headers.ContainsKey("Authorization"))
+            {
+                string token = Request.Headers["Authorization"].ToString().Split(' ')[1];
+                CustomUser dbUser = db.CustomUsers.Where(u => u.token.Equals(token)).FirstOrDefault();
+                if (dbUser == null || dbUser.tokenExpirationDate < DateTime.Now) { return Unauthorized(); }
+                Business business = _mapper.Map<Business>(businessDto);
+                Business exists = db.Businesses.Where(b => b.name == business.name).FirstOrDefault();
+                if (exists != null) { return StatusCode(StatusCodes.Status406NotAcceptable); }
+                db.Businesses.Add(business);
+                db.SaveChanges();
+                return CreatedAtAction(nameof(business), business);
+            }
+            else
+            {
+                return Unauthorized();
+            }
         }
 
         [HttpPost("RemoveBusiness/{businessID}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-
         public IActionResult RemoveBusiness(Guid businessID)
         {
-            Business dbBusiness = db.Businesses.Where(a => a.businessID.Equals(businessID)).FirstOrDefault();
-            if (dbBusiness == null) { return Ok(); }
-            db.Businesses.Remove(dbBusiness);
-            db.SaveChanges();
-            return Ok();
+            if (Request.Headers.ContainsKey("Authorization"))
+            {
+                string token = Request.Headers["Authorization"].ToString().Split(' ')[1];
+                CustomUser dbUser = db.CustomUsers.Where(u => u.token.Equals(token)).FirstOrDefault();
+                if (dbUser == null || dbUser.tokenExpirationDate < DateTime.Now) { return Unauthorized(); }
+                Business dbBusiness = db.Businesses.Where(a => a.businessID.Equals(businessID)).FirstOrDefault();
+                if (dbBusiness == null) { return Ok(); }
+                db.Businesses.Remove(dbBusiness);
+                db.SaveChanges();
+                return Ok();
+            }
+            else
+            {
+                return Unauthorized();
+            }
         }
 
         [HttpPost("EditBusiness/{businessId}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-
         public IActionResult EditBusiness(Guid businessID,[FromBody] EditBusinessDto businessDto)
         {
-            Business dbBusiness = db.Businesses.Where(b => b.businessID == businessID).FirstOrDefault();
-            if (dbBusiness == null) return NotFound();
-            Business businessNewInfo = _mapper.Map<Business>(businessDto);
-
-            PropertyInfo[] properties = businessNewInfo.GetType().GetProperties();
-
-            foreach(PropertyInfo property in properties)
+            if (Request.Headers.ContainsKey("Authorization"))
             {
-                if (property.GetValue(businessNewInfo) != null && property.Name != "businessID")
-                {
-                    property.SetValue(dbBusiness, property.GetValue(businessNewInfo));
-                }
-            }
+                string token = Request.Headers["Authorization"].ToString().Split(' ')[1];
+                CustomUser dbUser = db.CustomUsers.Where(u => u.token.Equals(token)).FirstOrDefault();
+                if (dbUser == null || dbUser.tokenExpirationDate < DateTime.Now) { return Unauthorized(); }
+                Business dbBusiness = db.Businesses.Where(b => b.businessID == businessID).FirstOrDefault();
+                if (dbBusiness == null) return NotFound();
+                Business businessNewInfo = _mapper.Map<Business>(businessDto);
 
-            db.Entry(dbBusiness).State = EntityState.Modified;
-            db.SaveChanges();
-            return CreatedAtAction(nameof(dbBusiness), dbBusiness);
+                PropertyInfo[] properties = businessNewInfo.GetType().GetProperties();
+
+                foreach(PropertyInfo property in properties)
+                {
+                    if (property.GetValue(businessNewInfo) != null && property.Name != "businessID")
+                    {
+                        property.SetValue(dbBusiness, property.GetValue(businessNewInfo));
+                    }
+                }
+
+                db.Entry(dbBusiness).State = EntityState.Modified;
+                db.SaveChanges();
+                return CreatedAtAction(nameof(dbBusiness), dbBusiness);
+            }
+            else
+            {
+                return Unauthorized();
+            }
         }
 
         [HttpGet("GetBusinesses")]

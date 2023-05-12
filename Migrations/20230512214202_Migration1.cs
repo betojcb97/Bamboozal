@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Bamboo.Migrations
 {
     /// <inheritdoc />
-    public partial class MigrationFirst : Migration
+    public partial class Migration1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -20,6 +20,7 @@ namespace Bamboo.Migrations
                     number = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     city = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     country = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    state = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     postalCode = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
                     dateOfCreation = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -43,57 +44,16 @@ namespace Bamboo.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Products",
+                name: "Carts",
                 columns: table => new
                 {
-                    productID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    description = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    imageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    businessID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    isActive = table.Column<bool>(type: "bit", nullable: false)
+                    cartID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    userID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    dateOfCreation = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Products", x => x.productID);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUsers",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    userFirstName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    userLastName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    addressID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    isActive = table.Column<bool>(type: "bit", nullable: false),
-                    ownerOfBusinessID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    dateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    dateOfRegister = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AspNetUsers_Addresses_addressID",
-                        column: x => x.addressID,
-                        principalTable: "Addresses",
-                        principalColumn: "addressID");
+                    table.PrimaryKey("PK_Carts", x => x.cartID);
                 });
 
             migrationBuilder.CreateTable(
@@ -139,6 +99,113 @@ namespace Bamboo.Migrations
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    userFirstName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    userLastName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    addressID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    isActive = table.Column<bool>(type: "bit", nullable: false),
+                    ownerOfBusinessID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    businessID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    dateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    dateOfRegister = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Addresses_addressID",
+                        column: x => x.addressID,
+                        principalTable: "Addresses",
+                        principalColumn: "addressID");
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Businesses_businessID",
+                        column: x => x.businessID,
+                        principalTable: "Businesses",
+                        principalColumn: "businessID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CustomUsers",
+                columns: table => new
+                {
+                    userID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    userName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    userFirstName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    userLastName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    addressID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    isActive = table.Column<bool>(type: "bit", nullable: false),
+                    ownerOfBusinessID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    businessID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    dateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    dateOfRegister = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    token = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    tokenExpirationDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CustomUsers", x => x.userID);
+                    table.ForeignKey(
+                        name: "FK_CustomUsers_Addresses_addressID",
+                        column: x => x.addressID,
+                        principalTable: "Addresses",
+                        principalColumn: "addressID");
+                    table.ForeignKey(
+                        name: "FK_CustomUsers_Businesses_businessID",
+                        column: x => x.businessID,
+                        principalTable: "Businesses",
+                        principalColumn: "businessID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Products",
+                columns: table => new
+                {
+                    productID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    description = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    cost = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    tax = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    discount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    imageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    businessID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    isActive = table.Column<bool>(type: "bit", nullable: false),
+                    cartID = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Products", x => x.productID);
+                    table.ForeignKey(
+                        name: "FK_Products_Businesses_businessID",
+                        column: x => x.businessID,
+                        principalTable: "Businesses",
+                        principalColumn: "businessID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Products_Carts_cartID",
+                        column: x => x.cartID,
+                        principalTable: "Carts",
+                        principalColumn: "cartID");
                 });
 
             migrationBuilder.CreateTable(
@@ -264,6 +331,11 @@ namespace Bamboo.Migrations
                 column: "addressID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_businessID",
+                table: "AspNetUsers",
+                column: "businessID");
+
+            migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
@@ -274,6 +346,26 @@ namespace Bamboo.Migrations
                 name: "IX_Businesses_addressID",
                 table: "Businesses",
                 column: "addressID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CustomUsers_addressID",
+                table: "CustomUsers",
+                column: "addressID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CustomUsers_businessID",
+                table: "CustomUsers",
+                column: "businessID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Products_businessID",
+                table: "Products",
+                column: "businessID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Products_cartID",
+                table: "Products",
+                column: "cartID");
         }
 
         /// <inheritdoc />
@@ -295,7 +387,7 @@ namespace Bamboo.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Businesses");
+                name: "CustomUsers");
 
             migrationBuilder.DropTable(
                 name: "Products");
@@ -305,6 +397,12 @@ namespace Bamboo.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Carts");
+
+            migrationBuilder.DropTable(
+                name: "Businesses");
 
             migrationBuilder.DropTable(
                 name: "Addresses");

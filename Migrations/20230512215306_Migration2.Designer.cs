@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bamboo.Migrations
 {
     [DbContext(typeof(BambooContext))]
-    [Migration("20230507184340_Migrationfix")]
-    partial class Migrationfix
+    [Migration("20230512215306_Migration2")]
+    partial class Migration2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -56,6 +56,11 @@ namespace Bamboo.Migrations
                         .IsRequired()
                         .HasMaxLength(8)
                         .HasColumnType("nvarchar(8)");
+
+                    b.Property<string>("state")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("street")
                         .IsRequired()
@@ -111,6 +116,81 @@ namespace Bamboo.Migrations
                     b.ToTable("Businesses");
                 });
 
+            modelBuilder.Entity("Bamboo.Models.Cart", b =>
+                {
+                    b.Property<Guid>("cartID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("dateOfCreation")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("userID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("cartID");
+
+                    b.ToTable("Carts");
+                });
+
+            modelBuilder.Entity("Bamboo.Models.CustomUser", b =>
+                {
+                    b.Property<Guid>("userID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("addressID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("businessID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("dateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("dateOfRegister")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("isActive")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("ownerOfBusinessID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("tokenExpirationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("userEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("userFirstName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("userLastName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("userName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("userID");
+
+                    b.HasIndex("addressID");
+
+                    b.HasIndex("businessID");
+
+                    b.ToTable("CustomUsers");
+                });
+
             modelBuilder.Entity("Bamboo.Models.Product", b =>
                 {
                     b.Property<Guid>("productID")
@@ -121,10 +201,18 @@ namespace Bamboo.Migrations
                         .IsRequired()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("cartID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("cost")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("description")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal>("discount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("imageUrl")
                         .HasColumnType("nvarchar(max)");
@@ -140,7 +228,14 @@ namespace Bamboo.Migrations
                     b.Property<decimal>("price")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<decimal>("tax")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("productID");
+
+                    b.HasIndex("businessID");
+
+                    b.HasIndex("cartID");
 
                     b.ToTable("Products");
                 });
@@ -200,6 +295,9 @@ namespace Bamboo.Migrations
                     b.Property<Guid?>("addressID")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("businessID")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("dateOfBirth")
                         .HasColumnType("datetime2");
 
@@ -233,6 +331,8 @@ namespace Bamboo.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.HasIndex("addressID");
+
+                    b.HasIndex("businessID");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -379,13 +479,49 @@ namespace Bamboo.Migrations
                     b.Navigation("address");
                 });
 
+            modelBuilder.Entity("Bamboo.Models.CustomUser", b =>
+                {
+                    b.HasOne("Bamboo.Models.Address", "address")
+                        .WithMany()
+                        .HasForeignKey("addressID");
+
+                    b.HasOne("Bamboo.Models.Business", "business")
+                        .WithMany()
+                        .HasForeignKey("businessID");
+
+                    b.Navigation("address");
+
+                    b.Navigation("business");
+                });
+
+            modelBuilder.Entity("Bamboo.Models.Product", b =>
+                {
+                    b.HasOne("Bamboo.Models.Business", "business")
+                        .WithMany()
+                        .HasForeignKey("businessID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Bamboo.Models.Cart", null)
+                        .WithMany("products")
+                        .HasForeignKey("cartID");
+
+                    b.Navigation("business");
+                });
+
             modelBuilder.Entity("Bamboo.Models.User", b =>
                 {
                     b.HasOne("Bamboo.Models.Address", "address")
                         .WithMany()
                         .HasForeignKey("addressID");
 
+                    b.HasOne("Bamboo.Models.Business", "business")
+                        .WithMany()
+                        .HasForeignKey("businessID");
+
                     b.Navigation("address");
+
+                    b.Navigation("business");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -437,6 +573,11 @@ namespace Bamboo.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Bamboo.Models.Cart", b =>
+                {
+                    b.Navigation("products");
                 });
 #pragma warning restore 612, 618
         }

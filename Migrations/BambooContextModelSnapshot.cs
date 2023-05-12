@@ -130,6 +130,68 @@ namespace Bamboo.Migrations
                     b.ToTable("Carts");
                 });
 
+            modelBuilder.Entity("Bamboo.Models.CustomUser", b =>
+                {
+                    b.Property<Guid>("userID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("addressID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("businessID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("dateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("dateOfRegister")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("isActive")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("ownerOfBusinessID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("tokenExpirationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("userEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("userFirstName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("userLastName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("userName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("userPassword")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("userID");
+
+                    b.HasIndex("addressID");
+
+                    b.HasIndex("businessID");
+
+                    b.ToTable("CustomUsers");
+                });
+
             modelBuilder.Entity("Bamboo.Models.Product", b =>
                 {
                     b.Property<Guid>("productID")
@@ -416,6 +478,21 @@ namespace Bamboo.Migrations
                         .HasForeignKey("addressID");
 
                     b.Navigation("address");
+                });
+
+            modelBuilder.Entity("Bamboo.Models.CustomUser", b =>
+                {
+                    b.HasOne("Bamboo.Models.Address", "address")
+                        .WithMany()
+                        .HasForeignKey("addressID");
+
+                    b.HasOne("Bamboo.Models.Business", "business")
+                        .WithMany()
+                        .HasForeignKey("businessID");
+
+                    b.Navigation("address");
+
+                    b.Navigation("business");
                 });
 
             modelBuilder.Entity("Bamboo.Models.Product", b =>

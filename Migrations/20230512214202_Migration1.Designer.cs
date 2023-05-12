@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bamboo.Migrations
 {
     [DbContext(typeof(BambooContext))]
-    [Migration("20230512135801_MigrationCart")]
-    partial class MigrationCart
+    [Migration("20230512214202_Migration1")]
+    partial class Migration1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -125,12 +125,66 @@ namespace Bamboo.Migrations
                     b.Property<DateTime?>("dateOfCreation")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("userID")
+                    b.Property<Guid?>("userID")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("cartID");
 
                     b.ToTable("Carts");
+                });
+
+            modelBuilder.Entity("Bamboo.Models.CustomUser", b =>
+                {
+                    b.Property<Guid>("userID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("addressID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("businessID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("dateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("dateOfRegister")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("isActive")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("ownerOfBusinessID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("tokenExpirationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("userFirstName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("userLastName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("userName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("userID");
+
+                    b.HasIndex("addressID");
+
+                    b.HasIndex("businessID");
+
+                    b.ToTable("CustomUsers");
                 });
 
             modelBuilder.Entity("Bamboo.Models.Product", b =>
@@ -419,6 +473,21 @@ namespace Bamboo.Migrations
                         .HasForeignKey("addressID");
 
                     b.Navigation("address");
+                });
+
+            modelBuilder.Entity("Bamboo.Models.CustomUser", b =>
+                {
+                    b.HasOne("Bamboo.Models.Address", "address")
+                        .WithMany()
+                        .HasForeignKey("addressID");
+
+                    b.HasOne("Bamboo.Models.Business", "business")
+                        .WithMany()
+                        .HasForeignKey("businessID");
+
+                    b.Navigation("address");
+
+                    b.Navigation("business");
                 });
 
             modelBuilder.Entity("Bamboo.Models.Product", b =>

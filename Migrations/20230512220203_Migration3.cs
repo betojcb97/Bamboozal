@@ -5,16 +5,15 @@
 namespace Bamboo.Migrations
 {
     /// <inheritdoc />
-    public partial class MigrationAddressState : Migration
+    public partial class Migration3 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "state",
-                table: "Addresses",
-                type: "nvarchar(20)",
-                maxLength: 20,
+                name: "userPassword",
+                table: "CustomUsers",
+                type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "");
         }
@@ -23,8 +22,8 @@ namespace Bamboo.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "state",
-                table: "Addresses");
+                name: "userPassword",
+                table: "CustomUsers");
         }
     }
 }

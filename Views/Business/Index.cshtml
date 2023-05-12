@@ -216,8 +216,9 @@
         if (form.checkValidity() === true) {
             let formData = $('#addBusinessForm').serializeArray();
             let jsonData = {};
+            debugger;
             formData.forEach(function (item) {
-                if (item.name === "addressID" && item.value === "") {
+                if (item.name === "addressID" && item.value === "null") {
                     jsonData[item.name] = null;
                 } else if (item.name === "isActive") {
                     jsonData[item.name] = item.value === "on" ? true : false;
