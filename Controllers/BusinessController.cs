@@ -2,6 +2,8 @@
 using Bamboo.Data;
 using Bamboo.DTO;
 using Bamboo.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
@@ -23,6 +25,7 @@ namespace Bamboo.Controllers
         }
 
         [HttpPost("AddBusiness")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public IActionResult AddBusiness([FromBody] AddBusinessDto businessDto)
         {
             Business business = _mapper.Map<Business>(businessDto);
@@ -34,6 +37,8 @@ namespace Bamboo.Controllers
         }
 
         [HttpPost("RemoveBusiness/{businessID}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+
         public IActionResult RemoveBusiness(Guid businessID)
         {
             Business dbBusiness = db.Businesses.Where(a => a.businessID.Equals(businessID)).FirstOrDefault();
@@ -44,6 +49,8 @@ namespace Bamboo.Controllers
         }
 
         [HttpPost("EditBusiness/{businessId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+
         public IActionResult EditBusiness(Guid businessID,[FromBody] EditBusinessDto businessDto)
         {
             Business dbBusiness = db.Businesses.Where(b => b.businessID == businessID).FirstOrDefault();

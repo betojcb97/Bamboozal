@@ -79,6 +79,20 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuer = false,
         ClockSkew = TimeSpan.Zero
     };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnChallenge = context =>
+        {
+            context.HandleResponse();
+
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            context.Response.Redirect("/User/Index");
+
+            return Task.CompletedTask;
+        },
+    };
+
 });
 
 // Add services to the container.

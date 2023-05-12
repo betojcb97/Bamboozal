@@ -22,6 +22,8 @@ namespace Bamboo.Models
 
         public Guid? ownerOfBusinessID { get; set; }
 
+        public virtual Business? business { get; set; }
+
         public DateTime? dateOfBirth { get; set; }
 
         public DateTime? dateOfRegister { get; set; }

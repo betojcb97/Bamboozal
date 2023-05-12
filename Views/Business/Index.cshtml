@@ -233,26 +233,41 @@
                 type: 'POST',
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
-                success: function (response) {
-                    let successAlert = `
-                                <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                                    Business added successfully!
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>`;
-                    $('#alertContainer').html(successAlert);
-
-                    $('#addBusinessModal').modal('hide');
+                beforeSend: function (xhr) {
+                    var authToken = localStorage.getItem('authToken');
+                    xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                },
+                success: function (response, textStatus, xhr) {
+                    if (xhr.status === 201) {  // 201: Created
+                        let successAlert = `
+                        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                        Business added successfully!
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>`;
+                        $('#alertContainer').html(successAlert);
+                        $('#addBusinessModal').modal('hide');
+                    } else if (xhr.status === 406) {  // 406: Not Acceptable
+                        let errorAlert = `
+                        <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
+                        Business already exists!
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>`;
+                        $('#alertContainer').html(errorAlert);
+                        $('#addBusinessModal').modal('hide');
+                    }
                 },
                 error: function (xhr, status, error) {
                     let errorAlert = `
-                                        <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
-                                            Error adding business!
-                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>`;
+                    <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
+                    Error adding business!
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>`;
                     $('#alertContainer').html(errorAlert);
                     $('#addBusinessModal').modal('hide');
                 }
@@ -288,26 +303,30 @@
             url: '/Business/RemoveBusiness/' + selectedBusinessId,
             type: 'POST',
             contentType: 'application/json',
+            beforeSend: function (xhr) {
+                var authToken = localStorage.getItem('authToken');
+                xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+            },
             success: function (response) {
                 let successAlert = `
-                                    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                                        Business removed successfully!
-                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>`;
+                <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                Business removed successfully!
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+                </div>`;
                 $('#alertContainer').html(successAlert);
 
                 $('#editBusinessModal').modal('hide');
             },
             error: function (xhr, status, error) {
                 let errorAlert = `
-                                            <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
-                                                Error removing business!
-                                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>`;
+                <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
+                Error removing business!
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+                </div>`;
                 $('#alertContainer').html(errorAlert);
                 $('#editBusinessModal').modal('hide');
             }
@@ -341,26 +360,30 @@
                 type: 'POST',
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
+                beforeSend: function (xhr) {
+                    var authToken = localStorage.getItem('authToken');
+                    xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                },
                 success: function (response) {
                     let successAlert = `
-                                <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                                    Business updated successfully!
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>`;
+                    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                    Business updated successfully!
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>`;
                     $('#alertContainer').html(successAlert);
 
                     $('#editBusinessModal').modal('hide');
                 },
                 error: function (xhr, status, error) {
                     let errorAlert = `
-                                        <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
-                                            Error updating business!
-                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>`;
+                    <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
+                    Error updating business!
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>`;
                     $('#alertContainer').html(errorAlert);
                     $('#editBusinessModal').modal('hide');
                 }

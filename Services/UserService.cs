@@ -50,6 +50,11 @@ namespace Bamboo.Services
             return token;
         }
 
+        public async Task LogoutAsync()
+        {
+            await _signInManager.SignOutAsync();
+        }
+
         public async Task<bool> LogoffAsync()
         {
             await _signInManager.SignOutAsync();

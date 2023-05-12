@@ -1,66 +1,388 @@
-﻿@model Bamboo.DTO.LoginUserDto
-@{
-    ViewData["Title"] = "Log in";
+﻿@{
+    ViewBag.Title = "List Users";
 }
 
-<h1>@ViewData["Title"]</h1>
-<div class="row">
-    <div class="col-md-8">
-        <section>
-            <form id="account" method="post">
-                <h4>Use a local account to log in.</h4>
-                <hr />
-                <div asp-validation-summary="All" class="text-danger"></div>
-                <div class="form-group">
-                    <label asp-for="userName"></label>
-                    <input asp-for="userName" class="form-control" />
-                    <span asp-validation-for="userName" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="userPassword"></label>
-                    <input asp-for="userPassword" class="form-control" />
-                    <span asp-validation-for="userPassword" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <button type="submit" id="submit" class="btn btn-primary">Log in</button>
-                </div>
-            </form>
-        </section>
-    </div>
-</div>
-
-@section Scripts {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Users</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            $("#submit").on('click', function (event) {
-                event.preventDefault();
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
 
-                var userName = $("#userName").val();
-                var userPassword = $("#userPassword").val();
-                debugger;
-                $.ajax({
-                    url: '/User/Login',
-                    type: 'POST',
-                    dataType: 'json',
-                    contentType: 'application/json',
-                    data: JSON.stringify({
-                        userName: userName,
-                        userPassword: userPassword
-                    }),
-                    success: function (response) {
-                        debugger;
-                        console.log(response);
-                        localStorage.setItem('authToken', response);
-                        window.location.href = '/Business/Index';
-                    },
-                    error: function (error) {
-                        debugger;
-                        console.log(error);
-                        // Handle error here, e.g., display an error message
+        .page-container {
+            min-height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-container d-flex flex-column">
+        <div class="container">
+            <h1>List of Users</h1>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addUserModal" style="background-color: green; color: black; font-weight: bold;" color>Add User</button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editUserModal" style="background-color: yellow; color: black; font-weight: bold;">Edit User</button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#removeUserModal" style="background-color: red; color: black; font-weight: bold;">Remove User</button>
+            <div id="alertContainer"></div>
+            <table class="table table-hover mt-3">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Address</th>
+                        <th>Is Active</th>
+                        <th>Business</th>
+                        <th>Date of Birth</th>
+                        <th>Date of Register</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addUserModalLabel">Add User</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> </button>
+                </div>
+                <div class="modal-body">
+                    <form id="addUserForm">
+                        <div class="form-group">
+                            <label for="userName">User Name</label>
+                            <input type="text" class="form-control" id="userName" name="userName" maxlength="50" required>
+                            <div class="invalid-feedback">The userName must be provided and not exceed 50 characters.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="userEmail">User Email</label>
+                            <input type="email" class="form-control" id="userEmail" name="userEmail" maxlength="50" required>
+                            <div class="invalid-feedback">The userEmail must be provided and not exceed 50 characters.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="userPassword">User Password</label>
+                            <input type="password" class="form-control" id="userPassword" name="userPassword" maxlength="50" required>
+                            <div class="invalid-feedback">The userPassword must be provided and not exceed 50 characters.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="rePassword">Confirm Password</label>
+                            <input type="password" class="form-control" id="rePassword" name="rePassword" required>
+                            <div class="invalid-feedback">The passwords must match.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="userFirstName">First Name</label>
+                            <input type="text" class="form-control" id="userFirstName" name="userFirstName" maxlength="20" required>
+                            <div class="invalid-feedback">The userFirstName must be provided and not exceed 20 characters.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="userLastName">Last Name</label>
+                            <input type="text" class="form-control" id="userLastName" name="userLastName" maxlength="20" required>
+                            <div class="invalid-feedback">The userLastName must be provided and not exceed 20 characters.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="addressID">Address ID</label>
+                            <input type="text" class="form-control" id="addressID" name="addressID">
+                        </div>
+                        <div class="form-group">
+                            <label for="isActive">Active</label>
+                            <input type="checkbox" class="form-control" id="isActive" name="isActive">
+                        </div>
+                        <div class="form-group">
+                            <label for="ownerOfBusinessID">Owner ID</label>
+                            <input type="text" class="form-control" id="ownerOfBusinessID" name="ownerOfBusinessID">
+                        </div>
+                        <div class="form-group">
+                            <label for="dateOfBirth">Date of Birth</label>
+                            <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth">
+                        </div>
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="sendBtnAdd">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="editUserForm">
+                        <div class="form-group">
+                            <label for="userName">User Name</label>
+                            <input type="text" class="form-control" id="userName" name="userName" maxlength="50">
+                        </div>
+                        <div class="form-group">
+                            <label for="userEmail">User Email</label>
+                            <input type="email" class="form-control" id="userEmail" name="userEmail" maxlength="50">
+                        </div>
+                        <div class="form-group">
+                            <label for="userFirstName">First Name</label>
+                            <input type="text" class="form-control" id="userFirstName" name="userFirstName" maxlength="20">
+                        </div>
+                        <div class="form-group">
+                            <label for="userLastName">Last Name</label>
+                            <input type="text" class="form-control" id="userLastName" name="userLastName" maxlength="20">
+                        </div>
+                        <div class="form-group">
+                            <label for="addressID">Address ID</label>
+                            <input type="text" class="form-control" id="addressID" name="addressID">
+                        </div>
+                        <div class="form-group">
+                            <label for="isActive">Active</label>
+                            <input type="checkbox" class="form-control" id="isActive" name="isActive">
+                        </div>
+                        <div class="form-group">
+                            <label for="ownerOfBusinessID">Owner ID</label>
+                            <input type="text" class="form-control" id="ownerOfBusinessID" name="ownerOfBusinessID">
+                        </div>
+                        <div class="form-group">
+                            <label for="dateOfBirth">Date of Birth</label>
+                            <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth">
+                        </div>
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="sendBtnEdit">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+
+<script>
+
+    let selectedUserId;
+    $(document).ready(function () {
+        $.ajax({
+            url: '/User/ListUsers',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                let tableBody = $('#usersTableBody');
+                data.forEach(function (user) {
+                    let isActive = user.isActive ? 'Yes' : 'No';
+                    let address = '';
+                    if (user.addressDto) {
+                        if (business.addressDto.street) {
+                            address += `${user.addressDto.street}`;
+                        }
+                        if (business.addressDto.city) {
+                            address += `, ${user.addressDto.city}`;
+                        }
+                        if (business.addressDto.zipCode) {
+                            address += `, ${user.addressDto.postalCode}`;
+                        }
                     }
+                    if (address === '') {
+                        address = 'N/A';
+                    }
+                    let business = '';
+                    if(user.businessDto){
+                        business += `${user.businessDto.name}`;
+                    }
+                    tableBody.append(
+                        `<tr data-user-id="${user.userID}">
+                        <td><input type="checkbox" class="user-checkbox"></td>
+                        <td>${user.userFirstName}</td>
+                        <td>${user.userLastName}</td>
+                        <td>${address}</td>
+                        <td>${isActive}</td>
+                        <td>${business}</td>
+                        <td>${user.dateOfBirth}</td>
+                        <td>${user.dateOfRegister}</td>
+                        </tr>`
+                    );
                 });
-            });
+            },
+            error: function (xhr, status, error) {
+                alert('Error: ' + error);
+            }
         });
-    </script>
-}
+    });
+
+    $('#sendBtnAdd').on('click', function (event) {
+        let form = $('#addUserForm')[0];
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+        if (form.checkValidity() === true) {
+            let formData = $('#addUserForm').serializeArray();
+            let jsonData = {};
+            formData.forEach(function (item) {
+                if ((item.name === "addressID" || item.name === "ownerOfBusinessID") && item.value === "") {
+                    jsonData[item.name] = null;
+                } else if (item.name === "isActive") {
+                    jsonData[item.name] = item.value === "on" ? true : false;
+                } else if (item.value === "") {
+                    jsonData[item.name] = null;
+                } else {
+                    jsonData[item.name] = item.value;
+                }
+            });
+            event.preventDefault();
+            $.ajax({
+                url: '/User/AddUser',
+                type: 'POST',
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json',
+                success: function (response) {
+                    let successAlert = `
+                                    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                                        User added successfully!
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>`;
+                    $('#alertContainer').html(successAlert);
+
+                    $('#addUserModal').modal('hide');
+                },
+                error: function (xhr, status, error) {
+                    let errorAlert = `
+                        <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
+                        Error adding user!
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>`;
+                    $('#alertContainer').html(errorAlert);
+                    $('#addUserModal').modal('hide');
+                }
+            });
+        }
+    });
+
+    $('button[data-target="#editUserModal"]').on('click', function () {
+        let selectedRow = $('input.user-checkbox:checked').closest('tr');
+        if (selectedRow.length === 0) {
+            alert('Please select a user to edit.');
+            return false;
+        }
+        if (selectedRow.length > 1) {
+            alert('Please select only one user to edit.');
+            return false;
+        }
+        selectedUserId = selectedRow.attr('data-user-id');
+    });
+
+    $('button[data-target="#removeUserModal"]').on('click', function () {
+        let selectedRow = $('input.user-checkbox:checked').closest('tr');
+        if (selectedRow.length === 0) {
+            alert('Please select a user to remove.');
+            return false;
+        }
+        if (selectedRow.length > 1) {
+            alert('Please select only one user to remove.');
+            return false;
+        }
+        selectedUserId = selectedRow.attr('data-address-id');
+        $.ajax({
+            url: '/User/RemoveUser/' + selectedUserId,
+            type: 'POST',
+            contentType: 'application/json',
+            success: function (response) {
+                let successAlert = `
+                    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                    User removed successfully!
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>`;
+                $('#alertContainer').html(successAlert);
+
+                $('#editUserModal').modal('hide');
+            },
+            error: function (xhr, status, error) {
+                let errorAlert = `
+                    <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
+                    Error removing user!
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>`;
+                $('#alertContainer').html(errorAlert);
+                $('#editUserModal').modal('hide');
+            }
+        });
+    });
+
+    $('#sendBtnEdit').on('click', function (event) {
+        let form = $('#editUserForm')[0];
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+        if (form.checkValidity() === true) {
+            let formData = $('#editUserForm').serializeArray();
+            let jsonData = {};
+            formData.forEach(function (item) {
+                if ((item.name === "addressID" || item.name === "ownerOfBusinessID") && item.value === "") {
+                    jsonData[item.name] = null;
+                } else if (item.name === "isActive") {
+                    jsonData[item.name] = item.value === "on" ? true : false;
+                } else if (item.value === "") {
+                    jsonData[item.name] = null;
+                } else {
+                    jsonData[item.name] = item.value;
+                }
+            });
+            event.preventDefault();
+            $.ajax({
+                url: '/User/EditUser/' + selectedUserId,
+                type: 'POST',
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json',
+                success: function (response) {
+                    let successAlert = `
+                        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                        User updated successfully!
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>`;
+                    $('#alertContainer').html(successAlert);
+
+                    $('#editUserModal').modal('hide');
+                },
+                error: function (xhr, status, error) {
+                    let errorAlert = `
+                        <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
+                        Error updating address!
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>`;
+                    $('#alertContainer').html(errorAlert);
+                    $('#editUserModal').modal('hide');
+                }
+            });
+        }
+    });
+
+</script>
