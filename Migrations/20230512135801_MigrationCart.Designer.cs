@@ -4,6 +4,7 @@ using Bamboo.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bamboo.Migrations
 {
     [DbContext(typeof(BambooContext))]
-    partial class BambooContextModelSnapshot : ModelSnapshot
+    [Migration("20230512135801_MigrationCart")]
+    partial class MigrationCart
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -122,7 +125,7 @@ namespace Bamboo.Migrations
                     b.Property<DateTime?>("dateOfCreation")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("userID")
+                    b.Property<Guid>("userID")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("cartID");

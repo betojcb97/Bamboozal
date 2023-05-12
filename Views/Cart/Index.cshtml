@@ -1,0 +1,181 @@
+﻿@{
+    ViewBag.Title = "List Carts";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Carts</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+        .page-container {
+            min-height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-container d-flex flex-column">
+        <div class="container">
+            <h1>List of Carts</h1>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editCartModal" style="background-color: yellow; color: black; font-weight: bold;">Edit Cart</button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#removeCartModal" style="background-color: red; color: black; font-weight: bold;">Remove Cart</button>
+            <div id="alertContainer"></div>
+            <table class="table table-hover mt-3" id="cartsTable">
+                <thead>
+                    <tr>
+                        <th>Cart ID</th>
+                        <th>User ID</th>
+                        <th>Date of Creation</th>
+                        <th>Product</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Tax</th>
+                        <th>Discount</th>
+                    </tr>
+                </thead>
+                <tbody id="cartsTableBody">
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '/Cart/ListCarts',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                let tableBody = $('#cartsTableBody');
+                data.forEach(function (cart) {
+                    cart.productsDto.forEach(function (product, index) {
+                        let row =
+                            `<tr data-cart-id="${cart.cartID}" data-product-id="${product.productId}">
+                                ${index === 0 ? `<td rowspan="${cart.productsDto.length}">${cart.cartID}</td>
+                                <td rowspan="${cart.productsDto.length}">${cart.userID}</td>
+                                <td rowspan="${cart.productsDto.length}">${cart.dateOfCreation}</td>` : ""}
+                                <td>${product.name}</td>
+                                <td>${product.description}</td>
+                                <td>${product.price}</td>
+                                <td>${product.tax}</td>
+                                <td>${product.discount}</td>
+                            </tr>`;
+                        tableBody.append(row);
+                    });
+                });
+            },
+            error: function (xhr, status, error) {
+                alert('Error: ' + error);
+            }
+        });
+    });
+
+
+    $('button[data-target="#removeCartModal"]').on('click', function () {
+        let selectedRow = $('input.cart-checkbox:checked').closest('tr');
+        if (selectedRow.length === 0) {
+            alert('Please select a cart to remove.');
+            return false;
+        }
+        if (selectedRow.length > 1) {
+            alert('Please select only one cart to remove.');
+            return false;
+        }
+        selectedCartId = selectedRow.attr('data-cart-id');
+        $.ajax({
+            url: '/Cart/RemoveCart/' + selectedCartId,
+            type: 'POST',
+            contentType: 'application/json',
+            success: function (response) {
+                let successAlert = `
+                    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                    Cart removed successfully!
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>`;
+                $('#alertContainer').html(successAlert);
+
+                $('#editCartModal').modal('hide');
+            },
+            error: function (xhr, status, error) {
+                let errorAlert = `
+                    <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
+                    Error removing cart!
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>`;
+                $('#alertContainer').html(errorAlert);
+                $('#editCartModal').modal('hide');
+            }
+        });
+    });
+
+    $('#sendBtnEdit').on('click', function (event) {
+        let form = $('#editCartForm')[0];
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+        if (form.checkValidity() === true) {
+            let formData = $('#editCartForm').serializeArray();
+            let jsonData = {};
+            formData.forEach(function (item) {
+                if (item.name === "addressID" && item.value === "") {
+                    jsonData[item.name] = null;
+                } else if (item.name === "isActive") {
+                    jsonData[item.name] = item.value === "on" ? true : false;
+                } else if (item.value === "") {
+                    jsonData[item.name] = null;
+                } else {
+                    jsonData[item.name] = item.value;
+                }
+            });
+            event.preventDefault();
+            $.ajax({
+                url: '/Cart/EditCart/' + selectedCartId,
+                type: 'POST',
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json',
+                success: function (response) {
+                    let successAlert = `
+                        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                        Cart updated successfully!
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>`;
+                    $('#alertContainer').html(successAlert);
+
+                    $('#editCartModal').modal('hide');
+                },
+                error: function (xhr, status, error) {
+                    let errorAlert = `
+                        <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
+                        Error updating cart!
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>`;
+                    $('#alertContainer').html(errorAlert);
+                    $('#editCartModal').modal('hide');
+                }
+            });
+        }
+    });
+
+</script>

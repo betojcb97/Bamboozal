@@ -31,6 +31,7 @@
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addProductModal" style="background-color: green; color: black; font-weight: bold;">Add Product</button>
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editProductModal" style="background-color: yellow; color: black; font-weight: bold;">Edit Product</button>
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#removeProductModal" style="background-color: red; color: black; font-weight: bold;">Remove Product</button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#cartProductModal" style="background-color: blue; color: black; font-weight: bold;">Add Product to Cart</button>
             <div id="alertContainer"></div>
             <table class="table table-hover mt-3">
                 <thead>
@@ -171,6 +172,7 @@
     </div>
 <script>
     let selectedProductId;
+    let selectedProductsIds = [];
     const decimals = ["price", "cost", "tax", "discount"];
     $(document).ready(function () {
         fetchBusinesses();
@@ -309,6 +311,40 @@
             return false;
         }
         selectedProductId = selectedRow.attr('data-product-id');
+    });
+
+    $('button[data-target="#cartProductModal"]').on('click', function () {
+        debugger;
+        let selectedRows = $('input.product-checkbox:checked').closest('tr');
+        if (selectedRows.length === 0) {
+            alert('Please select a product to add to cart.');
+            return false;
+        }
+        if (selectedRows.length >= 1) {
+            selectedRows.toArray().forEach(function (row) {
+                let productId = $(row).attr('data-product-id');
+                selectedProductsIds.push(productId);
+            });
+        }
+        let userId = null;
+        let data = {
+            userID: userId,
+            productsIds: selectedProductsIds
+        };
+        $.ajax({
+            url: '/Cart/AddCart',  
+            type: 'POST',
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            success: function (response) {
+                console.log('Cart added successfully.');
+                console.log(response); 
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.error('Error adding cart: ', textStatus, ', Details: ', errorThrown);
+                console.error('Response: ', jqXHR.responseText);
+            }
+        });
     });
 
     $('#sendBtnEdit').on('click', function (event) {

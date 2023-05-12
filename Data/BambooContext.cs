@@ -14,6 +14,7 @@ namespace Bamboo.Data
         public DbSet<Business> Businesses { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<Cart> Carts { get; set; }
 
     }
 }

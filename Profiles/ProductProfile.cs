@@ -7,14 +7,15 @@ namespace Bamboo.Profiles
 {
     public class ProductProfile : Profile
     {
-        public ProductProfile() 
+        public ProductProfile()
         {
             CreateMap<AddProductDto, Product>();
 
-            CreateMap<Product, ReadProductDto>().ForMember(ReadProductDto => ReadProductDto.businessDto,
+            CreateMap<Product, ReadProductDto>().ForMember(dto => dto.businessDto,
                 opt => opt.MapFrom(product => product.business));
 
             CreateMap<EditProductDto, Product>();
         }
     }
 }
+
