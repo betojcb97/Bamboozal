@@ -11,6 +11,8 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="~/js/Util.js"></script>
+
     <style>
         html,
         body {
@@ -183,6 +185,7 @@
             success: function (data) {
                 let tableBody = $('#usersTableBody');
                 data.forEach(function (user) {
+                    debugger;
                     let isActive = user.isActive ? 'Yes' : 'No';
                     let address = '';
                     if (user.addressDto) {
@@ -203,6 +206,8 @@
                     if(user.businessDto){
                         business += `${user.businessDto.name}`;
                     }
+                    let dateOfBirth = formatISODate(user.dateOfBirth);
+                    let dateOfRegister = formatISODate(user.dateOfRegister);
                     tableBody.append(
                         `<tr data-user-id="${user.userID}">
                         <td><input type="checkbox" class="user-checkbox"></td>
@@ -211,8 +216,8 @@
                         <td>${address}</td>
                         <td>${isActive}</td>
                         <td>${business}</td>
-                        <td>${user.dateOfBirth}</td>
-                        <td>${user.dateOfRegister}</td>
+                        <td>${dateOfBirth}</td>
+                        <td>${dateOfRegister}</td>
                         </tr>`
                     );
                 });

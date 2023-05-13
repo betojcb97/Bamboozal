@@ -1,4 +1,5 @@
 ﻿using Bamboo.Models;
+using Bamboo.API;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -21,6 +22,12 @@ namespace Bamboo.Controllers
         public IActionResult Privacy()
         {
             return View();
+        }
+
+        public async void Teste()
+        {
+            GoogleImage googleImage = new GoogleImage();
+            string response = await googleImage.Search("car");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

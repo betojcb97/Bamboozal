@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "nC3m7UOcbCKAEN7iNjkVSEpfbS1b9fRlyweODpsO+l8vJRHXwOvumuYeHVRZAk5f6AKSUIHx/asifXvIqZcnHw==",
+  "dgSpecHash": "hmuKu9X6385EltJP+Gbf/ldkEDXtVUmEngxH3Guy38OrZqChORnLOcEF9hoYDWMamcLz/oU6iq5qdYTtUu9QfQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\alber\\source\\repos\\Bamboo\\Bamboo.csproj",
   "expectedPackageFiles": [
@@ -9,6 +9,9 @@
     "C:\\Users\\alber\\.nuget\\packages\\azure.core\\1.24.0\\azure.core.1.24.0.nupkg.sha512",
     "C:\\Users\\alber\\.nuget\\packages\\azure.identity\\1.6.0\\azure.identity.1.6.0.nupkg.sha512",
     "C:\\Users\\alber\\.nuget\\packages\\castle.core\\5.1.0\\castle.core.5.1.0.nupkg.sha512",
+    "C:\\Users\\alber\\.nuget\\packages\\google.apis\\1.49.0\\google.apis.1.49.0.nupkg.sha512",
+    "C:\\Users\\alber\\.nuget\\packages\\google.apis.core\\1.49.0\\google.apis.core.1.49.0.nupkg.sha512",
+    "C:\\Users\\alber\\.nuget\\packages\\google.apis.customsearch.v1\\1.49.0.2084\\google.apis.customsearch.v1.1.49.0.2084.nupkg.sha512",
     "C:\\Users\\alber\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\alber\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\6.0.16\\microsoft.aspnetcore.authentication.jwtbearer.6.0.16.nupkg.sha512",
     "C:\\Users\\alber\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\7.0.5\\microsoft.aspnetcore.cryptography.internal.7.0.5.nupkg.sha512",

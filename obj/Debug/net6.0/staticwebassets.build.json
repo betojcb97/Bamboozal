@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "6QP1Q+RJ/BVpAdbtVdQimmOZahJz68Sa9P1vUKRiVzs=",
+  "Hash": "5CcRJxRi+/8ofR7SIwoGtTyILjRgOxQktOrL0K/aVNg=",
   "Source": "Bamboo",
   "BasePath": "_content/Bamboo",
   "Mode": "Default",
@@ -100,6 +100,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\js\\site.js"
+    },
+    {
+      "Identity": "C:\\Users\\alber\\source\\repos\\Bamboo\\wwwroot\\js\\Util.js",
+      "SourceId": "Bamboo",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\alber\\source\\repos\\Bamboo\\wwwroot\\",
+      "BasePath": "_content/Bamboo",
+      "RelativePath": "js/Util.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\Util.js"
     },
     {
       "Identity": "C:\\Users\\alber\\source\\repos\\Bamboo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.css",

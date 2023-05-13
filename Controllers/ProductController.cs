@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Bamboo.API;
 using Bamboo.Data;
 using Bamboo.DTO;
 using Bamboo.Models;
@@ -23,11 +24,17 @@ namespace Bamboo.Controllers
         }
 
         [HttpPost("AddProduct")]
-        public IActionResult AddProduct([FromBody] AddProductDto productDto)
+        public async Task<IActionResult> AddProduct([FromBody] AddProductDto productDto)
         {
             Product product = _mapper.Map<Product>(productDto);
             Product exists = db.Products.Where(p => p.name == product.name).FirstOrDefault();
             if (exists != null) { return StatusCode(StatusCodes.Status406NotAcceptable); }
+            if (product.imageUrl == null)
+            {
+                GoogleImage googleImage = new GoogleImage();
+                string response = await googleImage.Search(product.name+","+product.description);
+                product.imageUrl = response;
+            }
             db.Products.Add(product);
             db.SaveChanges();
             return CreatedAtAction(nameof(product), product);

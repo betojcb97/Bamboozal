@@ -185,14 +185,16 @@
                     }
 
                     let logo = business.logoUrl ? `<img src="${business.logoUrl}" alt="Logo" width="50">` : 'N/A';
+                    let email = `<a href="mailto:${business.email}">${business.email}</a>`;
+                    let phone = `<a href="tel:${business.phone}">${business.phone}</a>`;
 
                     tableBody.append(
                         `<tr data-business-id="${business.businessID}">
                             <td><input type="checkbox" class="business-checkbox"></td>
                             <td>${business.name}</td>
                             <td>${business.description}</td>
-                            <td>${business.email}</td>
-                            <td>${business.phone}</td>
+                            <td>${email}</td>
+                            <td>${phone}</td>
                             <td>${address}</td>
                             <td>${isActive}</td>
                             <td>${logo}</td>

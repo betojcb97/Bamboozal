@@ -183,8 +183,8 @@
             success: function (data) {
                 let tableBody = $('#productsTableBody');
                 data.forEach(function (product) {
-                        let isActive = product.isActive ? 'Yes' : 'No';
-                        let image = product.imageUrl ? `<img src="${product.imageUrl}" alt="Image" width="50">` : 'N/A';
+                    let isActive = product.isActive ? 'Yes' : 'No';
+                    let image = product.imageUrl ? `<a href="${product.imageUrl}" target="_blank"><img src="${product.imageUrl}" alt="Image" width="50"></a>` : 'N/A';
 
                     tableBody.append(
                     `<tr data-product-id="${product.productID}">
@@ -196,7 +196,7 @@
                         <td>${product.tax}</td>
                         <td>${product.discount}</td>
                         <td>${image}</td>
-                        <td>${product.businessName}</td>
+                        <td>${product.businessDto.name}</td>
                         <td>${isActive}</td>
                     </tr>`
                     );
