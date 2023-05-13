@@ -55,6 +55,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<TokenValidator>();
 
 builder.Services.AddSingleton<IAuthorizationHandler, ActiveUserAuthorization>();
 

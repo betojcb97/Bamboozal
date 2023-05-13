@@ -14,90 +14,97 @@ namespace Bamboo.Controllers
     public class CartController : Controller
     {
 
+        private TokenValidator tokenValidator;
         private BambooContext db;
-        private IMapper _mapper;
-        public CartController(BambooContext context, IMapper mapper)
+        private IMapper mapper;
+        public CartController(BambooContext context, IMapper _mapper, TokenValidator _tokenValidator)
         {
             db = context;
-            _mapper = mapper;
+            mapper = _mapper;
+            tokenValidator = _tokenValidator;
         }
 
         [HttpPost("AddCart")]
         public IActionResult AddCart([FromBody] AddCartDto cartDto)
         {
-            // Create a new Cart
-            Cart cart = new Cart
+            bool authorized = tokenValidator.ValidateToken();
+            if (authorized)
             {
-                userID = cartDto.userID,
-                productsIds = cartDto.productsIds,
-                products = new List<Product>(),
-            };
-
-            // Get products from the database based on product IDs
-            if (cartDto.productsIds != null)
-            {
-                foreach (var productId in cartDto.productsIds)
+                Cart cart = new Cart
                 {
-                    var product = db.Products.Find(productId);
-                    if (product != null)
+                    userID = cartDto.userID,
+                    productsIds = cartDto.productsIds,
+                    products = new List<Product>(),
+                };
+
+                if (cartDto.productsIds != null)
+                {
+                    foreach (var productId in cartDto.productsIds)
                     {
-                        cart.products.Add(product);
+                        var product = db.Products.Find(productId);
+                        if (product != null)
+                        {
+                            cart.products.Add(product);
+                        }
                     }
                 }
+
+                db.Carts.Add(cart);
+                db.SaveChanges();
+
+                return CreatedAtAction(nameof(cart), cart);
             }
-
-            db.Carts.Add(cart);
-            db.SaveChanges();
-
-            return CreatedAtAction(nameof(cart), cart);
+            else { return Unauthorized(); }
         }
 
 
         [HttpPost("RemoveCart/{cartID}")]
         public IActionResult RemoveCart(Guid cartID)
         {
-            Cart dbCart = db.Carts.Where(a => a.cartID.Equals(cartID)).FirstOrDefault();
-            if (dbCart == null) { return Ok(); }
-            db.Carts.Remove(dbCart);
-            db.SaveChanges();
-            return Ok();
+            bool authorized = tokenValidator.ValidateToken();
+            if (authorized)
+            {
+                Cart dbCart = db.Carts.Where(a => a.cartID.Equals(cartID)).FirstOrDefault();
+                if (dbCart == null) { return Ok(); }
+                db.Carts.Remove(dbCart);
+                db.SaveChanges();
+                return Ok();
+            }
+            else { return Unauthorized(); }
         }
 
         [HttpPost("EditCart/{cartID}")]
         public IActionResult EditCart(Guid cartID, [FromBody] EditCartDto cartDto)
         {
-            Cart dbCart = db.Carts.Where(a => a.cartID.Equals(cartID)).FirstOrDefault();
-            if (dbCart == null) return NotFound();
-            Cart CartNewInfo = _mapper.Map<Cart>(cartDto);
-
-            PropertyInfo[] properties = CartNewInfo.GetType().GetProperties();
-
-            foreach (PropertyInfo property in properties)
+            bool authorized = tokenValidator.ValidateToken();
+            if (authorized)
             {
-                if (property.GetValue(CartNewInfo) != null && property.Name != "CartID")
-                {
-                    property.SetValue(dbCart, property.GetValue(CartNewInfo));
-                }
-            }
+                Cart dbCart = db.Carts.Where(a => a.cartID.Equals(cartID)).FirstOrDefault();
+                if (dbCart == null) return NotFound();
+                Cart CartNewInfo = mapper.Map<Cart>(cartDto);
 
-            db.Entry(dbCart).State = EntityState.Modified;
-            db.SaveChanges();
-            return CreatedAtAction(nameof(dbCart), dbCart);
+                PropertyInfo[] properties = CartNewInfo.GetType().GetProperties();
+
+                foreach (PropertyInfo property in properties)
+                {
+                    if (property.GetValue(CartNewInfo) != null && property.Name != "CartID")
+                    {
+                        property.SetValue(dbCart, property.GetValue(CartNewInfo));
+                    }
+                }
+
+                db.Entry(dbCart).State = EntityState.Modified;
+                db.SaveChanges();
+                return CreatedAtAction(nameof(dbCart), dbCart);
+            }
+            else { return Unauthorized(); }
         }
 
         [HttpGet("ListCarts")]
         public IActionResult ListCarts()
         {
-            List<ReadCartDto> readCartDtos = _mapper.Map<List<ReadCartDto>>(db.Carts.ToList());
+            List<ReadCartDto> readCartDtos = mapper.Map<List<ReadCartDto>>(db.Carts.ToList());
             return Json(readCartDtos);
-        }
-
-        [HttpGet("{id}")]
-        public IActionResult GetCartById(Guid id)
-        {
-            var Cart = db.Carts.FirstOrDefault(a => a.cartID.Equals(id));
-            if (Cart == null) { return NotFound(); }
-            return Ok(Cart);
         }
 
         [HttpGet("Index")]

@@ -14,68 +14,77 @@ namespace Bamboo.Controllers
     public class AddressController : Controller
     {
 
+        private TokenValidator tokenValidator;
         private BambooContext db;
-        private IMapper _mapper;
-        public AddressController(BambooContext context, IMapper mapper)
+        private IMapper mapper;
+        public AddressController(BambooContext context, IMapper _mapper, TokenValidator _tokenValidator)
         {
             db = context;
-            _mapper = mapper;
+            mapper = _mapper;
+            tokenValidator = _tokenValidator;
         }
 
         [HttpPost("AddAddress")]
         public IActionResult AddAddress([FromBody] AddAddressDto addressDto)
         {
-            Address address = _mapper.Map<Address>(addressDto);
-            db.Addresses.Add(address);
-            db.SaveChanges();
-            return CreatedAtAction(nameof(address), address);
+            bool authorized = tokenValidator.ValidateToken();
+            if (authorized)
+            {
+                Address address = mapper.Map<Address>(addressDto);
+                db.Addresses.Add(address);
+                db.SaveChanges();
+                return CreatedAtAction(nameof(address), address);
+            }
+            else { return Unauthorized(); }
         }
 
         [HttpPost("RemoveAddress/{addressID}")]
         public IActionResult RemoveAddress(Guid addressID)
         {
-            Address dbAddress = db.Addresses.Where(a => a.addressID.Equals(addressID)).FirstOrDefault();
-            if (dbAddress == null) { return Ok(); }
-            db.Addresses.Remove(dbAddress);
-            db.SaveChanges();
-            return Ok();
+            bool authorized = tokenValidator.ValidateToken();
+            if (authorized)
+            {
+                Address dbAddress = db.Addresses.Where(a => a.addressID.Equals(addressID)).FirstOrDefault();
+                if (dbAddress == null) { return Ok(); }
+                db.Addresses.Remove(dbAddress);
+                db.SaveChanges();
+                return Ok();
+            }
+            else { return Unauthorized(); }
         }
 
         [HttpPost("EditAddress/{addressID}")]
         public IActionResult EditAddress(Guid addressID, [FromBody] EditAddressDto addressDto)
         {
-            Address dbAddress = db.Addresses.Where(a => a.addressID.Equals(addressID)).FirstOrDefault();
-            if (dbAddress == null) return NotFound();
-            Address addressNewInfo = _mapper.Map<Address>(addressDto);
-
-            PropertyInfo[] properties = addressNewInfo.GetType().GetProperties();
-
-            foreach (PropertyInfo property in properties)
+            bool authorized = tokenValidator.ValidateToken();
+            if (authorized)
             {
-                if (property.GetValue(addressNewInfo) != null && property.Name != "addressID")
-                {
-                    property.SetValue(dbAddress, property.GetValue(addressNewInfo));
-                }
-            }
+                Address dbAddress = db.Addresses.Where(a => a.addressID.Equals(addressID)).FirstOrDefault();
+                if (dbAddress == null) return NotFound();
+                Address addressNewInfo = mapper.Map<Address>(addressDto);
 
-            db.Entry(dbAddress).State = EntityState.Modified;
-            db.SaveChanges();
-            return CreatedAtAction(nameof(dbAddress), dbAddress);
+                PropertyInfo[] properties = addressNewInfo.GetType().GetProperties();
+
+                foreach (PropertyInfo property in properties)
+                {
+                    if (property.GetValue(addressNewInfo) != null && property.Name != "addressID")
+                    {
+                        property.SetValue(dbAddress, property.GetValue(addressNewInfo));
+                    }
+                }
+
+                db.Entry(dbAddress).State = EntityState.Modified;
+                db.SaveChanges();
+                return CreatedAtAction(nameof(dbAddress), dbAddress);
+            }
+            else { return Unauthorized(); }
         }
 
         [HttpGet("ListAddresses")]
         public IActionResult ListAddresses()
         {
-            List<ReadAddressDto> readAddressDtos = _mapper.Map<List<ReadAddressDto>>(db.Addresses.ToList());
+            List<ReadAddressDto> readAddressDtos = mapper.Map<List<ReadAddressDto>>(db.Addresses.ToList());
             return Json(readAddressDtos);
-        }
-
-        [HttpGet("{id}")]
-        public IActionResult GetAddressById(Guid id)
-        {
-            var address = db.Addresses.FirstOrDefault(a => a.addressID.Equals(id));
-            if (address == null) { return NotFound(); }
-            return Ok(address);
         }
 
         [HttpGet("Index")]

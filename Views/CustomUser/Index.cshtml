@@ -99,8 +99,9 @@
                             <label class="form-check-label" for="isActive">Active</label>
                         </div>
                         <div class="form-group">
-                            <label for="ownerOfBusinessID">Owner ID</label>
-                            <input type="text" class="form-control" id="ownerOfBusinessID" name="ownerOfBusinessID">
+                            <label for="businessID">Business ID</label>
+                            <select class="form-control" id="businessID" name="businessID" required>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="dateOfBirth">Date of Birth</label>
@@ -153,8 +154,9 @@
                             <label class="form-check-label" for="isActive">Active</label>
                         </div>
                         <div class="form-group">
-                            <label for="ownerOfBusinessID">Owner ID</label>
-                            <input type="text" class="form-control" id="ownerOfBusinessID" name="ownerOfBusinessID">
+                            <label for="businessID">Business ID</label>
+                            <select class="form-control" id="businessID" name="businessID" required>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="dateOfBirth">Date of Birth</label>
@@ -171,61 +173,12 @@
         </div>
     </div>
 
-</body>
-</html>
-
 <script>
 
     let selectedUserId;
     $(document).ready(function () {
-        $.ajax({
-            url: '/CustomUser/ListUsers',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                let tableBody = $('#usersTableBody');
-                data.forEach(function (user) {
-                    debugger;
-                    let isActive = user.isActive ? 'Yes' : 'No';
-                    let address = '';
-                    if (user.addressDto) {
-                        if (business.addressDto.street) {
-                            address += `${user.addressDto.street}`;
-                        }
-                        if (business.addressDto.city) {
-                            address += `, ${user.addressDto.city}`;
-                        }
-                        if (business.addressDto.zipCode) {
-                            address += `, ${user.addressDto.postalCode}`;
-                        }
-                    }
-                    if (address === '') {
-                        address = 'N/A';
-                    }
-                    let business = '';
-                    if(user.businessDto){
-                        business += `${user.businessDto.name}`;
-                    }
-                    let dateOfBirth = formatISODate(user.dateOfBirth);
-                    let dateOfRegister = formatISODate(user.dateOfRegister);
-                    tableBody.append(
-                        `<tr data-user-id="${user.userID}">
-                        <td><input type="checkbox" class="user-checkbox"></td>
-                        <td>${user.userFirstName}</td>
-                        <td>${user.userLastName}</td>
-                        <td>${address}</td>
-                        <td>${isActive}</td>
-                        <td>${business}</td>
-                        <td>${dateOfBirth}</td>
-                        <td>${dateOfRegister}</td>
-                        </tr>`
-                    );
-                });
-            },
-            error: function (xhr, status, error) {
-                alert('Error: ' + error);
-            }
-        });
+            fetchBusinesses();
+        fetchAndFillUsersTable();
     });
 
     $('#sendBtnAdd').on('click', function (event) {
@@ -255,28 +208,64 @@
                 type: 'POST',
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
+                beforeSend: function (xhr) {
+                    var authToken = localStorage.getItem('authToken');
+                    xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                },
                 success: function (response) {
-                    let successAlert = `
-                                    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                                        User added successfully!
-                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>`;
-                    $('#alertContainer').html(successAlert);
-
-                    $('#addUserModal').modal('hide');
+                    showAlert("User added successfully!");
+                    fetchAndFillUsersTable();
                 },
                 error: function (xhr, status, error) {
-                    let errorAlert = `
-                        <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
-                        Error adding user!
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                        </button>
-                        </div>`;
-                    $('#alertContainer').html(errorAlert);
-                    $('#addUserModal').modal('hide');
+                    if (xhr.status === 401) {
+                        window.location.href = '/CustomUser/LoginPage';
+                    }
+                    showAlert("Error adding user! "+ error);
+                }
+            });
+        }
+    });
+
+    $('#sendBtnEdit').on('click', function (event) {
+        let form = $('#editUserForm')[0];
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+        if (form.checkValidity() === true) {
+            let formData = $('#editUserForm').serializeArray();
+            let jsonData = {};
+            formData.forEach(function (item) {
+                if ((item.name === "addressID" || item.name === "businessID") && item.value === "") {
+                    jsonData[item.name] = null;
+                } else if (item.name === "isActive") {
+                    jsonData[item.name] = item.value === "on" ? true : false;
+                } else if (item.value === "") {
+                    jsonData[item.name] = null;
+                } else {
+                    jsonData[item.name] = item.value;
+                }
+            });
+            event.preventDefault();
+            $.ajax({
+                url: '/CustomUser/EditCustomUser/' + selectedUserId,
+                type: 'POST',
+                data: JSON.stringify(jsonData),
+                contentType: 'application/json',
+                beforeSend: function (xhr) {
+                    var authToken = localStorage.getItem('authToken');
+                    xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                },
+                success: function (response) {
+                    showAlert("User updated successfully!");
+                    fetchAndFillUsersTable();
+                },
+                error: function (xhr, status, error) {
+                    if (xhr.status === 401) {
+                        window.location.href = '/CustomUser/LoginPage';
+                    }
+                    showAlert("Error updating address! " + error);
                 }
             });
         }
@@ -305,89 +294,101 @@
             alert('Please select only one user to remove.');
             return false;
         }
-        selectedUserId = selectedRow.attr('data-address-id');
+        selectedUserId = selectedRow.attr('data-user-id');
         $.ajax({
-            url: '/CustomUser/RemoveUser/' + selectedUserId,
+            url: '/CustomUser/RemoveCustomUser/' + selectedUserId,
             type: 'POST',
             contentType: 'application/json',
+            beforeSend: function (xhr) {
+                var authToken = localStorage.getItem('authToken');
+                xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+            },
             success: function (response) {
-                let successAlert = `
-                    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                    User removed successfully!
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
-                    </div>`;
-                $('#alertContainer').html(successAlert);
-
-                $('#editUserModal').modal('hide');
+                showAlert("User removed successfully!");
+                fetchAndFillUsersTable();
             },
             error: function (xhr, status, error) {
-                let errorAlert = `
-                    <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
-                    Error removing user!
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
-                    </div>`;
-                $('#alertContainer').html(errorAlert);
-                $('#editUserModal').modal('hide');
+                if (xhr.status === 401) {
+                    window.location.href = '/CustomUser/LoginPage';
+                }
+                showAlert("Error removing user! " + error);
             }
         });
     });
 
-    $('#sendBtnEdit').on('click', function (event) {
-        let form = $('#editUserForm')[0];
-        if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-        form.classList.add('was-validated');
-        if (form.checkValidity() === true) {
-            let formData = $('#editUserForm').serializeArray();
-            let jsonData = {};
-            formData.forEach(function (item) {
-                if ((item.name === "addressID" || item.name === "ownerOfBusinessID") && item.value === "") {
-                    jsonData[item.name] = null;
-                } else if (item.name === "isActive") {
-                    jsonData[item.name] = item.value === "on" ? true : false;
-                } else if (item.value === "") {
-                    jsonData[item.name] = null;
-                } else {
-                    jsonData[item.name] = item.value;
-                }
-            });
-            event.preventDefault();
-            $.ajax({
-                url: '/CustomUser/EditUser/' + selectedUserId,
-                type: 'POST',
-                data: JSON.stringify(jsonData),
-                contentType: 'application/json',
-                success: function (response) {
-                    let successAlert = `
-                        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                        User updated successfully!
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                        </button>
-                        </div>`;
-                    $('#alertContainer').html(successAlert);
+    function fetchAndFillUsersTable() {
+        $.ajax({
+            url: '/CustomUser/ListUsers',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                let tableBody = $('#usersTableBody');
+                tableBody.empty();
 
-                    $('#editUserModal').modal('hide');
-                },
-                error: function (xhr, status, error) {
-                    let errorAlert = `
-                        <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
-                        Error updating address!
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                        </button>
-                        </div>`;
-                    $('#alertContainer').html(errorAlert);
-                    $('#editUserModal').modal('hide');
-                }
-            });
-        }
-    });
+                data.forEach(function (user) {
+                    let isActive = user.isActive ? 'Yes' : 'No';
+                    let address = '';
+                    if (user.addressDto) {
+                        if (user.addressDto.street) {
+                            address += `${user.addressDto.street}`;
+                        }
+                        if (user.addressDto.city) {
+                            address += `, ${user.addressDto.city}`;
+                        }
+                        if (user.addressDto.postalCode) {
+                            address += `, ${user.addressDto.postalCode}`;
+                        }
+                    }
+                    if (address === '') {
+                        address = 'N/A';
+                    }
+
+                    let business = '';
+                    if (user.businessDto) {
+                        business += `${user.businessDto.name}`;
+                    }
+                    let dateOfBirth = formatISODate(user.dateOfBirth);
+                    let dateOfRegister = formatISODate(user.dateOfRegister);
+
+                    tableBody.append(
+                        `<tr data-user-id="${user.userID}">
+                            <td><input type="checkbox" class="user-checkbox"></td>
+                            <td>${user.userFirstName}</td>
+                            <td>${user.userLastName}</td>
+                            <td>${address}</td>
+                            <td>${isActive}</td>
+                            <td>${business}</td>
+                            <td>${dateOfBirth}</td>
+                            <td>${dateOfRegister}</td>
+                        </tr>`
+                    );
+                });
+            },
+            error: function (xhr, status, error) {
+                showAlert('Error: ' + error);
+            }
+        });
+    }
+
+    function fetchBusinesses() {
+        $.ajax({
+            url: '/Business/ListBusinesses',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                let businessDropdowns = $('select[name="businessID"]');
+                data.forEach(function (business) {
+                    businessDropdowns.append(`<option value="${business.businessID}">${business.name}</option>`);
+                });
+                businessDropdowns.append(`<option value="null">Null</option>`);
+            },
+            error: function (xhr, status, error) {
+                showAlert('Error: ' + error);
+            }
+        });
+    }
 
 </script>
+
+</body>
+</html>

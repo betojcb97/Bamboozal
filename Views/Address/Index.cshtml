@@ -11,6 +11,8 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="~/js/Util.js"></script>
+
     <style>
         html,
         body {
@@ -23,6 +25,7 @@
 </head>
 
 <body>
+
     <div class="page-container d-flex flex-column">
         <div class="container">
             <h1>List of Addresses</h1>
@@ -142,37 +145,12 @@
         </div>
     </div>
 
-</body>
-</html>
-
 <script>
 
     let selectedAddressId;
+
     $(document).ready(function () {
-        $.ajax({
-            url: '/Address/ListAddresses',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                let tableBody = $('#addressesTableBody');
-                data.forEach(function (address) {
-                    tableBody.append(
-                        `<tr data-address-id="${address.addressID}">
-                            <td><input type="checkbox" class="address-checkbox"></td>
-                            <td>${address.street}</td>
-                            <td>${address.number}</td>
-                            <td>${address.city}</td>
-                            <td>${address.state}</td>
-                            <td>${address.country}</td>
-                            <td>${address.postalCode}</td>
-                            </tr>`
-                    );
-                });
-            },
-            error: function (xhr, status, error) {
-                alert('Error: ' + error);
-            }
-        });
+        fetchAndFillAddressesTable();
     });
 
     $('#sendBtnAdd').on('click', function (event) {
@@ -203,31 +181,23 @@
                 type: 'POST',
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
+                beforeSend: function (xhr) {
+                    var authToken = localStorage.getItem('authToken');
+                    xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                },
                 success: function (response) {
-                    let successAlert = `
-                                <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                                    Address added successfully!
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>`;
-                    $('#alertContainer').html(successAlert);
-
-                    $('#addAddressModal').modal('hide');
+                    showAlert("Address added successfully!");
+                    fetchAndFillAddressesTable();
                 },
                 error: function (xhr, status, error) {
-                    let errorAlert = `
-                                        <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
-                                            Error adding address!
-                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>`;
-                    $('#alertContainer').html(errorAlert);
-                    $('#addAddressModal').modal('hide');
+                    if (xhr.status === 401) {
+                        window.location.href = '/CustomUser/LoginPage';
+                    }
+                    showAlert("Error adding address! " + error);
                 }
             });
         }
+        $('#addAddressModal').modal('hide');
     });
 
     $('button[data-target="#editAddressModal"]').on('click', function () {
@@ -258,30 +228,22 @@
             url: '/Address/RemoveAddress/' + selectedAddressId,
             type: 'POST',
             contentType: 'application/json',
+            beforeSend: function (xhr) {
+                var authToken = localStorage.getItem('authToken');
+                xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+            },
             success: function (response) {
-                let successAlert = `
-                                    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                                        Address removed successfully!
-                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>`;
-                $('#alertContainer').html(successAlert);
-
-                $('#editAddressModal').modal('hide');
+                showAlert("Address removed successfully!");
+                fetchAndFillAddressesTable();
             },
             error: function (xhr, status, error) {
-                let errorAlert = `
-                                            <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
-                                                Error removing address!
-                                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>`;
-                $('#alertContainer').html(errorAlert);
-                $('#editAddressModal').modal('hide');
+                if (xhr.status === 401) {
+                    window.location.href = '/CustomUser/LoginPage';
+                }
+                showAlert("Error removing address! " + error);
             }
         });
+        $('#editAddressModal').modal('hide');
     });
 
     $('#sendBtnEdit').on('click', function (event) {
@@ -311,31 +273,54 @@
                 type: 'POST',
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
+                beforeSend: function (xhr) {
+                    var authToken = localStorage.getItem('authToken');
+                    xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                },
                 success: function (response) {
-                    let successAlert = `
-                                <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                                    Address updated successfully!
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>`;
-                    $('#alertContainer').html(successAlert);
-
-                    $('#editAddressModal').modal('hide');
+                    showAlert("Address updated successfully!");
+                    fetchAndFillAddressesTable();
                 },
                 error: function (xhr, status, error) {
-                    let errorAlert = `
-                                        <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
-                                            Error updating address!
-                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>`;
-                    $('#alertContainer').html(errorAlert);
-                    $('#editAddressModal').modal('hide');
+                    if (xhr.status === 401) {
+                        window.location.href = '/CustomUser/LoginPage';
+                    }
+                    showAlert("Error updating address! " + error);
                 }
             });
         }
+        $('#editAddressModal').modal('hide');
     });
 
+    function fetchAndFillAddressesTable() {
+        $.ajax({
+            url: '/Address/ListAddresses',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                let tableBody = $('#addressesTableBody');
+                tableBody.empty();
+
+                data.forEach(function (address) {
+                    tableBody.append(
+                        `<tr data-address-id="${address.addressID}">
+                            <td><input type="checkbox" class="address-checkbox"></td>
+                            <td>${address.street}</td>
+                            <td>${address.number}</td>
+                            <td>${address.city}</td>
+                            <td>${address.state}</td>
+                            <td>${address.country}</td>
+                            <td>${address.postalCode}</td>
+                        </tr>`
+                    );
+                });
+            },
+            error: function (xhr, status, error) {
+                showAlert('Error: ' + error);
+            }
+        });
+    }
+
 </script>
+</body>
+</html>

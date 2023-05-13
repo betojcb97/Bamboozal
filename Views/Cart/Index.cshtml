@@ -11,6 +11,8 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="~/js/Util.js"></script>
+
     <style>
         html,
         body {
@@ -48,40 +50,12 @@
 
         </div>
     </div>
-</body>
-</html>
 
 <script>
-    $(document).ready(function () {
-        $.ajax({
-            url: '/Cart/ListCarts',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                let tableBody = $('#cartsTableBody');
-                data.forEach(function (cart) {
-                    cart.productsDto.forEach(function (product, index) {
-                        let row =
-                            `<tr data-cart-id="${cart.cartID}" data-product-id="${product.productId}">
-                                ${index === 0 ? `<td rowspan="${cart.productsDto.length}">${cart.cartID}</td>
-                                <td rowspan="${cart.productsDto.length}">${cart.userID}</td>
-                                <td rowspan="${cart.productsDto.length}">${cart.dateOfCreation}</td>` : ""}
-                                <td>${product.name}</td>
-                                <td>${product.description}</td>
-                                <td>${product.price}</td>
-                                <td>${product.tax}</td>
-                                <td>${product.discount}</td>
-                            </tr>`;
-                        tableBody.append(row);
-                    });
-                });
-            },
-            error: function (xhr, status, error) {
-                alert('Error: ' + error);
-            }
-        });
-    });
 
+    $(document).ready(function () {
+        fetchAndFillCartsTable();
+    });
 
     $('button[data-target="#removeCartModal"]').on('click', function () {
         let selectedRow = $('input.cart-checkbox:checked').closest('tr');
@@ -98,30 +72,22 @@
             url: '/Cart/RemoveCart/' + selectedCartId,
             type: 'POST',
             contentType: 'application/json',
+            beforeSend: function (xhr) {
+                var authToken = localStorage.getItem('authToken');
+                xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+            },
             success: function (response) {
-                let successAlert = `
-                    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                    Cart removed successfully!
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
-                    </div>`;
-                $('#alertContainer').html(successAlert);
-
-                $('#editCartModal').modal('hide');
+                showAlert("Cart removed successfully!");
+                fetchAndFillCartsTable();
             },
             error: function (xhr, status, error) {
-                let errorAlert = `
-                    <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
-                    Error removing cart!
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
-                    </div>`;
-                $('#alertContainer').html(errorAlert);
-                $('#editCartModal').modal('hide');
+                if (xhr.status === 401) {
+                    window.location.href = '/CustomUser/LoginPage';
+                }
+                showAlert("Error removing cart! " + error);
             }
         });
+        $('#editCartModal').modal('hide');
     });
 
     $('#sendBtnEdit').on('click', function (event) {
@@ -151,31 +117,56 @@
                 type: 'POST',
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
+                beforeSend: function (xhr) {
+                    var authToken = localStorage.getItem('authToken');
+                    xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                },
                 success: function (response) {
-                    let successAlert = `
-                        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                        Cart updated successfully!
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                        </button>
-                        </div>`;
-                    $('#alertContainer').html(successAlert);
-
-                    $('#editCartModal').modal('hide');
+                    showAlert("Cart updated successfully!");
                 },
                 error: function (xhr, status, error) {
-                    let errorAlert = `
-                        <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
-                        Error updating cart!
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                        </button>
-                        </div>`;
-                    $('#alertContainer').html(errorAlert);
-                    $('#editCartModal').modal('hide');
+                    if (xhr.status === 401) {
+                        window.location.href = '/CustomUser/LoginPage';
+                    }
+                    showAlert("Error updating cart! " + error);
                 }
             });
         }
+        $('#editCartModal').modal('hide');
     });
 
+    function fetchAndFillCartsTable() {
+        $.ajax({
+            url: '/Cart/ListCarts',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                let tableBody = $('#cartsTableBody');
+                tableBody.empty();
+
+                data.forEach(function (cart) {
+                    cart.productsDto.forEach(function (product, index) {
+                        let row =
+                            `<tr data-cart-id="${cart.cartID}" data-product-id="${product.productId}">
+                                ${index === 0 ? `<td rowspan="${cart.productsDto.length}">${cart.cartID}</td>
+                                <td rowspan="${cart.productsDto.length}">${cart.userID}</td>
+                                <td rowspan="${cart.productsDto.length}">${cart.dateOfCreation}</td>` : ""}
+                                <td>${product.name}</td>
+                                <td>${product.description}</td>
+                                <td>${product.price}</td>
+                                <td>${product.tax}</td>
+                                <td>${product.discount}</td>
+                            </tr>`;
+                        tableBody.append(row);
+                    });
+                });
+            },
+            error: function (xhr, status, error) {
+                showAlert('Error: ' + error);
+            }
+        });
+    }
+
 </script>
+</body>
+</html>

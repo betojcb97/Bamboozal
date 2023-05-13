@@ -12,6 +12,8 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="~/js/Util.js"></script>
+
     <style>
         html,
         body {
@@ -113,6 +115,7 @@
             </div>
         </div>
     </div>
+  
     <div class="modal fade" id="editProductModal" tabindex="-1" role="dialog" aria-labelledby="editProductModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -170,42 +173,16 @@
             </div>
         </div>
     </div>
+
 <script>
+
     let selectedProductId;
     let selectedProductsIds = [];
     const decimals = ["price", "cost", "tax", "discount"];
+
     $(document).ready(function () {
         fetchBusinesses();
-        $.ajax({
-            url: '/Product/ListProducts',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                let tableBody = $('#productsTableBody');
-                data.forEach(function (product) {
-                    let isActive = product.isActive ? 'Yes' : 'No';
-                    let image = product.imageUrl ? `<a href="${product.imageUrl}" target="_blank"><img src="${product.imageUrl}" alt="Image" width="50"></a>` : 'N/A';
-
-                    tableBody.append(
-                    `<tr data-product-id="${product.productID}">
-                        <td><input type="checkbox" class="product-checkbox"></td>
-                        <td>${product.name}</td>
-                        <td>${product.description}</td>
-                        <td>${product.price}</td>
-                        <td>${product.cost}</td>
-                        <td>${product.tax}</td>
-                        <td>${product.discount}</td>
-                        <td>${image}</td>
-                        <td>${product.businessDto.name}</td>
-                        <td>${isActive}</td>
-                    </tr>`
-                    );
-                });
-            },
-            error: function (xhr, status, error) {
-                alert('Error: ' + error);
-            }
-        });
+        fetchAndFillProductsTable();
     });
 
     $('#sendBtnAdd').on('click', function (event) {
@@ -241,19 +218,20 @@
                 url: '/Product/AddProduct',
                 type: 'POST',
                 data: JSON.stringify(jsonData), 
-                contentType: 'application/json', 
+                contentType: 'application/json',
+                beforeSend: function (xhr) {
+                    var authToken = localStorage.getItem('authToken');
+                    xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                },
                 success: function (response) {
-                    let successAlert = `
-                            <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                                Product added successfully!
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>`;
-                    $('#alertContainer').html(successAlert);
-                    $('#addProductModal').modal('hide');
+                    showAlert("Product added successfully!");
+                    fetchAndFillProductsTable();
                 },
                 error: function (xhr, status, error) {
+                    if (xhr.status === 401) {
+                        window.location.href = '/CustomUser/LoginPage';
+                    }
+                    showAlert("Error adding product! "+error);
                 }
             });
         }
@@ -274,28 +252,19 @@
             url: '/Product/RemoveProduct/' + selectedProductId,
             type: 'POST',
             contentType: 'application/json',
+            beforeSend: function (xhr) {
+                var authToken = localStorage.getItem('authToken');
+                xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+            },
             success: function (response) {
-                let successAlert = `
-                                        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                                            Product removed successfully!
-                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>`;
-                $('#alertContainer').html(successAlert);
-
-                $('#editProductModal').modal('hide');
+                showAlert("Product removed successfully!");
+                fetchAndFillProductsTable();
             },
             error: function (xhr, status, error) {
-                let errorAlert = `
-                    <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
-                        Error removing product!
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>`;
-                $('#alertContainer').html(errorAlert);
-                    $('#editProductModal').modal('hide');
+                if (xhr.status === 401) {
+                    window.location.href = '/CustomUser/LoginPage';
+                }
+                showAlert("Error removing product! " + error);
             }
         });
     });
@@ -314,7 +283,6 @@
     });
 
     $('button[data-target="#cartProductModal"]').on('click', function () {
-        debugger;
         let selectedRows = $('input.product-checkbox:checked').closest('tr');
         if (selectedRows.length === 0) {
             alert('Please select a product to add to cart.');
@@ -336,13 +304,18 @@
             type: 'POST',
             data: JSON.stringify(data),
             contentType: 'application/json',
+            beforeSend: function (xhr) {
+                var authToken = localStorage.getItem('authToken');
+                xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+            },
             success: function (response) {
-                console.log('Cart added successfully.');
-                console.log(response); 
+                showAlert("Cart added successfully!");
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                console.error('Error adding cart: ', textStatus, ', Details: ', errorThrown);
-                console.error('Response: ', jqXHR.responseText);
+                if (xhr.status === 401) {
+                    window.location.href = '/CustomUser/LoginPage';
+                }
+                showAlert("Error adding cart! "+error);
             }
         });
     });
@@ -381,28 +354,19 @@
                 type: 'POST',
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
+                beforeSend: function (xhr) {
+                    var authToken = localStorage.getItem('authToken');
+                    xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                },
                 success: function (response) {
-                    let successAlert = `
-                                    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                                        Product updated successfully!
-                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>`;
-                    $('#alertContainer').html(successAlert);
-
-                    $('#editProductModal').modal('hide');
+                    showAlert("Product updated successfully!");
+                    fetchAndFillProductsTable();    
                 },
                 error: function (xhr, status, error) {
-                    let errorAlert = `
-                                            <div class="alert alert-error alert-dismissible fade show mt-3" role="alert">
-                                                Error updating product!
-                                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>`;
-                    $('#alertContainer').html(errorAlert);
-                        $('#editProductModal').modal('hide');
+                    if (xhr.status === 401) {
+                        window.location.href = '/CustomUser/LoginPage';
+                    }
+                    showAlert("Error updating product! " + error);
                 }
             });
         }
@@ -421,13 +385,46 @@
                 businessDropdowns.append(`<option value="null">Null</option>`);
             },
             error: function (xhr, status, error) {
-                alert('Error: ' + error);
+                    showAlert('Error: ' + error);
             }
         });
     }
 
+    function fetchAndFillProductsTable() {
+        $.ajax({
+            url: '/Product/ListProducts',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                let tableBody = $('#productsTableBody');
+                tableBody.empty();
+
+                data.forEach(function (product) {
+                    let isActive = product.isActive ? 'Yes' : 'No';
+                    let image = product.imageUrl ? `<a href="${product.imageUrl}" target="_blank"><img src="${product.imageUrl}" alt="Image" width="50"></a>` : 'N/A';
+
+                    tableBody.append(
+                        `<tr data-product-id="${product.productID}">
+                            <td><input type="checkbox" class="product-checkbox"></td>
+                            <td>${product.name}</td>
+                            <td>${product.description}</td>
+                            <td>${product.price}</td>
+                            <td>${product.cost}</td>
+                            <td>${product.tax}</td>
+                            <td>${product.discount}</td>
+                            <td>${image}</td>
+                            <td>${product.businessDto.name}</td>
+                            <td>${isActive}</td>
+                        </tr>`
+                    );
+                });
+            },
+            error: function (xhr, status, error) {
+                    showAlert('Error: ' + error);
+            }
+        });
+    }
 
 </script>
-
 </body>
 </html>

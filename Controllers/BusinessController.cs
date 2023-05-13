@@ -2,6 +2,7 @@
 using Bamboo.Data;
 using Bamboo.DTO;
 using Bamboo.Models;
+using Bamboo.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,67 +16,56 @@ namespace Bamboo.Controllers
     [Route("[controller]")]
     public class BusinessController : Controller
     {
-
+        private TokenValidator tokenValidator;
         private BambooContext db;
-        private IMapper _mapper;
-        public BusinessController(BambooContext context, IMapper mapper)
+        private IMapper mapper;
+        public BusinessController(BambooContext context, IMapper _mapper, TokenValidator _tokenValidator)
         {
             db = context;
-            _mapper = mapper;
+            mapper = _mapper;
+            tokenValidator = _tokenValidator;
         }
 
         [HttpPost("AddBusiness")]
         public IActionResult AddBusiness([FromBody] AddBusinessDto businessDto)
         {
-            if (Request.Headers.ContainsKey("Authorization"))
+            bool authorized = tokenValidator.ValidateToken();
+            if (authorized)
             {
-                string token = Request.Headers["Authorization"].ToString().Split(' ')[1];
-                CustomUser dbUser = db.CustomUsers.Where(u => u.token.Equals(token)).FirstOrDefault();
-                if (dbUser == null || dbUser.tokenExpirationDate < DateTime.Now) { return Unauthorized(); }
-                Business business = _mapper.Map<Business>(businessDto);
+                Business business = mapper.Map<Business>(businessDto);
                 Business exists = db.Businesses.Where(b => b.name == business.name).FirstOrDefault();
                 if (exists != null) { return StatusCode(StatusCodes.Status406NotAcceptable); }
                 db.Businesses.Add(business);
                 db.SaveChanges();
                 return CreatedAtAction(nameof(business), business);
             }
-            else
-            {
-                return Unauthorized();
-            }
+            else { return Unauthorized(); }
         }
 
         [HttpPost("RemoveBusiness/{businessID}")]
         public IActionResult RemoveBusiness(Guid businessID)
         {
-            if (Request.Headers.ContainsKey("Authorization"))
+            bool authorized = tokenValidator.ValidateToken();
+            if (authorized)
             {
-                string token = Request.Headers["Authorization"].ToString().Split(' ')[1];
-                CustomUser dbUser = db.CustomUsers.Where(u => u.token.Equals(token)).FirstOrDefault();
-                if (dbUser == null || dbUser.tokenExpirationDate < DateTime.Now) { return Unauthorized(); }
                 Business dbBusiness = db.Businesses.Where(a => a.businessID.Equals(businessID)).FirstOrDefault();
                 if (dbBusiness == null) { return Ok(); }
                 db.Businesses.Remove(dbBusiness);
                 db.SaveChanges();
                 return Ok();
             }
-            else
-            {
-                return Unauthorized();
-            }
+            else { return Unauthorized(); }
         }
 
         [HttpPost("EditBusiness/{businessId}")]
         public IActionResult EditBusiness(Guid businessID,[FromBody] EditBusinessDto businessDto)
         {
-            if (Request.Headers.ContainsKey("Authorization"))
+            bool authorized = tokenValidator.ValidateToken();
+            if (authorized)
             {
-                string token = Request.Headers["Authorization"].ToString().Split(' ')[1];
-                CustomUser dbUser = db.CustomUsers.Where(u => u.token.Equals(token)).FirstOrDefault();
-                if (dbUser == null || dbUser.tokenExpirationDate < DateTime.Now) { return Unauthorized(); }
                 Business dbBusiness = db.Businesses.Where(b => b.businessID == businessID).FirstOrDefault();
                 if (dbBusiness == null) return NotFound();
-                Business businessNewInfo = _mapper.Map<Business>(businessDto);
+                Business businessNewInfo = mapper.Map<Business>(businessDto);
 
                 PropertyInfo[] properties = businessNewInfo.GetType().GetProperties();
 
@@ -91,10 +81,7 @@ namespace Bamboo.Controllers
                 db.SaveChanges();
                 return CreatedAtAction(nameof(dbBusiness), dbBusiness);
             }
-            else
-            {
-                return Unauthorized();
-            }
+            else { return Unauthorized(); }
         }
 
         [HttpGet("GetBusinesses")]
@@ -106,16 +93,8 @@ namespace Bamboo.Controllers
         [HttpGet("ListBusinesses")]
         public IActionResult ListBusinesses()
         {
-            List<ReadBusinessDto> readBusinessDtos = _mapper.Map<List<ReadBusinessDto>>(db.Businesses.ToList());
+            List<ReadBusinessDto> readBusinessDtos = mapper.Map<List<ReadBusinessDto>>(db.Businesses.ToList());
             return Json(readBusinessDtos);
-        }
-
-        [HttpGet("{id}")]
-        public IActionResult GetBusinessById(Guid id)
-        {
-            var business = db.Businesses.FirstOrDefault(b => b.businessID.Equals(id));
-            if (business == null) { return NotFound(); }
-            return Ok(business);
         }
 
         [HttpGet("Index")]
