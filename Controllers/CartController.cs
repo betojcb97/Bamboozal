@@ -28,11 +28,12 @@ namespace Bamboo.Controllers
         public IActionResult AddCart([FromBody] AddCartDto cartDto)
         {
             bool authorized = tokenValidator.ValidateToken();
+            CustomUser loggedUser = tokenValidator.getLoggedUser();
             if (authorized)
             {
                 Cart cart = new Cart
                 {
-                    userID = cartDto.userID,
+                    userID = loggedUser.userID,
                     productsIds = cartDto.productsIds,
                     products = new List<Product>(),
                 };

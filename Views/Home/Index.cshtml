@@ -1,8 +1,94 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewBag.Title = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #1f2833;
+            color: #66fcf1;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .card {
+            background-color: #0b0c10;
+            border-color: #45a29e;
+        }
+
+        .card-title {
+            color: #c5c6c7;
+        }
+
+        .card-text {
+            color: #66fcf1;
+        }
+
+        .project-title {
+            text-align: center;
+            color: white;
+            font-size: 3em;
+            padding: 20px;
+            background: linear-gradient(to right, blue, purple);
+        }
+    </style>
+</head>
+<body>
+    <div class="project-title">
+        Bamboo Marketplace
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Businesses</h5>
+                        <p class="card-text">Information about businesses...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Products</h5>
+                        <p class="card-text">Information about products...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Addresses</h5>
+                        <p class="card-text">Information about addresses...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Users</h5>
+                        <p class="card-text">Information about users...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Carts</h5>
+                        <p class="card-text">Information about carts...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

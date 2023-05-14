@@ -31,4 +31,24 @@ public class TokenValidator
             return false;
         }
     }
+
+    public CustomUser getLoggedUser()
+    {
+        if (httpContextAccessor.HttpContext.Request.Headers.ContainsKey("Authorization"))
+        {
+            string token = httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString().Split(' ')[1];
+            CustomUser dbUser = db.CustomUsers.Where(u => u.token.Equals(token)).FirstOrDefault();
+            if (dbUser == null || dbUser.tokenExpirationDate < DateTime.Now || dbUser.tokenExpirationDate == null)
+            {
+                return null;
+            }
+            return dbUser;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+
 }

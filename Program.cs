@@ -11,7 +11,8 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("BambooConnection");
+//var connectionString = builder.Configuration.GetConnectionString("BambooConnection");
+var connectionString = "Server=tcp:bambooserver.database.windows.net,1433;Initial Catalog=BambooDb;Persist Security Info=False;User ID=bamboosa;Password=Amk170067;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"; //Bamboosa Amk170067
 
 builder.Services.AddDbContext<BambooContext>(opts => 
 opts.UseLazyLoadingProxies().UseSqlServer(connectionString));
