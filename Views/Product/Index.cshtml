@@ -30,10 +30,16 @@
     <div class="page-container d-flex flex-column">
         <div class="container">
             <h1>List of Products</h1>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addProductModal" style="background-color: green; color: black; font-weight: bold;">Add Product</button>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editProductModal" style="background-color: yellow; color: black; font-weight: bold;">Edit Product</button>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#removeProductModal" style="background-color: red; color: black; font-weight: bold;">Remove Product</button>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#cartProductModal" style="background-color: blue; color: black; font-weight: bold;">Add Product to Cart</button>
+            <div class="form-group">
+                <label for="businessIDFilter">Select a business</label>
+                <select class="form-control" id="businessIDFilter" name="businessIDFilter">
+                    <option value="" selected>All</option>
+                </select>
+            </div>
+            <button type="button" class="btnFunctions" data-toggle="modal" data-target="#addProductModal">Add Product</button>
+            <button type="button" class="btnFunctions" data-toggle="modal" data-target="#editProductModal">Edit Product</button>
+            <button type="button" class="btnFunctions" data-toggle="modal" data-target="#removeProductModal">Remove Product</button>
+            <button type="button" class="btnFunctions" data-toggle="modal" data-target="#cartProductModal">Add Product to Cart</button>
             <div id="alertContainer"></div>
             <table class="table table-hover mt-3">
                 <thead>
@@ -178,11 +184,16 @@
 
     let selectedProductId;
     let selectedProductsIds = [];
+    let selectedBusinessId = '';
     const decimals = ["price", "cost", "tax", "discount"];
 
     $(document).ready(function () {
         fetchBusinesses();
-        fetchAndFillProductsTable();
+        fetchAndFillProductsTable(selectedBusinessId);
+        $('#businessIDFilter').change(function(){
+            selectedBusinessId = $(this).val();
+            fetchAndFillProductsTable(selectedBusinessId);
+        });
     });
 
     $('#sendBtnAdd').on('click', function (event) {
@@ -225,7 +236,7 @@
                 },
                 success: function (response) {
                     showAlert("Product added successfully!");
-                    fetchAndFillProductsTable();
+                        fetchAndFillProductsTable(selectedBusinessId);
                 },
                 error: function (xhr, status, error) {
                     if (xhr.status === 401) {
@@ -258,7 +269,7 @@
             },
             success: function (response) {
                 showAlert("Product removed successfully!");
-                fetchAndFillProductsTable();
+                    fetchAndFillProductsTable(selectedBusinessId);
             },
             error: function (xhr, status, error) {
                 if (xhr.status === 401) {
@@ -360,8 +371,8 @@
                 },
                 success: function (response) {
                     showAlert("Product updated successfully!");
-                    fetchAndFillProductsTable();    
-                },
+                        fetchAndFillProductsTable(selectedBusinessId);
+                    },
                 error: function (xhr, status, error) {
                     if (xhr.status === 401) {
                         window.location.href = '/CustomUser/LoginPage';
@@ -379,8 +390,10 @@
             dataType: 'json',
             success: function (data) {
                 let businessDropdowns = $('select[name="businessID"]');
+                let businessDropdownsFilter = $('select[name="businessIDFilter"]');
                 data.forEach(function (business) {
                     businessDropdowns.append(`<option value="${business.businessID}">${business.name}</option>`);
+                    businessDropdownsFilter.append(`<option value="${business.businessID}">${business.name}</option>`);
                 });
                 businessDropdowns.append(`<option value="null">Null</option>`);
             },
@@ -390,9 +403,11 @@
         });
     }
 
-    function fetchAndFillProductsTable() {
+    function fetchAndFillProductsTable(businessID) {
+        let url = '/Product/ListProducts';
+        if (businessID !== ''){ url+='OfBusiness/'+businessID; }
         $.ajax({
-            url: '/Product/ListProducts',
+            url: url,
             type: 'GET',
             dataType: 'json',
             success: function (data) {

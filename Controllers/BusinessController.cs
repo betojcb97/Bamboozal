@@ -50,6 +50,8 @@ namespace Bamboo.Controllers
             {
                 Business dbBusiness = db.Businesses.Where(a => a.businessID.Equals(businessID)).FirstOrDefault();
                 if (dbBusiness == null) { return Ok(); }
+                List<Product> businessProducts = db.Products.Where(p => p.businessID.Equals(businessID)).ToList();
+                db.Products.RemoveRange(businessProducts);
                 db.Businesses.Remove(dbBusiness);
                 db.SaveChanges();
                 return Ok();

@@ -2,6 +2,7 @@
 using Bamboo.Data;
 using Bamboo.DTO;
 using Bamboo.Models;
+using Bamboo.Util;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
@@ -17,24 +18,26 @@ namespace Bamboo.Controllers
         private TokenValidator tokenValidator;
         private BambooContext db;
         private IMapper mapper;
-        public CartController(BambooContext context, IMapper _mapper, TokenValidator _tokenValidator)
+        private IHttpContextAccessor httpContextAccessor;
+        public CartController(BambooContext db, IMapper mapper, TokenValidator tokenValidator, IHttpContextAccessor httpContextAccessor)
         {
-            db = context;
-            mapper = _mapper;
-            tokenValidator = _tokenValidator;
+            this.db = db;
+            this.mapper = mapper;
+            this.tokenValidator = tokenValidator;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         [HttpPost("AddCart")]
         public IActionResult AddCart([FromBody] AddCartDto cartDto)
         {
             bool authorized = tokenValidator.ValidateToken();
-            CustomUser loggedUser = tokenValidator.getLoggedUser();
+            CustomUser loggedUser = Util.Util.getLoggedUser(httpContextAccessor,db);
             if (authorized)
             {
                 Cart cart = new Cart
                 {
                     userID = loggedUser.userID,
-                    productsIds = cartDto.productsIds,
+                    productsIds = cartDto.productsIds?.ToList(),
                     products = new List<Product>(),
                 };
 
@@ -42,7 +45,7 @@ namespace Bamboo.Controllers
                 {
                     foreach (var productId in cartDto.productsIds)
                     {
-                        var product = db.Products.Find(productId);
+                        var product = db.Products.FirstOrDefault(p => p.productID == productId);
                         if (product != null)
                         {
                             cart.products.Add(product);
@@ -65,14 +68,18 @@ namespace Bamboo.Controllers
             bool authorized = tokenValidator.ValidateToken();
             if (authorized)
             {
-                Cart dbCart = db.Carts.Where(a => a.cartID.Equals(cartID)).FirstOrDefault();
+                Cart dbCart = db.Carts.Include(c => c.products).Where(a => a.cartID.Equals(cartID)).FirstOrDefault();
                 if (dbCart == null) { return Ok(); }
+
+                dbCart.products.Clear();
+
                 db.Carts.Remove(dbCart);
                 db.SaveChanges();
                 return Ok();
             }
             else { return Unauthorized(); }
         }
+
 
         [HttpPost("EditCart/{cartID}")]
         public IActionResult EditCart(Guid cartID, [FromBody] EditCartDto cartDto)

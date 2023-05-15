@@ -1,11 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Bamboo.Models
 {
     public class Cart
     {
-        [Required]
+        [Key]
         public Guid cartID { get; set; }
 
         public Guid? userID { get; set; }
@@ -13,7 +14,7 @@ namespace Bamboo.Models
         [NotMapped]
         public virtual List<Guid> productsIds { get; set; }
 
-        public virtual List<Product>? products { get; set; }
+        public virtual ICollection<Product> products { get; set; }
 
         public DateTime? dateOfCreation { get; set; }
 

@@ -46,6 +46,8 @@ namespace Bamboo.Models
 
         public DateTime? tokenExpirationDate { get; set; }
 
+        public string? emailTokenConfirmation { get; set; }
+
         public CustomUser() : base()
         {
             userID = Guid.NewGuid();

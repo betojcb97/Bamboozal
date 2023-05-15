@@ -2,16 +2,14 @@
 using Bamboo.Data;
 using Bamboo.DTO;
 using Bamboo.Models;
-using Bamboo.Services;
-using Microsoft.AspNetCore.Identity;
+using Bamboo.API;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Newtonsoft.Json.Linq;
-using System.Dynamic;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System;
+
 
 namespace Bamboo.Controllers
 {
@@ -23,11 +21,13 @@ namespace Bamboo.Controllers
         private TokenValidator tokenValidator;
         private BambooContext db;
         private IMapper mapper;
-        public CustomUserController(BambooContext context, IMapper _mapper, TokenValidator _tokenValidator)
+        private IWebHostEnvironment hostingEnvironment;
+        public CustomUserController(BambooContext context, IMapper _mapper, TokenValidator _tokenValidator, IWebHostEnvironment _hostingEnvironment)
         {
             db = context;
             mapper = _mapper;
             tokenValidator = _tokenValidator;
+            hostingEnvironment = _hostingEnvironment;
         }
 
         public string GenerateToken(Guid userID)
@@ -99,8 +99,23 @@ namespace Bamboo.Controllers
             }
 
             dbUser.userPassword = CreateHashedPassWord(userDto.userPassword);
+            string emailTokenConfirmation = new Guid().ToString();
+            dbUser.emailTokenConfirmation = emailTokenConfirmation;
 
             db.CustomUsers.Add(dbUser);
+            db.SaveChanges();
+            string url = "https://localhost:7226"+ "/ConfirmEmail/" + emailTokenConfirmation;
+            EmailApi.SendEmail(dbUser.userEmail,"Confirm your email for Bamboo", url);
+            return Ok();
+        }
+
+        [HttpGet("ConfirmEmail/{emailTokenConfirmation}")]
+        public IActionResult ConfirmEmail(string emailTokenConfirmation) 
+        {
+            CustomUser dbUser = db.CustomUsers.Where(u => u.emailTokenConfirmation.Equals(emailTokenConfirmation)).FirstOrDefault();
+            if (dbUser == null) { return BadRequest(); }
+            dbUser.isActive = true;
+            db.Entry(dbUser).State = EntityState.Modified;
             db.SaveChanges();
             return Ok();
         }

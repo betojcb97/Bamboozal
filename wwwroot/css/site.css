@@ -14,23 +14,8 @@ html {
 }
 
 body {
-    margin-bottom: 60px;
-}
-
-.user-symbol {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    margin-left: 5px;
-}
-
-.user-symbol-authenticated {
-    background-color: green;
-}
-
-.user-symbol-unauthenticated {
-    background-color: red;
+    margin-bottom: 20px;
+    font-family: 'Century Gothic', sans-serif;
 }
 
 .alert-message {
@@ -46,7 +31,8 @@ body {
     transition: opacity 0.5s ease-in-out;
 }
 
-
 .alert-message.fade-out {
     opacity: 0;
 }
+
+

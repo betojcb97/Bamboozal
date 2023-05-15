@@ -10,55 +10,75 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3" style="background: linear-gradient(0deg, rgba(115,34,195,1) 0%, rgba(137,161,146,1) 0%); box-shadow: none !important;">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Bamboo</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <div class="navbar-logo-container" style="border-radius: 10px; overflow: hidden;">
+                        <img src="~/Images/Bamboo.png" alt="Logo" class="navbar-logo" width="100" height="80" style="padding-right: 10px;">
+                    </div>
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <style>
+                        .nav-item {
+                            border: 0.5px solid black;
+                            padding: 2px;
+                            margin-right: 10px;
+                            border-radius: 15px;
+                            background: linear-gradient(0deg, rgba(104,18,189,0.5802696078431373) 0%, rgba(0,0,0,0.41780462184873945) 48%);
+                        }
+
+                        .nav-link {
+                            color: black !important;
+                            font-weight: bold;
+                        }
+                    </style>
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Business" asp-action="Index">Businesses</a>
+                            <a class="nav-link" asp-area="" asp-controller="Business" asp-action="Index">Businesses</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Products</a>
+                            <a class="nav-link" asp-area="" asp-controller="Product" asp-action="Index">Products</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Address" asp-action="Index">Addresses</a>
+                            <a class="nav-link" asp-area="" asp-controller="Address" asp-action="Index">Addresses</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="CustomUser" asp-action="Index">Users</a>
+                            <a class="nav-link" asp-area="" asp-controller="CustomUser" asp-action="Index">Users</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Cart" asp-action="Index">Carts</a>
+                            <a class="nav-link" asp-area="" asp-controller="Cart" asp-action="Index">Carts</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="CustomUser" asp-action="LoginPage">Log in</a>
+                            <a class="nav-link" asp-area="" asp-controller="CustomUser" asp-action="LoginPage">Log in</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="CustomUser" asp-action="LogoutPage">Log out</a>
+                            <a class="nav-link" asp-area="" asp-controller="CustomUser" asp-action="LogoutPage">Log out</a>
                         </li>
                     </ul>
+
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+    <div class="container-fluid no-padding">
+        <main role="main">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
+    <footer class="border-top footer text-muted" >
+        <div class="container" style="color: white !important; box-shadow: none !important;">
             &copy; 2023 - Bamboo - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a> - Author: Alberto Junqueira
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

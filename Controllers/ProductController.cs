@@ -97,10 +97,11 @@ namespace Bamboo.Controllers
         }
 
 
-        [HttpGet("GetProducts")]
-        public IActionResult GetProducts()
+        [HttpGet("ListProductsOfBusiness/{businessID}")]
+        public IActionResult ListProductsOfBusiness(Guid businessID)
         {
-            return Ok(db.Products);
+            List<ReadProductDto> readProductsDtos = mapper.Map<List<ReadProductDto>>(db.Products.Where(p => p.businessID.Equals(businessID)).ToList());
+            return Json(readProductsDtos);
         }
 
         [HttpGet("Index")]
