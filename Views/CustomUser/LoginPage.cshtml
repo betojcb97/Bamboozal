@@ -6,10 +6,10 @@
 <h1>@ViewData["Title"]</h1>
 <div class="row">
     <div class="col-md-8">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addUserModal" style="background-color: green; color: black; font-weight: bold;" color>Register</button>
+        <div id="alertContainer"></div>
         <section>
             <form id="account" method="post">
-                <h4>Use a local account to log in.</h4>
-                <hr />
                 <div asp-validation-summary="All" class="text-danger"></div>
                 <div class="form-group">
                     <label asp-for="userName"></label>
@@ -18,7 +18,7 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="userPassword"></label>
-                    <input asp-for="userPassword" class="form-control" />
+                    <input asp-for="userPassword" class="form-control" type="password" />
                     <span asp-validation-for="userPassword" class="text-danger"></span>
                 </div>
                 <div class="form-group">
@@ -29,37 +29,183 @@
     </div>
 </div>
 
+<div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addUserModalLabel">Add User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> </button>
+            </div>
+            <div class="modal-body">
+                <form id="addUserForm">
+                    <div class="form-group">
+                        <label for="userName">User Name</label>
+                        <input type="text" class="form-control" id="userName" name="userName" maxlength="50" required>
+                        <div class="invalid-feedback">The userName must be provided and not exceed 50 characters.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="userEmail">User Email</label>
+                        <input type="email" class="form-control" id="userEmail" name="userEmail" maxlength="50" required>
+                        <div class="invalid-feedback">The userEmail must be provided and not exceed 50 characters.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="userPassword">User Password</label>
+                        <input type="password" class="form-control" id="userPassword" name="userPassword" maxlength="50" required>
+                        <div class="invalid-feedback">The userPassword must be provided and not exceed 50 characters.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="rePassword">Confirm Password</label>
+                        <input type="password" class="form-control" id="rePassword" name="rePassword" required>
+                        <div class="invalid-feedback">The passwords must match.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="userFirstName">First Name</label>
+                        <input type="text" class="form-control" id="userFirstName" name="userFirstName" maxlength="20" required>
+                        <div class="invalid-feedback">The userFirstName must be provided and not exceed 20 characters.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="userLastName">Last Name</label>
+                        <input type="text" class="form-control" id="userLastName" name="userLastName" maxlength="20" required>
+                        <div class="invalid-feedback">The userLastName must be provided and not exceed 20 characters.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="addressID">Address ID</label>
+                        <select class="form-control" id="addressID" name="addressID">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="businessID">Business ID</label>
+                        <select class="form-control" id="businessID" name="businessID">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dateOfBirth">Date of Birth</label>
+                        <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth">
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="sendBtnAdd">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="~/js/Util.js"></script>
     <script>
         $(document).ready(function () {
-            $("#submit").on('click', function (event) {
-                event.preventDefault();
+            fetchAddresses();
+            fetchBusinesses();
+        });
 
-                var userName = $("#userName").val();
-                var userPassword = $("#userPassword").val();
-                debugger;
-                $.ajax({
-                    url: '/CustomUser/Login',
-                    type: 'POST',
-                    dataType: 'json',
-                    contentType: 'application/json',
-                    data: JSON.stringify({
-                        userName: userName,
-                        userPassword: userPassword
-                    }),
-                    success: function (response) {
-                        debugger;
-                        console.log(response);
-                        localStorage.setItem('authToken', response);
-                        window.location.href = '/Business/Index';
-                    },
-                    error: function (error) {
-                        debugger;
-                        console.log(error);
-                    }
-                });
+        $("#submit").on('click', function (event) {
+            event.preventDefault();
+
+            var userName = $("#userName").val();
+            var userPassword = $("#userPassword").val();
+            debugger;
+            $.ajax({
+                url: '/CustomUser/Login',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    userName: userName,
+                    userPassword: userPassword
+                }),
+                success: function (response) {
+                    localStorage.setItem('authToken', response);
+                    window.location.href = '/Business/Index';
+                },
+                error: function (error) {
+                    showAlert("Error! "+error);
+                }
             });
         });
+
+        $('#sendBtnAdd').on('click', function (event) {
+            let form = $('#addUserForm')[0];
+            if (form.checkValidity() === false) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+            if (form.checkValidity() === true) {
+                let formData = $('#addUserForm').serializeArray();
+                let jsonData = {};
+                formData.forEach(function (item) {
+                    if ((item.name === "addressID" || item.name === "ownerOfBusinessID") && item.value === "") {
+                        jsonData[item.name] = null;
+                    } else if (item.value === "") {
+                        jsonData[item.name] = null;
+                    } else {
+                        jsonData[item.name] = item.value;
+                    }
+                });
+                event.preventDefault();
+                $.ajax({
+                    url: '/CustomUser/AddUser',
+                    type: 'POST',
+                    data: JSON.stringify(jsonData),
+                    contentType: 'application/json',
+                    beforeSend: function (xhr) {
+                        var authToken = localStorage.getItem('authToken');
+                        xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                    },
+                    success: function (response) {
+                        showAlert("User added successfully!");
+                    },
+                    error: function (xhr, status, error) {
+                        if (xhr.status === 401) {
+                            window.location.href = '/CustomUser/LoginPage';
+                        }
+                        showAlert("Error adding user! " + error);
+                    }
+                });
+            }
+        });
+
+        function fetchBusinesses() {
+            $.ajax({
+                url: '/Business/ListBusinesses',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    let businessDropdowns = $('select[name="businessID"]');
+                    data.forEach(function (business) {
+                        businessDropdowns.append(`<option value="${business.businessID}">${business.name}</option>`);
+                    });
+                    businessDropdowns.append(`<option value="">Null</option>`);
+                },
+                error: function (xhr, status, error) {
+                    showAlert('Error: ' + error);
+                }
+            });
+        }
+
+        function fetchAddresses() {
+            $.ajax({
+                url: '/Address/ListAddresses',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    let addressDropdowns = $('select[name="addressID"]');
+                    data.forEach(function (address) {
+                        addressDropdowns.append(`<option value="${address.addressID}">${address.street}</option>`);
+                    });
+                    addressDropdowns.append(`<option value="">Null</option>`);
+                },
+                error: function (xhr, status, error) {
+                    showAlert('Error: ' + error);
+                }
+            });
+        }
     </script>
 }

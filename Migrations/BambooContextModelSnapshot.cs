@@ -195,6 +195,47 @@ namespace Bamboo.Migrations
                     b.ToTable("CustomUsers");
                 });
 
+            modelBuilder.Entity("Bamboo.Models.Order", b =>
+                {
+                    b.Property<Guid>("orderID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("businessID")
+                        .IsRequired()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("cost")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid?>("deliveryAddressID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("discount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("subtotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("tax")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("total")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid?>("userID")
+                        .IsRequired()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("orderID");
+
+                    b.HasIndex("businessID");
+
+                    b.HasIndex("deliveryAddressID");
+
+                    b.ToTable("Orders");
+                });
+
             modelBuilder.Entity("Bamboo.Models.Product", b =>
                 {
                     b.Property<Guid>("productID")
@@ -229,6 +270,9 @@ namespace Bamboo.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<Guid?>("orderID")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<decimal>("price")
                         .HasColumnType("decimal(18,2)");
 
@@ -240,6 +284,8 @@ namespace Bamboo.Migrations
                     b.HasIndex("businessID");
 
                     b.HasIndex("cartID");
+
+                    b.HasIndex("orderID");
 
                     b.ToTable("Products");
                 });
@@ -498,6 +544,23 @@ namespace Bamboo.Migrations
                     b.Navigation("business");
                 });
 
+            modelBuilder.Entity("Bamboo.Models.Order", b =>
+                {
+                    b.HasOne("Bamboo.Models.Business", "business")
+                        .WithMany()
+                        .HasForeignKey("businessID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Bamboo.Models.Address", "deliveryAddress")
+                        .WithMany()
+                        .HasForeignKey("deliveryAddressID");
+
+                    b.Navigation("business");
+
+                    b.Navigation("deliveryAddress");
+                });
+
             modelBuilder.Entity("Bamboo.Models.Product", b =>
                 {
                     b.HasOne("Bamboo.Models.Business", "business")
@@ -509,6 +572,10 @@ namespace Bamboo.Migrations
                     b.HasOne("Bamboo.Models.Cart", null)
                         .WithMany("products")
                         .HasForeignKey("cartID");
+
+                    b.HasOne("Bamboo.Models.Order", null)
+                        .WithMany("products")
+                        .HasForeignKey("orderID");
 
                     b.Navigation("business");
                 });
@@ -580,6 +647,11 @@ namespace Bamboo.Migrations
                 });
 
             modelBuilder.Entity("Bamboo.Models.Cart", b =>
+                {
+                    b.Navigation("products");
+                });
+
+            modelBuilder.Entity("Bamboo.Models.Order", b =>
                 {
                     b.Navigation("products");
                 });

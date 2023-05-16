@@ -111,7 +111,9 @@ namespace Bamboo.Controllers
         [HttpGet("ListCarts")]
         public IActionResult ListCarts()
         {
-            List<ReadCartDto> readCartDtos = mapper.Map<List<ReadCartDto>>(db.Carts.ToList());
+            CustomUser dbUser = Util.Util.getLoggedUser(httpContextAccessor, db);
+            if (dbUser == null) return Json(null);
+            List<ReadCartDto> readCartDtos = mapper.Map<List<ReadCartDto>>(db.Carts.Where(c => c.userID.Equals(dbUser.userID)).ToList());
             return Json(readCartDtos);
         }
 

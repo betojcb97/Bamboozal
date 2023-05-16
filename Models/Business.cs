@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Bamboo.Models
 {
@@ -23,6 +24,7 @@ namespace Bamboo.Models
         public string phone { get; set; }
 
         public Guid? addressID { get; set; }
+
         public virtual Address address { get; set; }
 
         public bool? isActive { get; set; }

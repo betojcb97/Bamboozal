@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "List Carts";
+    ViewBag.Title = "List Orders";
 }
 
 <!DOCTYPE html>
@@ -18,17 +18,18 @@
 <body>
     <div class="page-container d-flex flex-column">
         <div class="container">
-            <h1>List of Carts</h1>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#removeCartModal">Remove Cart</button>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#finishOrderModal">Finish Order</button>
+            <h1>List of Orders</h1>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#removeOrderModal">Remove Order</button>
             <div id="alertContainer"></div>
-            <table class="table table-hover mt-3" id="cartsTable">
+            <table class="table table-hover mt-3" id="ordersTable">
                 <thead>
                     <tr>
                         <th></th>
-                        <th>Cart ID</th>
-                        <th>User ID</th>
-                        <th>Date of Creation</th>
+                        <th>Order ID</th>
+                        <th>Business</th>
+                        <th>Total</th>
+                        <th>SubTotal</th>
+                        <th>Total Discount</th>
                         <th>Product</th>
                         <th>Description</th>
                         <th>Price</th>
@@ -36,7 +37,7 @@
                         <th>Discount</th>
                     </tr>
                 </thead>
-                <tbody id="cartsTableBody">
+                <tbody id="ordersTableBody">
                 </tbody>
             </table>
         </div>
@@ -45,22 +46,22 @@
 <script>
 
     $(document).ready(function () {
-        fetchAndFillCartsTable();
+        fetchAndFillOrdersTable();
     });
 
-    $('button[data-target="#removeCartModal"]').on('click', function () {
-        let selectedRow = $('input.cart-checkbox:checked').closest('tr');
+    $('button[data-target="#removeOrderModal"]').on('click', function () {
+        let selectedRow = $('input.order-checkbox:checked').closest('tr');
         if (selectedRow.length === 0) {
-            alert('Please select a cart to remove.');
+            alert('Please select a order to remove.');
             return false;
         }
         if (selectedRow.length > 1) {
-            alert('Please select only one cart to remove.');
+            alert('Please select only one order to remove.');
             return false;
         }
-        selectedCartId = selectedRow.attr('data-cart-id');
+        selectedOrderId = selectedRow.attr('data-order-id');
         $.ajax({
-            url: '/Cart/RemoveCart/' + selectedCartId,
+            url: '/Order/RemoveOrder/' + selectedOrderId,
             type: 'POST',
             contentType: 'application/json',
             beforeSend: function (xhr) {
@@ -68,60 +69,28 @@
                 xhr.setRequestHeader("Authorization", "Bearer " + authToken);
             },
             success: function (response) {
-                showAlert("Cart removed successfully!");
-                fetchAndFillCartsTable();
+                showAlert("Order removed successfully!");
+                fetchAndFillOrdersTable();
             },
             error: function (xhr, status, error) {
                 if (xhr.status === 401) {
                     window.location.href = '/CustomUser/LoginPage';
                 }
-                showAlert("Error removing cart! " + error);
+                showAlert("Error removing order! " + error);
             }
         });
-        $('#editCartModal').modal('hide');
-    });
-
-    $('button[data-target="#finishOrderModal"]').on('click', function () {
-        let selectedRow = $('input.cart-checkbox:checked').closest('tr');
-        if (selectedRow.length === 0) {
-            alert('Please select a cart to finish.');
-            return false;
-        }
-        if (selectedRow.length > 1) {
-            alert('Please select only one cart to finish.');
-            return false;
-        }
-        selectedCartId = selectedRow.attr('data-cart-id');
-        $.ajax({
-            url: '/Order/AddOrder/' + selectedCartId,
-            type: 'POST',
-            contentType: 'application/json',
-            beforeSend: function (xhr) {
-                var authToken = localStorage.getItem('authToken');
-                xhr.setRequestHeader("Authorization", "Bearer " + authToken);
-            },
-            success: function (response) {
-                showAlert("Order added successfully!");
-                fetchAndFillCartsTable();
-            },
-            error: function (xhr, status, error) {
-                if (xhr.status === 401) {
-                    window.location.href = '/CustomUser/LoginPage';
-                }
-                showAlert("Error finishing order! " + error);
-            }
-        });
+        $('#editOrderModal').modal('hide');
     });
 
     $('#sendBtnEdit').on('click', function (event) {
-        let form = $('#editCartForm')[0];
+        let form = $('#editOrderForm')[0];
         if (form.checkValidity() === false) {
             event.preventDefault();
             event.stopPropagation();
         }
         form.classList.add('was-validated');
         if (form.checkValidity() === true) {
-            let formData = $('#editCartForm').serializeArray();
+            let formData = $('#editOrderForm').serializeArray();
             let jsonData = {};
             formData.forEach(function (item) {
                 if (item.name === "addressID" && item.value === "") {
@@ -136,7 +105,7 @@
             });
             event.preventDefault();
             $.ajax({
-                url: '/Cart/EditCart/' + selectedCartId,
+                url: '/Order/EditOrder/' + selectedOrderId,
                 type: 'POST',
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
@@ -145,22 +114,22 @@
                     xhr.setRequestHeader("Authorization", "Bearer " + authToken);
                 },
                 success: function (response) {
-                    showAlert("Cart updated successfully!");
+                    showAlert("Order updated successfully!");
                 },
                 error: function (xhr, status, error) {
                     if (xhr.status === 401) {
                         window.location.href = '/CustomUser/LoginPage';
                     }
-                    showAlert("Error updating cart! " + error);
+                    showAlert("Error updating order! " + error);
                 }
             });
         }
-        $('#editCartModal').modal('hide');
+        $('#editOrderModal').modal('hide');
     });
 
-    function fetchAndFillCartsTable() {
+    function fetchAndFillOrdersTable() {
         $.ajax({
-            url: '/Cart/ListCarts',
+            url: '/Order/ListOrders',
             type: 'GET',
             dataType: 'json',
             beforeSend: function (xhr) {
@@ -168,17 +137,19 @@
                 xhr.setRequestHeader("Authorization", "Bearer " + authToken);
             },
             success: function (data) {
-                let tableBody = $('#cartsTableBody');
+                let tableBody = $('#ordersTableBody');
                 tableBody.empty();
-
-                data.forEach(function (cart) {
-                    cart.productsDto.forEach(function (product, index) {
+                debugger;
+                data.forEach(function (order) {
+                    order.productsDto.forEach(function (product, index) {
                         let row =
-                        `<tr data-cart-id="${cart.cartID}" data-product-id="${product.productId}">
-                        ${index === 0 ? `<td rowspan="${cart.productsDto.length}"><input type="checkbox" class="cart-checkbox" value="${cart.cartID}"></td>
-                        <td rowspan="${cart.productsDto.length}">${cart.cartID}</td>
-                        <td rowspan="${cart.productsDto.length}">${cart.userID}</td>
-                        <td rowspan="${cart.productsDto.length}">${cart.dateOfCreation}</td>` : ""}
+                        `<tr data-order-id="${order.orderID}" data-product-id="${product.productId}">
+                        ${index === 0 ? `<td rowspan="${order.productsDto.length}"><input type="checkbox" class="order-checkbox" value="${order.orderID}"></td>
+                        <td rowspan="${order.productsDto.length}">${order.orderID}</td>
+                        <td rowspan="${order.productsDto.length}">${order.businessDto.name}</td>
+                        <td rowspan="${order.productsDto.length}">${order.total}</td>
+                        <td rowspan="${order.productsDto.length}">${order.subtotal}</td>
+                        <td rowspan="${order.productsDto.length}">${order.discount}</td>` : ""}
                         <td>${product.name}</td>
                         <td>${product.description}</td>
                         <td>${product.price}</td>
@@ -188,7 +159,6 @@
                         tableBody.append(row);
                     });
                 });
-
             },
             error: function (xhr, status, error) {
                 showAlert('Error: ' + error);

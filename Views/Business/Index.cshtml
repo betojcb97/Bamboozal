@@ -12,25 +12,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="~/js/Util.js"></script>
-
-    <style>
-        html,
-        body {
-            height: 100%;
-        }
-        .page-container {
-            min-height: 100%;
-        }
-    </style>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 
 <body>
     <div class="page-container d-flex flex-column">
         <div class="container">
             <h1>List of Businesses</h1>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addBusinessModal" style="background-color: green; color: black; font-weight: bold;" color>Add Business</button>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editBusinessModal" style="background-color: yellow; color: black; font-weight: bold;">Edit Business</button>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#removeBusinessModal" style="background-color: red; color: black; font-weight: bold;">Remove Business</button>
+            <button type="button" class="btnAdd" data-toggle="modal" data-target="#addBusinessModal" >Add Business</button>
+            <button type="button" class="btnEdit" data-toggle="modal" data-target="#editBusinessModal">Edit Business</button>
+            <button type="button" class="btnRemove" data-toggle="modal" data-target="#removeBusinessModal">Remove Business</button>
             <div id="alertContainer"></div>
             <table class="table table-hover mt-3">
                 <thead>
