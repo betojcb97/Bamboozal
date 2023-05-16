@@ -53,15 +53,16 @@
             </div>
         </nav>
     </header>
-    <div class="container-fluid">
-        <main role="main" class="main">
-            @RenderBody()
-        </main>
-    </div>
-
-    <footer class="footer" >
+    <div class="content-container">
+        <div class="container-fluid">
+            <main role="main" class="main">
+                @RenderBody()
+            </main>
+        </div>
+        <footer class="footer">
             &copy; 2023 - Bamboo - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a> - Author: Alberto Junqueira
-    </footer>
+        </footer>
+    </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

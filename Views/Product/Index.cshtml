@@ -405,7 +405,7 @@
 
                 data.forEach(function (product) {
                     let isActive = product.isActive ? 'Yes' : 'No';
-                    let image = product.imageUrl ? `<a href="${product.imageUrl}" target="_blank"><img src="${product.imageUrl}" alt="Image" width="50"></a>` : 'N/A';
+                    let image = product.imageUrl ? `<a href="${product.imageUrl}" target="_blank"><img src="${product.imageUrl}" alt="Image" width="100" height="100"></a>` : 'N/A';
 
                     tableBody.append(
                         `<tr data-product-id="${product.productID}">
