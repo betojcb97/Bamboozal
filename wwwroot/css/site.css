@@ -7,7 +7,7 @@
 
 html {
     font-size: 14px;
-    background: linear-gradient(180deg, rgba(161,157,227,0.22888647151898733) 0%, rgba(178,95,190,0.1940763449367089) 20%, rgba(0,31,254,0.235215585443038) 100%);
+    background: linear-gradient(180deg, rgba(255,255,255,0.22888647151898733) 0%, rgba(172,240,183,0.1940763449367089) 43%, rgba(37,203,4,0.4377472310126582) 100%);
 }
 
 header {
@@ -21,7 +21,7 @@ body {
     display: flex !important;
     flex-direction: column !important;
     min-height: 100vh !important;
-    background: linear-gradient(180deg, rgba(161,157,227,0.22888647151898733) 0%, rgba(178,95,190,0.1940763449367089) 20%, rgba(0,31,254,0.235215585443038) 100%);
+    background: linear-gradient(180deg, rgba(255,255,255,0.22888647151898733) 0%, rgba(172,240,183,0.1940763449367089) 43%, rgba(37,203,4,0.4377472310126582) 100%);
 }
 
 footer {
@@ -41,22 +41,25 @@ main {
 
 h1 {
     margin-top: 10px;
+    margin-left: 10px;
 }
 
 .container {
     margin-top: 0px;
+    margin-left: 10px;
     overflow: hidden;
 }
 
 .card {
     border-radius: 20px;
-    background-color: gray;
+    background-color: lightgray;
 }
 
 .card-title {
     font-size: 2em;
     color: black;
     font-weight: bold;
+    text-align: center;
 }
 
 .card-text {
@@ -95,26 +98,34 @@ h1 {
 }
 
 .btnAdd {
-    background: linear-gradient(0deg, rgba(5,168,84,0.7567401960784313) 30%, rgba(131,236,154,0.7067345727848101) 53%);
+    background: linear-gradient(180deg, rgba(255,255,255,0.22888647151898733) 0%, rgba(172,240,183,0.1940763449367089) 43%, rgba(37,203,4,0.4377472310126582) 100%);
     color: black;
     font-weight: bold;
+    margin-right: 10px;
+    margin-top: 10px;
 }
 
 .btnEdit {
-    background: linear-gradient(0deg, rgba(245,255,0,0.7567401960784313) 30%, rgba(249,255,153,0.6086333069620253) 53%);
+    background: linear-gradient(180deg, rgba(255,255,255,0.22888647151898733) 0%, rgba(236,240,172,0.1940763449367089) 43%, rgba(199,203,4,0.4377472310126582) 100%);
     color: black;
     font-weight: bold;
+    margin-right: 10px;
+    margin-top: 10px;
 }
 
 .btnRemove {
-    background: linear-gradient(0deg, rgba(250,47,47,0.7567401960784313) 30%, rgba(255,153,153,0.7067345727848101) 53%);
+    background: linear-gradient(180deg, rgba(255,255,255,0.22888647151898733) 0%, rgba(240,172,172,0.1940763449367089) 43%, rgba(203,4,4,0.4377472310126582) 100%);
     color: black;
     font-weight: bold;
+    margin-right: 10px;
+    margin-top: 10px;
 }
-.btnCart {
-    background: linear-gradient(0deg, rgba(0,136,255,0.7567401960784313) 30%, rgba(153,234,255,0.6086333069620253) 53%);
+.btnFunct {
+    background: linear-gradient(180deg, rgba(255,255,255,0.22888647151898733) 0%, rgba(172,240,236,0.1940763449367089) 43%, rgba(4,12,203,0.4377472310126582) 100%);
     color: black;
     font-weight: bold;
+    margin-right: 10px;
+    margin-top: 10px;
 }
 
 .alert-message {
@@ -134,4 +145,65 @@ h1 {
     opacity: 0;
 }
 
+
+.custom-table {
+    width: 90%;
+    background-color: transparent;
+    border-spacing: 0;
+    border-collapse: collapse;
+    margin-top: 20px; 
+    margin-bottom: 20px;
+}
+
+.custom-table th,
+.custom-table td {
+    text-align: center;
+    padding: 0.75rem;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+}
+
+.custom-table thead th {
+    vertical-align: bottom;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.custom-table tbody + tbody {
+    border-top: 2px solid #dee2e6;
+}
+
+.custom-table.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.custom-table.table-hover tbody tr:hover {
+    color: #212529;
+    background-color: rgba(0, 0, 0, 0.075);
+}
+
+.custom-table.table-bordered {
+    border: 1px solid #dee2e6;
+}
+
+.custom-table.table-bordered th,
+.custom-table.table-bordered td {
+    border: 1px solid #dee2e6;
+}
+
+.custom-table.table-bordered thead th,
+.custom-table.table-bordered thead td {
+    border-bottom-width: 2px;
+}
+
+.custom-table thead.thead-dark th {
+    color: #fff;
+    background-color: #343a40;
+    border-color: #454d55;
+}
+
+.custom-table thead.thead-dark,
+.custom-table thead.thead-dark th,
+.custom-table thead.thead-dark td {
+    border-color: #454d55;
+}
 
