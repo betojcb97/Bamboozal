@@ -42,7 +42,7 @@ namespace Bamboo.Controllers
                 db.SaveChanges();
                 return CreatedAtAction(nameof(business), business);
             }
-            else { return Unauthorized(); }
+            else { return Unauthorized("Please login to add a business!"); }
         }
 
         [HttpPost("RemoveBusiness/{businessID}")]

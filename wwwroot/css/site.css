@@ -25,6 +25,7 @@ body {
     flex-direction: column;
     min-height: 100vh;
     position: relative;
+    padding-bottom: 50px;
 }
 
 .head {
@@ -42,15 +43,40 @@ body {
 }
 
 .footer {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    height: 50px;
     margin-top: 20px;
     margin-left: 50px;
     color: white;
     box-shadow: none;
+    text-align: left;
+    vertical-align: bottom;
 }
+
+@keyframes glowing {
+    0% {
+        border-color: gold;
+    }
+    25% {
+        border-color: goldenrod;
+    }
+    50% {
+        border-color: gold;
+    }
+    75% {
+        border-color: goldenrod;
+    }
+    100% {
+        border-color: gold;
+    }
+}
+
+#businessIDFilter {
+    border: 3px solid;
+    animation: glowing 2s linear infinite;
+    width: 30vw !important;
+    font-size: 15px;
+}
+
 
 h1 {
     margin-top: 10px;
