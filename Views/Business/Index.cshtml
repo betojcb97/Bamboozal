@@ -85,7 +85,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" id="closeBtnAdd" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="sendBtnAdd">Send</button>
                 </div>
             </div>
@@ -138,7 +138,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" id="closeBtnEdit" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="sendBtnEdit">Send</button>
                 </div>
             </div>
@@ -151,6 +151,7 @@
 <script>
 
     let selectedBusinessId;
+    let authToken = '';
 
     $(document).ready(function () {
         fetchAddresses();
@@ -158,6 +159,7 @@
     });
 
     $('#sendBtnAdd').on('click', function (event) {
+        assureLogin();
         let form = $('#addBusinessForm')[0];
         if (form.checkValidity() === false) {
             event.preventDefault();
@@ -186,27 +188,24 @@
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
-                    var authToken = localStorage.getItem('authToken');
                     xhr.setRequestHeader("Authorization", "Bearer " + authToken);
                 },
                 success: function (response, textStatus, xhr) {
                     if (xhr.status === 201) {  
                         showAlert("Business added successfully!");
                         fetchAndFillBusinessTable();
-                        $('#addBusinessModal').modal('hide');
                     } else if (xhr.status === 406) {
                         showAlert("Business already exists!");
                     }
+                    $('#closeBtnAdd').click();
                 },
                 error: function (xhr, status, error) {
-                    if (xhr.status === 401) {
-                        window.location.href = '/CustomUser/LoginPage';
-                    }
-                    showAlert("Error adding business! " + error);
+                    let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                    showAlert("Error adding business! " + errorMessage);
+                    $('#closeBtnAdd').click();
                 }
             });
         }
-        $('#addBusinessModal').modal('hide');
     });
 
     $('#sendBtnEdit').on('click', function (event) {
@@ -237,22 +236,20 @@
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
-                    var authToken = localStorage.getItem('authToken');
                     xhr.setRequestHeader("Authorization", "Bearer " + authToken);
                 },
                 success: function (response) {
                     showAlert("Business updated successfully!");
                     fetchAndFillBusinessTable();
+                    $('#closeBtnEdit').click();
                 },
                 error: function (xhr, status, error) {
-                    if (xhr.status === 401) {
-                        window.location.href = '/CustomUser/LoginPage';
-                    }
-                    showAlert("Error updating business! " + error);
+                    let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                    showAlert("Error updating business! " + errorMessage);
+                    $('#closeBtnEdit').click();
                 }
             });
         }
-        $('#editBusinessModal').modal('hide');
     });
 
     $('button[data-target="#editBusinessModal"]').on('click', function () {
@@ -269,6 +266,7 @@
     });
 
     $('button[data-target="#removeBusinessModal"]').on('click', function () {
+        assureLogin();
         let selectedRow = $('input.business-checkbox:checked').closest('tr');
         if (selectedRow.length === 0) {
             showAlert('Please select a business to remove.');
@@ -284,7 +282,6 @@
             type: 'POST',
             contentType: 'application/json',
             beforeSend: function (xhr) {
-                var authToken = localStorage.getItem('authToken');
                 xhr.setRequestHeader("Authorization", "Bearer " + authToken);
             },
             success: function (response) {
@@ -292,13 +289,10 @@
                 fetchAndFillBusinessTable();
             },
             error: function (xhr, status, error) {
-                if (xhr.status === 401) {
-                    window.location.href = '/CustomUser/LoginPage';
-                }
-                showAlert("Error removing business! " + error);
+                let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                showAlert("Error removing business! " + errorMessage);
             }
         });
-        $('#editBusinessModal').modal('hide');
     });
 
     function fetchAddresses() {
@@ -314,7 +308,8 @@
                 addressDropdowns.append(`<option value="null">Null</option>`);
             },
             error: function (xhr, status, error) {
-                showAlert('Error: ' + error);
+                let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                showAlert('Error: ' + errorMessage);
             }
         });
     }
@@ -326,7 +321,6 @@
             dataType: 'json',
             success: function (data) {
                 let tableBody = $('#businessesTableBody');
-                // Clear previous content
                 tableBody.empty();
 
                 data.forEach(function (business) {
@@ -366,7 +360,8 @@
                 });
             },
             error: function (xhr, status, error) {
-                showAlert('Error: ' + error);
+                let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                showAlert('Error: ' + errorMessage);
             }
         });
     }

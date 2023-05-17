@@ -14,7 +14,6 @@ namespace Bamboo.Controllers
     [Route("[controller]")]
     public class CartController : Controller
     {
-
         private TokenValidator tokenValidator;
         private BambooContext db;
         private IMapper mapper;

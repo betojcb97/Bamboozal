@@ -5,19 +5,19 @@ using Bamboo.DTO;
 
 namespace Bamboo.Profiles
 {
-    public class UserProfile : Profile
+    public class CustomUserProfile : Profile
     {
-        public UserProfile() 
+        public CustomUserProfile() 
         {
-            CreateMap<AddUserDto, User>();
+            CreateMap<AddCustomUserDto, CustomUser>();
 
-            CreateMap<User, ReadUserDto>()
+            CreateMap<CustomUser, ReadCustomUserDto>()
                 .ForMember(userDto => userDto.addressDto,
                 opt => opt.MapFrom(user => user.address))
                 .ForMember(userDto => userDto.businessDto,
                 opt => opt.MapFrom(user => user.ownerOfBusinessID));
 
-            CreateMap<EditUserDto, User>();
+            CreateMap<EditCustomUserDto, CustomUser>();
 
         }
     }

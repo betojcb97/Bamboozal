@@ -16,14 +16,17 @@ namespace Bamboo.Controllers
     [Route("[controller]")]
     public class BusinessController : Controller
     {
+
         private TokenValidator tokenValidator;
         private BambooContext db;
         private IMapper mapper;
-        public BusinessController(BambooContext context, IMapper _mapper, TokenValidator _tokenValidator)
+        private IHttpContextAccessor httpContextAccessor;
+        public BusinessController(BambooContext db, IMapper mapper, TokenValidator tokenValidator, IHttpContextAccessor httpContextAccessor)
         {
-            db = context;
-            mapper = _mapper;
-            tokenValidator = _tokenValidator;
+            this.db = db;
+            this.mapper = mapper;
+            this.tokenValidator = tokenValidator;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         [HttpPost("AddBusiness")]

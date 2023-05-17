@@ -81,11 +81,10 @@
                             <input type="text" class="form-control" id="postalCode" name="postalCode" maxlength="8" required>
                             <div class="invalid-feedback">The postal code of the business must be provided and not exceed 8 characters.</div>
                         </div>
-
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" id="closeBtnAdd" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="sendBtnAdd">Send</button>
                 </div>
             </div>
@@ -130,7 +129,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" id="closeBtnEdit" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="sendBtnEdit">Send</button>
                 </div>
             </div>
@@ -140,12 +139,14 @@
 <script>
 
     let selectedAddressId;
+    let authToken = '';
 
     $(document).ready(function () {
         fetchAndFillAddressesTable();
     });
 
     $('#sendBtnAdd').on('click', function (event) {
+        assureLogin();
         let form = $('#addAddressForm')[0];
         if (form.checkValidity() === false) {
             event.preventDefault();
@@ -174,22 +175,20 @@
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
-                    var authToken = localStorage.getItem('authToken');
                     xhr.setRequestHeader("Authorization", "Bearer " + authToken);
                 },
                 success: function (response) {
                     showAlert("Address added successfully!");
                     fetchAndFillAddressesTable();
+                    $('#closeBtnAdd').click();
                 },
                 error: function (xhr, status, error) {
-                    if (xhr.status === 401) {
-                        window.location.href = '/CustomUser/LoginPage';
-                    }
-                    showAlert("Error adding address! " + error);
+                    let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                    showAlert("Error adding address! " + errorMessage);
+                    $('#closeBtnAdd').click();
                 }
             });
         }
-        $('#addAddressModal').modal('hide');
     });
 
     $('button[data-target="#editAddressModal"]').on('click', function () {
@@ -206,6 +205,7 @@
     });
 
     $('button[data-target="#removeAddressModal"]').on('click', function () {
+        assureLogin();
         let selectedRow = $('input.address-checkbox:checked').closest('tr');
         if (selectedRow.length === 0) {
             alert('Please select a address to remove.');
@@ -221,7 +221,6 @@
             type: 'POST',
             contentType: 'application/json',
             beforeSend: function (xhr) {
-                var authToken = localStorage.getItem('authToken');
                 xhr.setRequestHeader("Authorization", "Bearer " + authToken);
             },
             success: function (response) {
@@ -229,16 +228,14 @@
                 fetchAndFillAddressesTable();
             },
             error: function (xhr, status, error) {
-                if (xhr.status === 401) {
-                    window.location.href = '/CustomUser/LoginPage';
-                }
-                showAlert("Error removing address! " + error);
+                let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                showAlert("Error removing address! " + errorMessage);
             }
         });
-        $('#editAddressModal').modal('hide');
     });
 
     $('#sendBtnEdit').on('click', function (event) {
+        assureLogin();
         let form = $('#editAddressForm')[0];
         if (form.checkValidity() === false) {
             event.preventDefault();
@@ -266,18 +263,17 @@
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
-                    var authToken = localStorage.getItem('authToken');
                     xhr.setRequestHeader("Authorization", "Bearer " + authToken);
                 },
                 success: function (response) {
                     showAlert("Address updated successfully!");
                     fetchAndFillAddressesTable();
+                    $('#closeBtnEdit').click();
                 },
                 error: function (xhr, status, error) {
-                    if (xhr.status === 401) {
-                        window.location.href = '/CustomUser/LoginPage';
-                    }
-                    showAlert("Error updating address! " + error);
+                    let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                    showAlert("Error updating address! " + errorMessage);
+                    $('#closeBtnEdit').click();
                 }
             });
         }
@@ -308,7 +304,8 @@
                 });
             },
             error: function (xhr, status, error) {
-                showAlert('Error: ' + error);
+                let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                showAlert('Error: ' + errorMessage);
             }
         });
     }

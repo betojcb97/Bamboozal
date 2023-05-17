@@ -44,11 +44,14 @@
 
 <script>
 
+    let authToken = '';
+
     $(document).ready(function () {
         fetchAndFillCartsTable();
     });
 
     $('button[data-target="#removeCartModal"]').on('click', function () {
+        assureLogin();
         let selectedRow = $('input.cart-checkbox:checked').closest('tr');
         if (selectedRow.length === 0) {
             alert('Please select a cart to remove.');
@@ -64,7 +67,6 @@
             type: 'POST',
             contentType: 'application/json',
             beforeSend: function (xhr) {
-                var authToken = localStorage.getItem('authToken');
                 xhr.setRequestHeader("Authorization", "Bearer " + authToken);
             },
             success: function (response) {
@@ -72,16 +74,14 @@
                 fetchAndFillCartsTable();
             },
             error: function (xhr, status, error) {
-                if (xhr.status === 401) {
-                    window.location.href = '/CustomUser/LoginPage';
-                }
-                showAlert("Error removing cart! " + error);
+                let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                showAlert("Error removing cart! " + errorMessage);
             }
         });
-        $('#editCartModal').modal('hide');
     });
 
     $('button[data-target="#finishOrderModal"]').on('click', function () {
+        assureLogin();
         let selectedRow = $('input.cart-checkbox:checked').closest('tr');
         if (selectedRow.length === 0) {
             alert('Please select a cart to finish.');
@@ -97,7 +97,6 @@
             type: 'POST',
             contentType: 'application/json',
             beforeSend: function (xhr) {
-                var authToken = localStorage.getItem('authToken');
                 xhr.setRequestHeader("Authorization", "Bearer " + authToken);
             },
             success: function (response) {
@@ -105,15 +104,14 @@
                 fetchAndFillCartsTable();
             },
             error: function (xhr, status, error) {
-                if (xhr.status === 401) {
-                    window.location.href = '/CustomUser/LoginPage';
-                }
-                showAlert("Error finishing order! " + error);
+                let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                showAlert("Error finishing order! " + errorMessage);
             }
         });
     });
 
     $('#sendBtnEdit').on('click', function (event) {
+        assureLogin();
         let form = $('#editCartForm')[0];
         if (form.checkValidity() === false) {
             event.preventDefault();
@@ -141,21 +139,17 @@
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
-                    var authToken = localStorage.getItem('authToken');
                     xhr.setRequestHeader("Authorization", "Bearer " + authToken);
                 },
                 success: function (response) {
                     showAlert("Cart updated successfully!");
                 },
                 error: function (xhr, status, error) {
-                    if (xhr.status === 401) {
-                        window.location.href = '/CustomUser/LoginPage';
-                    }
-                    showAlert("Error updating cart! " + error);
+                    let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                    showAlert("Error updating cart! " + errorMessage);
                 }
             });
         }
-        $('#editCartModal').modal('hide');
     });
 
     function fetchAndFillCartsTable() {
@@ -191,7 +185,8 @@
 
             },
             error: function (xhr, status, error) {
-                showAlert('Error: ' + error);
+                let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                showAlert('Error: ' + errorMessage);
             }
         });
     }

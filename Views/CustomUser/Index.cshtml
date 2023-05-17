@@ -98,7 +98,7 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" id="closeBtnAdd" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="sendBtnAdd">Send</button>
                 </div>
             </div>
@@ -150,7 +150,7 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" id="closeBtnEdit" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="sendBtnEdit">Send</button>
                 </div>
             </div>
@@ -160,6 +160,7 @@
 <script>
 
     let selectedUserId;
+    let authToken = '';
     $(document).ready(function () {
         fetchAddresses();
         fetchBusinesses();
@@ -167,6 +168,7 @@
     });
 
     $('#sendBtnAdd').on('click', function (event) {
+        assureLogin();
         let form = $('#addUserForm')[0];
         if (form.checkValidity() === false) {
             event.preventDefault();
@@ -192,24 +194,24 @@
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
-                    var authToken = localStorage.getItem('authToken');
                     xhr.setRequestHeader("Authorization", "Bearer " + authToken);
                 },
                 success: function (response) {
                     showAlert("User added successfully!");
                     fetchAndFillUsersTable();
+                    $('#closeBtnAdd').click();
                 },
                 error: function (xhr, status, error) {
-                    if (xhr.status === 401) {
-                        window.location.href = '/CustomUser/LoginPage';
-                    }
-                    showAlert("Error adding user! "+ error);
+                    let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                    showAlert("Error adding user! "+ errorMessage);
+                    $('#closeBtnAdd').click();
                 }
             });
         }
     });
 
     $('#sendBtnEdit').on('click', function (event) {
+        assureLogin();
         let form = $('#editUserForm')[0];
         if (form.checkValidity() === false) {
             event.preventDefault();
@@ -235,18 +237,17 @@
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
-                    var authToken = localStorage.getItem('authToken');
                     xhr.setRequestHeader("Authorization", "Bearer " + authToken);
                 },
                 success: function (response) {
                     showAlert("User updated successfully!");
                     fetchAndFillUsersTable();
+                    $('#closeBtnEdit').click();
                 },
                 error: function (xhr, status, error) {
-                    if (xhr.status === 401) {
-                        window.location.href = '/CustomUser/LoginPage';
-                    }
-                    showAlert("Error updating address! " + error);
+                    let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                    showAlert("Error updating user! " + errorMessage);
+                    $('#closeBtnEdit').click();
                 }
             });
         }
@@ -266,6 +267,7 @@
     });
 
     $('button[data-target="#removeUserModal"]').on('click', function () {
+        assureLogin();
         let selectedRow = $('input.user-checkbox:checked').closest('tr');
         if (selectedRow.length === 0) {
             alert('Please select a user to remove.');
@@ -281,7 +283,6 @@
             type: 'POST',
             contentType: 'application/json',
             beforeSend: function (xhr) {
-                var authToken = localStorage.getItem('authToken');
                 xhr.setRequestHeader("Authorization", "Bearer " + authToken);
             },
             success: function (response) {
@@ -289,10 +290,8 @@
                 fetchAndFillUsersTable();
             },
             error: function (xhr, status, error) {
-                if (xhr.status === 401) {
-                    window.location.href = '/CustomUser/LoginPage';
-                }
-                showAlert("Error removing user! " + error);
+                let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                showAlert("Error removing user! " + errorMessage);
             }
         });
     });
@@ -346,7 +345,8 @@
                 });
             },
             error: function (xhr, status, error) {
-                showAlert('Error: ' + error);
+                let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                showAlert('Error: ' + errorMessage);
             }
         });
     }
@@ -364,7 +364,8 @@
                 businessDropdowns.append(`<option value="">Null</option>`);
             },
             error: function (xhr, status, error) {
-                showAlert('Error: ' + error);
+                let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                showAlert('Error: ' + errorMessage);
             }
         });
     }
@@ -382,7 +383,8 @@
                 addressDropdowns.append(`<option value="">Null</option>`);
             },
             error: function (xhr, status, error) {
-                showAlert('Error: ' + error);
+                let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                showAlert('Error: ' + errorMessage);
             }
         });
     }

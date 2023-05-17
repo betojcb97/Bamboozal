@@ -21,13 +21,15 @@ namespace Bamboo.Controllers
         private TokenValidator tokenValidator;
         private BambooContext db;
         private IMapper mapper;
+        private IHttpContextAccessor httpContextAccessor;
         private IWebHostEnvironment hostingEnvironment;
-        public CustomUserController(BambooContext context, IMapper _mapper, TokenValidator _tokenValidator, IWebHostEnvironment _hostingEnvironment)
+        public CustomUserController(BambooContext db, IMapper mapper, TokenValidator tokenValidator, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment hostingEnvironment)
         {
-            db = context;
-            mapper = _mapper;
-            tokenValidator = _tokenValidator;
-            hostingEnvironment = _hostingEnvironment;
+            this.db = db;
+            this.mapper = mapper;
+            this.tokenValidator = tokenValidator;
+            this.httpContextAccessor = httpContextAccessor;
+            this.hostingEnvironment = hostingEnvironment;
         }
 
         public string GenerateToken(Guid userID)

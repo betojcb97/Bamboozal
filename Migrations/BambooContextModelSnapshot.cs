@@ -233,6 +233,8 @@ namespace Bamboo.Migrations
 
                     b.HasIndex("deliveryAddressID");
 
+                    b.HasIndex("userID");
+
                     b.ToTable("Orders");
                 });
 
@@ -556,9 +558,17 @@ namespace Bamboo.Migrations
                         .WithMany()
                         .HasForeignKey("deliveryAddressID");
 
+                    b.HasOne("Bamboo.Models.CustomUser", "user")
+                        .WithMany()
+                        .HasForeignKey("userID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("business");
 
                     b.Navigation("deliveryAddress");
+
+                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("Bamboo.Models.Product", b =>

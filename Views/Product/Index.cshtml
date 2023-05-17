@@ -104,7 +104,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" id="closeBtnAdd" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="sendBtnAdd">Send</button>
                 </div>
             </div>
@@ -162,7 +162,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" id="closeBtnEdit" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="sendBtnEdit">Send</button>
                 </div>
             </div>
@@ -174,6 +174,7 @@
     let selectedProductId;
     let selectedProductsIds = [];
     let selectedBusinessId = '';
+    let authToken = '';
     const decimals = ["price", "cost", "tax", "discount"];
 
     $(document).ready(function () {
@@ -186,6 +187,7 @@
     });
 
     $('#sendBtnAdd').on('click', function (event) {
+        assureLogin();
         let form = $('#addProductForm')[0];
         if (form.checkValidity() === false) {
             event.preventDefault();
@@ -220,24 +222,24 @@
                 data: JSON.stringify(jsonData), 
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
-                    var authToken = localStorage.getItem('authToken');
                     xhr.setRequestHeader("Authorization", "Bearer " + authToken);
                 },
                 success: function (response) {
                     showAlert("Product added successfully!");
-                        fetchAndFillProductsTable(selectedBusinessId);
+                    fetchAndFillProductsTable(selectedBusinessId);
+                    $('#closeBtnAdd').click();
                 },
                 error: function (xhr, status, error) {
-                    if (xhr.status === 401) {
-                        window.location.href = '/CustomUser/LoginPage';
-                    }
-                    showAlert("Error adding product! "+error);
+                    let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                    showAlert("Error adding product! "+errorMessage);
+                    $('#closeBtnAdd').click();
                 }
             });
         }
     });
 
     $('button[data-target="#removeProductModal"]').on('click', function () {
+        assureLogin();
         let selectedRow = $('input.product-checkbox:checked').closest('tr');
         if (selectedRow.length === 0) {
             alert('Please select a product to remove.');
@@ -253,23 +255,21 @@
             type: 'POST',
             contentType: 'application/json',
             beforeSend: function (xhr) {
-                var authToken = localStorage.getItem('authToken');
                 xhr.setRequestHeader("Authorization", "Bearer " + authToken);
             },
             success: function (response) {
                 showAlert("Product removed successfully!");
-                    fetchAndFillProductsTable(selectedBusinessId);
+                fetchAndFillProductsTable(selectedBusinessId);
             },
             error: function (xhr, status, error) {
-                if (xhr.status === 401) {
-                    window.location.href = '/CustomUser/LoginPage';
-                }
-                showAlert("Error removing product! " + error);
+                let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                showAlert("Error removing product! " + errorMessage);
             }
         });
     });
 
     $('button[data-target="#editProductModal"]').on('click', function () {
+        assureLogin();
         let selectedRow = $('input.product-checkbox:checked').closest('tr');
         if (selectedRow.length === 0) {
             alert('Please select a product to edit.');
@@ -283,6 +283,7 @@
     });
 
     $('button[data-target="#cartProductModal"]').on('click', function () {
+        assureLogin();
         let selectedRows = $('input.product-checkbox:checked').closest('tr');
         if (selectedRows.length === 0) {
             alert('Please select a product to add to cart.');
@@ -305,22 +306,20 @@
             data: JSON.stringify(data),
             contentType: 'application/json',
             beforeSend: function (xhr) {
-                var authToken = localStorage.getItem('authToken');
                 xhr.setRequestHeader("Authorization", "Bearer " + authToken);
             },
             success: function (response) {
                 showAlert("Cart added successfully!");
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                if (xhr.status === 401) {
-                    window.location.href = '/CustomUser/LoginPage';
-                }
-                showAlert("Error adding cart! "+error);
+                let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                showAlert("Error adding cart! "+errorMessage);
             }
         });
     });
 
     $('#sendBtnEdit').on('click', function (event) {
+        assureLogin();
         let form = $('#editProductForm')[0];
         if (form.checkValidity() === false) {
             event.preventDefault();
@@ -355,18 +354,17 @@
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
-                    var authToken = localStorage.getItem('authToken');
                     xhr.setRequestHeader("Authorization", "Bearer " + authToken);
                 },
                 success: function (response) {
                     showAlert("Product updated successfully!");
-                        fetchAndFillProductsTable(selectedBusinessId);
-                    },
+                    fetchAndFillProductsTable(selectedBusinessId); 
+                    $('#closeBtnEdit').click();
+                },
                 error: function (xhr, status, error) {
-                    if (xhr.status === 401) {
-                        window.location.href = '/CustomUser/LoginPage';
-                    }
-                    showAlert("Error updating product! " + error);
+                    let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                    showAlert("Error updating product! " + errorMessage);
+                    $('#closeBtnEdit').click();
                 }
             });
         }
@@ -387,7 +385,8 @@
                 businessDropdowns.append(`<option value="null">Null</option>`);
             },
             error: function (xhr, status, error) {
-                    showAlert('Error: ' + error);
+                let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                showAlert('Error: ' + errorMessage);
             }
         });
     }
@@ -424,7 +423,8 @@
                 });
             },
             error: function (xhr, status, error) {
-                    showAlert('Error: ' + error);
+                let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                showAlert('Error: ' + errorMessage);
             }
         });
     }
