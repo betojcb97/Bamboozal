@@ -86,8 +86,8 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="businessID">Business ID</label>
-                            <select class="form-control" id="businessID" name="businessID" required>
+                            <label for="ownerOfBusinessID">Business ID</label>
+                            <select class="form-control" id="ownerOfBusinessID" name="ownerOfBusinessID" required>
                             </select>
                         </div>
                         <div class="form-group">
@@ -138,8 +138,8 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="businessID">Business ID</label>
-                            <select class="form-control" id="businessID" name="businessID" required>
+                            <label for="ownerOfBusinessID">Business ID</label>
+                            <select class="form-control" id="ownerOfBusinessID" name="ownerOfBusinessID" required>
                             </select>
                         </div>
                         <div class="form-group">
@@ -222,7 +222,7 @@
             let formData = $('#editUserForm').serializeArray();
             let jsonData = {};
             formData.forEach(function (item) {
-                if ((item.name === "addressID" || item.name === "businessID") && item.value === "") {
+                if ((item.name === "addressID" || item.name === "ownerOfBusinessID") && item.value === "") {
                     jsonData[item.name] = null;
                 } else if (item.value === "") {
                     jsonData[item.name] = null;
@@ -337,7 +337,7 @@
                             <td>${user.userLastName}</td>
                             <td>${address}</td>
                             <td>${isActive}</td>
-                            <td>${business}</td>
+                            <td>${user.ownerOfBusinessID}</td>
                             <td>${dateOfBirth}</td>
                             <td>${dateOfRegister}</td>
                         </tr>`
@@ -357,9 +357,9 @@
             type: 'GET',
             dataType: 'json',
             success: function (data) {
-                let businessDropdowns = $('select[name="businessID"]');
+                    let businessDropdowns = $('select[name="ownerOfBusinessID"]');
                 data.forEach(function (business) {
-                    businessDropdowns.append(`<option value="${business.businessID}">${business.name}</option>`);
+                        businessDropdowns.append(`<option value="${business.ownerOfBusinessID}">${business.name}</option>`);
                 });
                 businessDropdowns.append(`<option value="">Null</option>`);
             },
