@@ -11,6 +11,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="~/js/Util.js"></script>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
@@ -34,9 +35,9 @@
                 <thead>
                     <tr>
                         <th></th>
-                        <th>Name</th>
+                        <th onclick="orderBy='name';fetchAndFillProductsTable(selectedBusinessId)">Name <i class="fas fa-caret-down"></i></th>
                         <th>Description</th>
-                        <th>Price</th>
+                        <th onclick="orderBy='price';fetchAndFillProductsTable(selectedBusinessId)">Price <i class="fas fa-caret-down"></i></th>
                         <th>Cost</th>
                         <th>Tax</th>
                         <th>Discount</th>
@@ -174,6 +175,8 @@
     let selectedProductId;
     let selectedProductsIds = [];
     let selectedBusinessId = '';
+    let orderBy = 'name';
+    let ordering = 'ascending';
     const decimals = ["price", "cost", "tax", "discount"];
 
     $(document).ready(function () {
@@ -393,6 +396,7 @@
     function fetchAndFillProductsTable(businessID) {
         let url = '/Product/ListProducts';
         if (businessID !== ''){ url+='OfBusiness/'+businessID; }
+        url += "?ascdesc=" + ordering + "&orderBy=" + orderBy
         $.ajax({
             url: url,
             type: 'GET',
@@ -426,6 +430,15 @@
                 showAlert('Error: ' + errorMessage);
             }
         });
+        toggleOrdering();
+    }
+
+    function toggleOrdering(){
+        if (ordering === "ascending"){
+            ordering = "descending";
+            return;
+        }
+        ordering = "ascending";
     }
 
 </script>

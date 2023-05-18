@@ -95,8 +95,7 @@ namespace Bamboo.Controllers
         [HttpGet("ListProducts")]
         public IActionResult ListProducts([FromQuery] string? orderBy="name", [FromQuery] string? ascdesc = "ascending")
         {
-            string order = ascdesc == "desc" ? "descending" : "";
-            string ordering = orderBy + order;
+            string ordering = orderBy + " " + ascdesc;
             List<ReadProductDto> readProductsDtos = db.Products
             .AsQueryable()
             .OrderBy(ordering)
@@ -109,9 +108,16 @@ namespace Bamboo.Controllers
 
 
         [HttpGet("ListProductsOfBusiness/{businessID}")]
-        public IActionResult ListProductsOfBusiness(Guid businessID)
+        public IActionResult ListProductsOfBusiness(Guid businessID, [FromQuery] string? orderBy = "name", [FromQuery] string? ascdesc = "ascending")
         {
-            List<ReadProductDto> readProductsDtos = mapper.Map<List<ReadProductDto>>(db.Products.Where(p => p.businessID.Equals(businessID)).ToList());
+            string ordering = orderBy + " " + ascdesc;
+            List<ReadProductDto> readProductsDtos = db.Products
+            .AsQueryable()
+            .Where(p => p.businessID.Equals(businessID))
+            .OrderBy(ordering)
+            .ToList()
+            .Select(p => mapper.Map<ReadProductDto>(p))
+            .ToList();
             return Json(readProductsDtos);
         }
 
