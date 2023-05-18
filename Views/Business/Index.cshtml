@@ -151,7 +151,6 @@
 <script>
 
     let selectedBusinessId;
-    let authToken = '';
 
     $(document).ready(function () {
         fetchAddresses();
@@ -188,7 +187,7 @@
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
-                    xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                    xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
                 },
                 success: function (response, textStatus, xhr) {
                     if (xhr.status === 201) {  
@@ -236,7 +235,7 @@
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
-                    xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                    xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
                 },
                 success: function (response) {
                     showAlert("Business updated successfully!");
@@ -282,7 +281,7 @@
             type: 'POST',
             contentType: 'application/json',
             beforeSend: function (xhr) {
-                xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
             },
             success: function (response) {
                 showAlert("Business removed successfully!");

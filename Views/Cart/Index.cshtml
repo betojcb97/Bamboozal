@@ -44,8 +44,6 @@
 
 <script>
 
-    let authToken = '';
-
     $(document).ready(function () {
         fetchAndFillCartsTable();
     });
@@ -67,7 +65,7 @@
             type: 'POST',
             contentType: 'application/json',
             beforeSend: function (xhr) {
-                xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                    xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
             },
             success: function (response) {
                 showAlert("Cart removed successfully!");
@@ -97,7 +95,7 @@
             type: 'POST',
             contentType: 'application/json',
             beforeSend: function (xhr) {
-                xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                    xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
             },
             success: function (response) {
                 showAlert("Order added successfully!");
@@ -139,7 +137,7 @@
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
-                    xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                        xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
                 },
                 success: function (response) {
                     showAlert("Cart updated successfully!");
@@ -158,8 +156,7 @@
             type: 'GET',
             dataType: 'json',
             beforeSend: function (xhr) {
-                var authToken = localStorage.getItem('authToken');
-                xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
             },
             success: function (data) {
                 let tableBody = $('#cartsTableBody');

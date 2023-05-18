@@ -139,7 +139,6 @@
 <script>
 
     let selectedAddressId;
-    let authToken = '';
 
     $(document).ready(function () {
         fetchAndFillAddressesTable();
@@ -175,7 +174,7 @@
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
-                    xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                        xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
                 },
                 success: function (response) {
                     showAlert("Address added successfully!");
@@ -221,7 +220,7 @@
             type: 'POST',
             contentType: 'application/json',
             beforeSend: function (xhr) {
-                xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                    xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
             },
             success: function (response) {
                 showAlert("Address removed successfully!");
@@ -263,7 +262,7 @@
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
-                    xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                        xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
                 },
                 success: function (response) {
                     showAlert("Address updated successfully!");

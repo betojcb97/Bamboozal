@@ -160,7 +160,6 @@
 <script>
 
     let selectedUserId;
-    let authToken = '';
     $(document).ready(function () {
         fetchAddresses();
         fetchBusinesses();
@@ -194,7 +193,7 @@
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
-                    xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                        xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
                 },
                 success: function (response) {
                     showAlert("User added successfully!");
@@ -237,7 +236,7 @@
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
-                    xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                        xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
                 },
                 success: function (response) {
                     showAlert("User updated successfully!");
@@ -283,7 +282,7 @@
             type: 'POST',
             contentType: 'application/json',
             beforeSend: function (xhr) {
-                xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                    xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
             },
             success: function (response) {
                 showAlert("User removed successfully!");

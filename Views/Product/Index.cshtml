@@ -174,7 +174,6 @@
     let selectedProductId;
     let selectedProductsIds = [];
     let selectedBusinessId = '';
-    let authToken = '';
     const decimals = ["price", "cost", "tax", "discount"];
 
     $(document).ready(function () {
@@ -222,7 +221,7 @@
                 data: JSON.stringify(jsonData), 
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
-                    xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                        xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
                 },
                 success: function (response) {
                     showAlert("Product added successfully!");
@@ -255,7 +254,7 @@
             type: 'POST',
             contentType: 'application/json',
             beforeSend: function (xhr) {
-                xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                    xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
             },
             success: function (response) {
                 showAlert("Product removed successfully!");
@@ -306,7 +305,7 @@
             data: JSON.stringify(data),
             contentType: 'application/json',
             beforeSend: function (xhr) {
-                xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                    xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
             },
             success: function (response) {
                 showAlert("Cart added successfully!");
@@ -354,7 +353,7 @@
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
-                    xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                        xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
                 },
                 success: function (response) {
                     showAlert("Product updated successfully!");

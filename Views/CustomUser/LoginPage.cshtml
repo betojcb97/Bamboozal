@@ -160,8 +160,7 @@
                     data: JSON.stringify(jsonData),
                     contentType: 'application/json',
                     beforeSend: function (xhr) {
-                        var authToken = localStorage.getItem('authToken');
-                        xhr.setRequestHeader("Authorization", "Bearer " + authToken);
+                        xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
                     },
                     success: function (response) {
                         showAlert("User added successfully!");
