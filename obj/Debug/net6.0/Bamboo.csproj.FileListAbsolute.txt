@@ -224,3 +224,4 @@ C:\Users\alber\Desktop\Bamboo\obj\Debug\net6.0\Bamboo.genruntimeconfig.cache
 C:\Users\alber\Desktop\Bamboo\obj\Debug\net6.0\ref\Bamboo.dll
 C:\Users\alber\Desktop\Bamboo\bin\Debug\net6.0\SendGrid.dll
 C:\Users\alber\Desktop\Bamboo\bin\Debug\net6.0\StarkbankEcdsa.dll
+C:\Users\alber\Desktop\Bamboo\bin\Debug\net6.0\System.Linq.Dynamic.Core.dll

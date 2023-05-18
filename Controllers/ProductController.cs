@@ -5,8 +5,10 @@ using Bamboo.DTO;
 using Bamboo.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Linq.Dynamic.Core;
 
 namespace Bamboo.Controllers
 {
@@ -91,9 +93,17 @@ namespace Bamboo.Controllers
         }
 
         [HttpGet("ListProducts")]
-        public IActionResult ListProducts()
+        public IActionResult ListProducts([FromQuery] string? orderBy="name", [FromQuery] string? ascdesc = "ascending")
         {
-            List<ReadProductDto> readProductsDtos = mapper.Map<List<ReadProductDto>>(db.Products.ToList());
+            string order = ascdesc == "desc" ? "descending" : "";
+            string ordering = orderBy + order;
+            List<ReadProductDto> readProductsDtos = db.Products
+            .AsQueryable()
+            .OrderBy(ordering)
+            .ToList()
+            .Select(p => mapper.Map<ReadProductDto>(p))
+            .ToList();
+
             return Json(readProductsDtos);
         }
 
