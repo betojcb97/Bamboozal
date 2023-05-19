@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "oH4kaquOyfg7rqn1WHLfrSheVKNoZ2ZhBk4trgOg0FA=",
+  "Hash": "+IRtMZZ0liAhGxYZrzwXrL45SV67DAfXq63pemUNaR8=",
   "Source": "Bamboo",
   "BasePath": "_content/Bamboo",
   "Mode": "Default",
@@ -51,6 +51,23 @@
       "OriginalItemSpec": "C:\\Users\\alber\\Desktop\\Bamboo\\obj\\Debug\\net6.0\\scopedcss\\projectbundle\\Bamboo.bundle.scp.css"
     },
     {
+      "Identity": "C:\\Users\\alber\\Desktop\\Bamboo\\wwwroot\\Content\\Curriculum_Alberto.pdf",
+      "SourceId": "Bamboo",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\alber\\Desktop\\Bamboo\\wwwroot\\",
+      "BasePath": "_content/Bamboo",
+      "RelativePath": "Content/Curriculum_Alberto.pdf",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\Content\\Curriculum_Alberto.pdf"
+    },
+    {
       "Identity": "C:\\Users\\alber\\Desktop\\Bamboo\\wwwroot\\css\\site.css",
       "SourceId": "Bamboo",
       "SourceType": "Discovered",
@@ -83,23 +100,6 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\favicon.ico"
-    },
-    {
-      "Identity": "C:\\Users\\alber\\Desktop\\Bamboo\\wwwroot\\Images\\Background.png",
-      "SourceId": "Bamboo",
-      "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\alber\\Desktop\\Bamboo\\wwwroot\\",
-      "BasePath": "_content/Bamboo",
-      "RelativePath": "Images/Background.png",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\Images\\Background.png"
     },
     {
       "Identity": "C:\\Users\\alber\\Desktop\\Bamboo\\wwwroot\\Images\\Bamboo.png",

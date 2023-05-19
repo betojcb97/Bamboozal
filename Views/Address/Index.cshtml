@@ -20,7 +20,7 @@
 
     <div class="page-container d-flex flex-column">
         <div class="container">
-            <h1>List of Addresses</h1>
+            <h1>Addresses</h1>
             <button type="button" class="btnAdd" data-toggle="modal" data-target="#addAddressModal" >Add Address</button>
             <button type="button" class="btnEdit" data-toggle="modal" data-target="#editAddressModal">Edit Address</button>
             <button type="button" class="btnRemove" data-toggle="modal" data-target="#removeAddressModal">Remove Address</button>
@@ -182,6 +182,7 @@
                     $('#closeBtnAdd').click();
                 },
                 error: function (xhr, status, error) {
+                    if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                     let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                     showAlert("Error adding address! " + errorMessage);
                     $('#closeBtnAdd').click();
@@ -227,6 +228,7 @@
                 fetchAndFillAddressesTable();
             },
             error: function (xhr, status, error) {
+                if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                 let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                 showAlert("Error removing address! " + errorMessage);
             }
@@ -270,6 +272,7 @@
                     $('#closeBtnEdit').click();
                 },
                 error: function (xhr, status, error) {
+                    if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                     let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                     showAlert("Error updating address! " + errorMessage);
                     $('#closeBtnEdit').click();
@@ -303,6 +306,7 @@
                 });
             },
             error: function (xhr, status, error) {
+                if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                 let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                 showAlert('Error: ' + errorMessage);
             }

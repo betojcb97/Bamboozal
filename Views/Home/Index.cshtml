@@ -13,86 +13,79 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="~/js/Util.js"></script>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <style>
+        body {
+            font-family: 'Century Gothic', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            background-color: #fff;
+            border-radius: 10px;
+            border: 1px solid black;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            margin: 30px;
+            font-size: 30px;
+            color: black;
+        }
+
+        .project-section {
+            color: #333;
+            font-size: 20px;
+        }
+
+        .about-me-section {
+            color: #333;
+            font-size: 20px;
+        }
+
+        .curriculum{
+            font-size: 20px;
+            margin: 30px;
+        }
+    </style>
 </head>
 <body>
-    <div class="project-title">
-        Bamboo Marketplace
-    </div>
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Businesses</h5>
-                        <ul>
-                            <li>BusinessId</li>
-                            <li>Name</li>
-                            <li>Description</li>
-                            <li>Email</li>
-                            <li>Phone</li>
-                            <li>Address</li>
-                            <li>Logo</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Products</h5>
-                        <ul>
-                            <li>ProductId</li>
-                            <li>Name</li>
-                            <li>Description</li>
-                            <li>Price</li>
-                            <li>Cost</li>
-                            <li>Tax</li>
-                            <li>Discount</li>
-                            <li>Image</li>
-                            <li>Business</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Addresses</h5>
-                        <ul>
-                            <li>AddressId</li>
-                            <li>Street</li>
-                            <li>Number</li>
-                            <li>City</li>
-                            <li>Country</li>
-                            <li>State</li>
-                            <li>PostalCode</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Users</h5>
-                        <ul>
-                            <li>UserId</li>
-                            <li>UserName</li>
-                            <li>First Name</li>
-                            <li>Last Name</li>
-                            <li>Email</li>
-                            <li>Password</li>
-                            <li>Address</li>
-                            <li>Date of Birth</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <h1>Welcome to My Portfolio - Bamboo Marketplace<a class="curriculum" href="~/Content/Curriculum_Alberto.pdf" download>My Curriculum</a></h1>
+    <div class="section project-section">
+        <h2>The Project</h2>
+        <p>
+            This project aims to demonstrate some of my skills and expertise in web development using .NET Core, C#, Razor CSHTML, and Microsoft SQL Server, building web applications with a focus on backend development, data storage, and frontend presentation using the Razor templating engine.
+        </p>
+        <p>
+            The website utilizes the .NET Core framework for server-side processing, C# for backend logic, Microsoft SQL Server for data storage, and Razor CSHTML for generating dynamic HTML views. It highlights my proficiency in creating full-stack web applications and showcases my understanding of web development best practices and technologies.
+        </p>
+        <p>
+            To host this webapplication I am using my local host and local database making use of ngrok technology for local tunneling to make my application available publicly.
+        </p>
     </div>
 
-    <script>
-
-    </script>
-
+    <div class="section about-me-section">
+        <h2>About Me</h2>
+        <p>
+            I began my career as a Business Management consultant at Instituto Aquila, where I gained experience in various types of businesses, particularly in the retail industry. My responsibilities involved data analysis, decision-making based on data insights, process optimization, and monitoring key business metrics.
+        </p>
+        <p>
+            Subsequently, I worked in the commercial department of a retail company, where I was responsible for purchase and sale negotiations, stock management, pricing strategies, expiration date control, and supervision of the e-commerce operations. This experience allowed me to further develop my technical skills while honing my interpersonal skills through extensive interactions with teams, suppliers, and customers.
+        </p>
+        <p>
+            With a strong interest in Business Management and a natural aptitude for engineering and computer science, I pursued an MBA at IBMEC in partnership with Microsoft, specializing in artificial intelligence. The program aimed to apply cutting-edge technology to enhance business operations. 
+        </p>
+        <p>
+            Since then, I have been working as a software engineer, focusing on full-stack web application development, including database management, REST API development using .NET C#, and frontend implementation with JavaScript.
+        </p>
+    </div>
 </body>
 </html>

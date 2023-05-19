@@ -18,7 +18,7 @@
 <body>
     <div class="page-container d-flex flex-column">
         <div class="container">
-            <h1>List of Users</h1>
+            <h1>Users</h1>
             <button type="button" class="btnAdd" data-toggle="modal" data-target="#addUserModal" >Add User</button>
             <button type="button" class="btnEdit" data-toggle="modal" data-target="#editUserModal" >Edit User</button>
             <button type="button" class="btnRemove" data-toggle="modal" data-target="#removeUserModal" >Remove User</button>
@@ -201,6 +201,7 @@
                     $('#closeBtnAdd').click();
                 },
                 error: function (xhr, status, error) {
+                    if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                     let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                     showAlert("Error adding user! "+ errorMessage);
                     $('#closeBtnAdd').click();
@@ -244,6 +245,7 @@
                     $('#closeBtnEdit').click();
                 },
                 error: function (xhr, status, error) {
+                    if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                     let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                     showAlert("Error updating user! " + errorMessage);
                     $('#closeBtnEdit').click();
@@ -289,6 +291,7 @@
                 fetchAndFillUsersTable();
             },
             error: function (xhr, status, error) {
+                if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                 let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                 showAlert("Error removing user! " + errorMessage);
             }
@@ -344,6 +347,7 @@
                 });
             },
             error: function (xhr, status, error) {
+                if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                 let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                 showAlert('Error: ' + errorMessage);
             }
@@ -363,6 +367,7 @@
                 businessDropdowns.append(`<option value="">Null</option>`);
             },
             error: function (xhr, status, error) {
+                if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                 let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                 showAlert('Error: ' + errorMessage);
             }
@@ -382,6 +387,7 @@
                 addressDropdowns.append(`<option value="">Null</option>`);
             },
             error: function (xhr, status, error) {
+                if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                 let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                 showAlert('Error: ' + errorMessage);
             }

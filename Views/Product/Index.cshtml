@@ -19,7 +19,7 @@
 <body>
     <div class="page-container d-flex flex-column">
         <div class="container">
-            <h1>List of Products</h1>
+            <h1>Products</h1>
             <div class="form-group">
                 <label for="businessIDFilter" style="font-weight: bold; font-size:20px; margin-right: 10px;">Select a business</label>
                 <select id="businessIDFilter" name="businessIDFilter">
@@ -232,6 +232,7 @@
                     $('#closeBtnAdd').click();
                 },
                 error: function (xhr, status, error) {
+                    if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                     let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                     showAlert("Error adding product! "+errorMessage);
                     $('#closeBtnAdd').click();
@@ -264,6 +265,7 @@
                 fetchAndFillProductsTable(selectedBusinessId);
             },
             error: function (xhr, status, error) {
+                if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                 let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                 showAlert("Error removing product! " + errorMessage);
             }
@@ -312,8 +314,10 @@
             },
             success: function (response) {
                 showAlert("Cart added successfully!");
+                window.location.href = '/Cart/Index';
             },
-            error: function (jqXHR, textStatus, errorThrown) {
+            error: function (xhr, textStatus, errorThrown) {
+                if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                 let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                 showAlert("Error adding cart! "+errorMessage);
             }
@@ -364,6 +368,7 @@
                     $('#closeBtnEdit').click();
                 },
                 error: function (xhr, status, error) {
+                    if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                     let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                     showAlert("Error updating product! " + errorMessage);
                     $('#closeBtnEdit').click();
@@ -387,6 +392,7 @@
                 businessDropdowns.append(`<option value="null">Null</option>`);
             },
             error: function (xhr, status, error) {
+                if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                 let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                 showAlert('Error: ' + errorMessage);
             }
@@ -426,6 +432,7 @@
                 });
             },
             error: function (xhr, status, error) {
+                if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                 let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                 showAlert('Error: ' + errorMessage);
             }

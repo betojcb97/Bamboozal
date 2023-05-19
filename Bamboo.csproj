@@ -36,4 +36,8 @@
     <Folder Include="Migrations\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\Content\Curriculum_Alberto.pdf" />
+  </ItemGroup>
+
 </Project>

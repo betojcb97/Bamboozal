@@ -18,7 +18,7 @@
 <body>
     <div class="page-container d-flex flex-column">
         <div class="container">
-            <h1>List of Carts</h1>
+            <h1>Carts</h1>
             <button type="button" class="btnRemove" data-toggle="modal" data-target="#removeCartModal">Remove Cart</button>
             <button type="button" class="btnFunct" data-toggle="modal" data-target="#finishOrderModal">Finish Order</button>
             <div id="alertContainer"></div>
@@ -72,6 +72,7 @@
                 fetchAndFillCartsTable();
             },
             error: function (xhr, status, error) {
+                if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                 let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                 showAlert("Error removing cart! " + errorMessage);
             }
@@ -99,9 +100,10 @@
             },
             success: function (response) {
                 showAlert("Order added successfully!");
-                fetchAndFillCartsTable();
+                window.location.href = '/Order/Index';
             },
             error: function (xhr, status, error) {
+                if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                 let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                 showAlert("Error finishing order! " + errorMessage);
             }
@@ -143,6 +145,7 @@
                     showAlert("Cart updated successfully!");
                 },
                 error: function (xhr, status, error) {
+                    if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                     let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                     showAlert("Error updating cart! " + errorMessage);
                 }
@@ -182,6 +185,7 @@
 
             },
             error: function (xhr, status, error) {
+                if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                 let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                 showAlert('Error: ' + errorMessage);
             }

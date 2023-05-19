@@ -18,7 +18,7 @@
 <body>
     <div class="page-container d-flex flex-column">
         <div class="container">
-            <h1>List of Businesses</h1>
+            <h1>Businesses</h1>
             <button type="button" class="btnAdd" data-toggle="modal" data-target="#addBusinessModal" >Add Business</button>
             <button type="button" class="btnEdit" data-toggle="modal" data-target="#editBusinessModal">Edit Business</button>
             <button type="button" class="btnRemove" data-toggle="modal" data-target="#removeBusinessModal">Remove Business</button>
@@ -199,6 +199,7 @@
                     $('#closeBtnAdd').click();
                 },
                 error: function (xhr, status, error) {
+                    if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                     let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                     showAlert("Error adding business! " + errorMessage);
                     $('#closeBtnAdd').click();
@@ -243,6 +244,7 @@
                     $('#closeBtnEdit').click();
                 },
                 error: function (xhr, status, error) {
+                    if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                     let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                     showAlert("Error updating business! " + errorMessage);
                     $('#closeBtnEdit').click();
@@ -288,6 +290,7 @@
                 fetchAndFillBusinessTable();
             },
             error: function (xhr, status, error) {
+                if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                 let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                 showAlert("Error removing business! " + errorMessage);
             }
@@ -307,6 +310,7 @@
                 addressDropdowns.append(`<option value="null">Null</option>`);
             },
             error: function (xhr, status, error) {
+                if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                 let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                 showAlert('Error: ' + errorMessage);
             }
@@ -340,9 +344,9 @@
                         address = 'N/A';
                     }
 
-                    let logo = business.logoUrl ? `<img src="${business.logoUrl}" alt="Logo" width="50">` : 'N/A';
                     let email = `<a href="mailto:${business.email}">${business.email}</a>`;
                     let phone = `<a href="tel:${business.phone}">${business.phone}</a>`;
+                    let logo = business.logoUrl ? `<a href="${business.logoUrl}" target="_blank"><img src="${business.logoUrl}" alt="Image" width="100" height="100"></a>` : 'N/A';
 
                     tableBody.append(
                         `<tr data-business-id="${business.businessID}">
@@ -359,6 +363,7 @@
                 });
             },
             error: function (xhr, status, error) {
+                if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                 let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                 showAlert('Error: ' + errorMessage);
             }
