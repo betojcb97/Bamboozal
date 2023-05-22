@@ -4661,11 +4661,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\alber\\Desktop\\Bamboo\\Bamboo.csproj",
+      "projectUniqueName": "C:\\Users\\alber\\Desktop\\BambooImplementing\\Bamboo.csproj",
       "projectName": "Bamboo",
-      "projectPath": "C:\\Users\\alber\\Desktop\\Bamboo\\Bamboo.csproj",
+      "projectPath": "C:\\Users\\alber\\Desktop\\BambooImplementing\\Bamboo.csproj",
       "packagesPath": "C:\\Users\\alber\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\alber\\Desktop\\Bamboo\\obj\\",
+      "outputPath": "C:\\Users\\alber\\Desktop\\BambooImplementing\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\alber\\AppData\\Roaming\\NuGet\\NuGet.Config",
