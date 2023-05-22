@@ -191,7 +191,7 @@ namespace Bamboo.Controllers
             bool authorized = tokenValidator.ValidateToken();
             if (authorized)
             {
-                    CustomUser dbUser = db.CustomUsers.Where(a => a.userID.Equals(userID)).FirstOrDefault();
+                CustomUser dbUser = db.CustomUsers.Where(a => a.userID.Equals(userID)).FirstOrDefault();
                 if (dbUser == null) return NotFound();
 
                 db.Remove(dbUser);
@@ -204,8 +204,16 @@ namespace Bamboo.Controllers
         [HttpGet("ListUsers")]
         public IActionResult ListUsers()
         {
-            List<ReadCustomUserDto> readUserDtos = mapper.Map<List<ReadCustomUserDto>>(db.CustomUsers.ToList());
-            return Json(readUserDtos);
+            bool authorized = tokenValidator.ValidateToken();
+            if (authorized)
+            {
+                string token = Request.Headers["Authorization"].ToString().Split(' ')[1];
+                CustomUser dbUser = db.CustomUsers.Where(u => u.token.Equals(token)).FirstOrDefault();
+                if (dbUser == null) return NotFound();
+
+                return Ok(dbUser);
+            }
+            else { return Unauthorized(); }
         }
 
         [HttpGet("LoginPage")]

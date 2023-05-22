@@ -18,8 +18,7 @@
 <body>
     <div class="page-container d-flex flex-column">
         <div class="container">
-            <h1>Users</h1>
-            <button type="button" class="btnAdd" data-toggle="modal" data-target="#addUserModal" >Add User</button>
+            <h1>My users</h1>
             <button type="button" class="btnEdit" data-toggle="modal" data-target="#editUserModal" >Edit User</button>
             <button type="button" class="btnRemove" data-toggle="modal" data-target="#removeUserModal" >Remove User</button>
             <div id="alertContainer"></div>
@@ -195,6 +194,9 @@
             url: '/CustomUser/ListUsers',
             type: 'GET',
             dataType: 'json',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
+            },
             success: function (data) {
                 let tableBody = $('#usersTableBody');
                 tableBody.empty();
