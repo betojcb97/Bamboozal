@@ -14,7 +14,7 @@ namespace Bamboo.Models
         [NotMapped]
         public virtual List<Guid> productsIds { get; set; }
 
-        public virtual ICollection<Product> products { get; set; }
+        public virtual List<Product> products { get; set; }
 
         public DateTime? dateOfCreation { get; set; }
 

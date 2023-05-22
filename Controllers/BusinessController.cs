@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Bamboo.API;
 using Bamboo.Data;
 using Bamboo.DTO;
 using Bamboo.Models;
@@ -30,7 +31,7 @@ namespace Bamboo.Controllers
         }
 
         [HttpPost("AddBusiness")]
-        public IActionResult AddBusiness([FromBody] AddBusinessDto businessDto)
+        public async Task<IActionResult> AddBusiness([FromBody] AddBusinessDto businessDto)
         {
             bool authorized = tokenValidator.ValidateToken();
             if (authorized)
@@ -38,6 +39,12 @@ namespace Bamboo.Controllers
                 Business business = mapper.Map<Business>(businessDto);
                 Business exists = db.Businesses.Where(b => b.name == business.name).FirstOrDefault();
                 if (exists != null) { return StatusCode(StatusCodes.Status406NotAcceptable); }
+                if (business.logoUrl == null)
+                {
+                    GoogleImage googleImage = new GoogleImage();
+                    string response = await googleImage.Search(business.name + "," + business.description);
+                    business.logoUrl = response;
+                }
                 db.Businesses.Add(business);
                 db.SaveChanges();
                 return CreatedAtAction(nameof(business), business);
