@@ -79,6 +79,16 @@ body {
     padding-left: 20px;
 }
 
+#businessIDFilter:hover {
+    border: 3px solid;
+    animation: glowing 3s linear infinite;
+    width: 30vw !important;
+    font-size: 15px;
+    border-radius: 10px;
+    padding-left: 20px;
+    background: linear-gradient(180deg, rgba(93,93,93,1) 0%, rgba(181,181,181,1) 35%, rgba(236,236,236,1) 100%);
+}
+
 
 h1 {
     margin-top: 10px;
@@ -132,6 +142,11 @@ h1 {
     color: black !important;
 }
 
+.nav-link:hover {
+    background: linear-gradient(180deg, rgba(28,28,28,1) 0%, rgba(118,118,122,1) 35%, rgba(150,150,150,1) 100%);
+    border-radius: 15px;
+}
+
 .navbar-logo {
     border: 3px solid black;
     border-radius: 15px;
@@ -149,8 +164,26 @@ h1 {
     border-radius: 10px;
 }
 
+.btnAdd:hover {
+    background: linear-gradient(180deg, rgba(0,93,33,1) 0%, rgba(37,138,55,1) 35%, rgba(145,190,140,1) 100%);
+    color: black;
+    font-weight: bold;
+    margin-right: 10px;
+    margin-top: 10px;
+    border-radius: 10px;
+}
+
 .btnEdit {
     background: linear-gradient(180deg, rgba(224,236,168,0.4206057422969187) 0%, rgba(221,219,39,0.6951155462184874) 68%);
+    color: black;
+    font-weight: bold;
+    margin-right: 10px;
+    margin-top: 10px;
+    border-radius: 10px;
+}
+
+.btnEdit:hover {
+    background: linear-gradient(180deg, rgba(133,134,0,1) 0%, rgba(185,187,46,1) 35%, rgba(230,235,176,1) 100%);
     color: black;
     font-weight: bold;
     margin-right: 10px;
@@ -166,8 +199,27 @@ h1 {
     margin-top: 10px;
     border-radius: 10px;
 }
+
+.btnRemove:hover {
+    background: linear-gradient(180deg, rgba(134,0,0,1) 0%, rgba(187,46,46,1) 35%, rgba(235,176,176,1) 100%);
+    color: black;
+    font-weight: bold;
+    margin-right: 10px;
+    margin-top: 10px;
+    border-radius: 10px;
+}
+
 .btnFunct {
     background: linear-gradient(180deg, rgba(199,234,245,0.4206057422969187) 0%, rgba(45,126,200,0.6951155462184874) 68%);
+    color: black;
+    font-weight: bold;
+    margin-right: 10px;
+    margin-top: 10px;
+    border-radius: 10px;
+}
+
+.btnFunct:hover {
+    background: linear-gradient(180deg, rgba(24,0,134,1) 0%, rgba(69,46,187,1) 35%, rgba(176,177,235,1) 100%);
     color: black;
     font-weight: bold;
     margin-right: 10px;
