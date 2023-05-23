@@ -15,7 +15,7 @@ namespace Bamboo.Profiles
                 .ForMember(userDto => userDto.addressDto,
                 opt => opt.MapFrom(user => user.address))
                 .ForMember(userDto => userDto.businessDto,
-                opt => opt.MapFrom(user => user.ownerOfBusinessID));
+                opt => opt.MapFrom(user => user.business));
 
             CreateMap<EditCustomUserDto, CustomUser>();
 

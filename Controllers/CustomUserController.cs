@@ -208,10 +208,11 @@ namespace Bamboo.Controllers
             if (authorized)
             {
                 string token = Request.Headers["Authorization"].ToString().Split(' ')[1];
-                CustomUser dbUser = db.CustomUsers.Where(u => u.token.Equals(token)).FirstOrDefault();
-                if (dbUser == null) return NotFound();
-
-                return Ok(dbUser);
+                ReadCustomUserDto dbUserDto = mapper.Map<ReadCustomUserDto>( db.CustomUsers.Where(u => u.token.Equals(token)).FirstOrDefault());
+                if (dbUserDto == null) return NotFound();
+                List<ReadCustomUserDto> dbUsers = new List<ReadCustomUserDto>();
+                dbUsers.Add(dbUserDto);
+                return Json(dbUsers);
             }
             else { return Unauthorized(); }
         }

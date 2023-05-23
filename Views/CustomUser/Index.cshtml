@@ -112,6 +112,7 @@
         if (form.checkValidity() === true) {
             let formData = $('#editUserForm').serializeArray();
             let jsonData = {};
+            debugger;
             formData.forEach(function (item) {
                 if ((item.name === "addressID" || item.name === "ownerOfBusinessID") && item.value === "") {
                     jsonData[item.name] = null;
@@ -200,7 +201,7 @@
             success: function (data) {
                 let tableBody = $('#usersTableBody');
                 tableBody.empty();
-
+                debugger;
                 data.forEach(function (user) {
                     let isActive = user.isActive ? 'Yes' : 'No';
                     let address = '';
@@ -223,6 +224,10 @@
                     if (user.businessDto) {
                         business += `${user.businessDto.name}`;
                     }
+                    if (business === '') {
+                        business = 'N/A';
+                    }
+
                     let dateOfBirth = formatISODate(user.dateOfBirth);
                     let dateOfRegister = formatISODate(user.dateOfRegister);
 
@@ -233,7 +238,7 @@
                             <td>${user.userLastName}</td>
                             <td>${address}</td>
                             <td>${isActive}</td>
-                            <td>${user.ownerOfBusinessID}</td>
+                            <td>${business}</td>
                             <td>${dateOfBirth}</td>
                             <td>${dateOfRegister}</td>
                         </tr>`
@@ -256,7 +261,7 @@
             success: function (data) {
                     let businessDropdowns = $('select[name="ownerOfBusinessID"]');
                 data.forEach(function (business) {
-                        businessDropdowns.append(`<option value="${business.ownerOfBusinessID}">${business.name}</option>`);
+                        businessDropdowns.append(`<option value="${business.businessID}">${business.name}</option>`);
                 });
                 businessDropdowns.append(`<option value="">Null</option>`);
             },
