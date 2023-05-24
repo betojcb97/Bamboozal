@@ -42,7 +42,7 @@ namespace Bamboo.Controllers
                 if (business.logoUrl == null)
                 {
                     GoogleImage googleImage = new GoogleImage();
-                    string response = await googleImage.Search(business.name + "," + business.description);
+                    string response = await googleImage.Search(business.description);
                     business.logoUrl = response;
                 }
                 db.Businesses.Add(business);
@@ -72,14 +72,14 @@ namespace Bamboo.Controllers
         }
 
         [HttpPost("EditBusiness/{businessId}")]
-        public IActionResult EditBusiness(Guid businessID,[FromBody] EditBusinessDto businessDto)
+        public async Task<IActionResult> EditBusiness(Guid businessID,[FromBody] EditBusinessDto businessDto)
         {
             bool authorized = tokenValidator.ValidateToken();
             if (authorized)
             {
                 CustomUser loggedUser = Util.Util.getLoggedUser(httpContextAccessor, db);
                 if (!loggedUser.ownerOfBusinessID.Equals(businessID)) return BadRequest("You must be the owner of the business to edit it!");
-                Business dbBusiness = db.Businesses.Where(b => b.businessID == businessID).FirstOrDefault();
+                Business dbBusiness = db.Businesses.Where(b => b.businessID.Equals(businessID)).FirstOrDefault();
                 if (dbBusiness == null) return NotFound();
                 Business businessNewInfo = mapper.Map<Business>(businessDto);
 
@@ -90,6 +90,12 @@ namespace Bamboo.Controllers
                     if (property.GetValue(businessNewInfo) != null && property.Name != "businessID")
                     {
                         property.SetValue(dbBusiness, property.GetValue(businessNewInfo));
+                    }
+                    if (property.Name == "logoUrl" && property.GetValue(businessNewInfo) == null)
+                    {
+                        GoogleImage googleImage = new GoogleImage();
+                        string response = await googleImage.Search(dbBusiness.description);
+                        dbBusiness.logoUrl = response;
                     }
                 }
 

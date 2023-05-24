@@ -68,7 +68,7 @@ namespace Bamboo.Controllers
         }
 
         [HttpPost("EditProduct/{productID}")]
-        public IActionResult EditProduct(Guid productID,[FromBody] EditProductDto productDto)
+        public async Task<IActionResult> EditProduct(Guid productID,[FromBody] EditProductDto productDto)
         {
             bool authorized = tokenValidator.ValidateToken();
             if (authorized)
@@ -86,6 +86,12 @@ namespace Bamboo.Controllers
                     if (property.GetValue(productNewInfo) != null && property.Name != "productID")
                     {
                         property.SetValue(dbProduct, property.GetValue(productNewInfo));
+                    }
+                    if (property.Name == "imageUrl" && property.GetValue(productNewInfo) == null)
+                    {
+                        GoogleImage googleImage = new GoogleImage();
+                        string response = await googleImage.Search(dbProduct.name + "," + dbProduct.description);
+                        dbProduct.imageUrl = response;
                     }
                 }
 

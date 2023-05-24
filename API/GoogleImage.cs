@@ -26,7 +26,16 @@ namespace Bamboo.API
 
             JObject json = JObject.Parse(content);
 
-            string imageUrl = json["items"][0]["link"].ToString();
+            string imageUrl = "";
+
+            foreach (var item in json["items"])
+            {
+                if (item["link"].ToString().StartsWith("https"))
+                {
+                    imageUrl = item["link"].ToString();
+                    break;
+                }
+            }
 
             return imageUrl;
         }

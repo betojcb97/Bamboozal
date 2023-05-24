@@ -77,6 +77,9 @@ body {
     font-size: 15px;
     border-radius: 10px;
     padding-left: 20px;
+    font-weight: bold;
+    font-size: 15px;
+    margin-right: 10px;
 }
 
 #businessIDFilter:hover {
@@ -261,7 +264,7 @@ h1 {
     border: 1px solid #3282b8;
     border-radius: 4px;
     opacity: 1;
-    animation: glow 0.8s ease-in-out infinite, fadeOut 2s forwards 8s;
+    animation: glow 1s ease-in-out infinite, fadeOut 2s forwards 8s;
 }
 
 
