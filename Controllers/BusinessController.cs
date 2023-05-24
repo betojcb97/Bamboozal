@@ -58,6 +58,8 @@ namespace Bamboo.Controllers
             bool authorized = tokenValidator.ValidateToken();
             if (authorized)
             {
+                CustomUser loggedUser = Util.Util.getLoggedUser(httpContextAccessor, db);
+                if (!loggedUser.ownerOfBusinessID.Equals(businessID)) return BadRequest("You must be the owner of the business to remove it!");
                 Business dbBusiness = db.Businesses.Where(a => a.businessID.Equals(businessID)).FirstOrDefault();
                 if (dbBusiness == null) { return Ok(); }
                 List<Product> businessProducts = db.Products.Where(p => p.businessID.Equals(businessID)).ToList();
@@ -75,6 +77,8 @@ namespace Bamboo.Controllers
             bool authorized = tokenValidator.ValidateToken();
             if (authorized)
             {
+                CustomUser loggedUser = Util.Util.getLoggedUser(httpContextAccessor, db);
+                if (!loggedUser.ownerOfBusinessID.Equals(businessID)) return BadRequest("You must be the owner of the business to edit it!");
                 Business dbBusiness = db.Businesses.Where(b => b.businessID == businessID).FirstOrDefault();
                 if (dbBusiness == null) return NotFound();
                 Business businessNewInfo = mapper.Map<Business>(businessDto);

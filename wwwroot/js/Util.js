@@ -21,8 +21,8 @@ function showAlert(message) {
         alertElement.classList.add('fade-out');
         setTimeout(() => {
             alertElement.remove();
-        }, 500); 
-    }, 5000); 
+        }, 1000); 
+    }, 10000); 
 }
 
 function createModal(modalLabel, modalId, formId, sendBtnId, attributes) {

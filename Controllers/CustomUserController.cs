@@ -164,8 +164,7 @@ namespace Bamboo.Controllers
             bool authorized = tokenValidator.ValidateToken();
             if (authorized) 
             {
-                CustomUser dbUser = db.CustomUsers.Where(a => a.userID.Equals(userID)).FirstOrDefault();
-                if (dbUser == null) return NotFound();
+                CustomUser loggedUser = Util.Util.getLoggedUser(httpContextAccessor, db); if (loggedUser == null) return NotFound();
                 CustomUser userNewInfo = mapper.Map<CustomUser>(userDto);
 
                 PropertyInfo[] properties = userNewInfo.GetType().GetProperties();
@@ -174,11 +173,15 @@ namespace Bamboo.Controllers
                 {
                     if (property.GetValue(userNewInfo) != null && property.Name != "userID")
                     {
-                        property.SetValue(dbUser, property.GetValue(userNewInfo));
+                        property.SetValue(loggedUser, property.GetValue(userNewInfo));
+                    }
+                    if (property.Name == "ownerOfBusinessID")
+                    {
+                        property.SetValue(loggedUser, property.GetValue(userNewInfo));
                     }
                 }
 
-                db.Entry(dbUser).State = EntityState.Modified;
+                db.Entry(loggedUser).State = EntityState.Modified;
                 db.SaveChanges();
                 return Ok();
             }
@@ -209,6 +212,11 @@ namespace Bamboo.Controllers
             {
                 string token = Request.Headers["Authorization"].ToString().Split(' ')[1];
                 ReadCustomUserDto dbUserDto = mapper.Map<ReadCustomUserDto>( db.CustomUsers.Where(u => u.token.Equals(token)).FirstOrDefault());
+                if (dbUserDto.ownerOfBusinessID.HasValue)
+                {
+                    ReadBusinessDto dbBusiness = mapper.Map<ReadBusinessDto>(db.Businesses.Where(b => b.businessID.Equals(dbUserDto.ownerOfBusinessID)).FirstOrDefault());
+                    dbUserDto.businessDto = dbBusiness;
+                }
                 if (dbUserDto == null) return NotFound();
                 List<ReadCustomUserDto> dbUsers = new List<ReadCustomUserDto>();
                 dbUsers.Add(dbUserDto);

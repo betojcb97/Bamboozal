@@ -58,6 +58,8 @@ namespace Bamboo.Controllers
             {
                 Product dbProduct = db.Products.Where(a => a.productID.Equals(productID)).FirstOrDefault();
                 if (dbProduct == null) { return Ok(); }
+                CustomUser loggedUser = Util.Util.getLoggedUser(httpContextAccessor, db);
+                if (!loggedUser.ownerOfBusinessID.Equals(dbProduct.businessID)) return BadRequest("You must be the owner of the business that sells this product to remove it!");
                 db.Products.Remove(dbProduct);
                 db.SaveChanges();
                 return Ok();
@@ -73,6 +75,8 @@ namespace Bamboo.Controllers
             {
                 Product dbProduct = db.Products.Where(p => p.productID == productID).FirstOrDefault();
                 if (dbProduct == null) return NotFound();
+                CustomUser loggedUser = Util.Util.getLoggedUser(httpContextAccessor, db);
+                if (!loggedUser.ownerOfBusinessID.Equals(dbProduct.businessID)) return BadRequest("You must be the owner of the business that sells this product to edit it!");
                 Product productNewInfo = mapper.Map<Product>(productDto);
 
                 PropertyInfo[] properties = productNewInfo.GetType().GetProperties();
