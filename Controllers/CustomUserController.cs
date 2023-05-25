@@ -107,7 +107,8 @@ namespace Bamboo.Controllers
             db.CustomUsers.Add(dbUser);
             db.SaveChanges();
             string url = "https://localhost:7226"+ "/ConfirmEmail/" + emailTokenConfirmation;
-            EmailApi.SendEmail(dbUser.userEmail,"Confirm your email for Bamboo", url);
+            var gmailService = new EmailApi();
+            gmailService.sendEmailAsync(dbUser.userEmail, "Confirm your email for Bamboo", url);
             return Ok();
         }
 

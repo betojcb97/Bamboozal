@@ -134,7 +134,6 @@
             success: function (data) {
                 let tableBody = $('#ordersTableBody');
                 tableBody.empty();
-                debugger;
                 data.forEach(function (order) {
                     order.productsDto.forEach(function (product, index) {
                         let row =

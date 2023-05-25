@@ -112,7 +112,6 @@
         if (form.checkValidity() === true) {
             let formData = $('#editUserForm').serializeArray();
             let jsonData = {};
-            debugger;
             formData.forEach(function (item) {
                 if ((item.name === "addressID" || item.name === "ownerOfBusinessID") && item.value === "") {
                     jsonData[item.name] = null;
@@ -201,7 +200,6 @@
             success: function (data) {
                 let tableBody = $('#usersTableBody');
                 tableBody.empty();
-                debugger;
                 data.forEach(function (user) {
                     let isActive = user.isActive ? 'Yes' : 'No';
                     let address = '';

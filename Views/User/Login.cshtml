@@ -38,7 +38,6 @@
 
                 var userName = $("#userName").val();
                 var userPassword = $("#userPassword").val();
-                debugger;
                 $.ajax({
                     url: '/User/Login',
                     type: 'POST',
@@ -49,13 +48,11 @@
                         userPassword: userPassword
                     }),
                     success: function (response) {
-                        debugger;
                         console.log(response);
                         localStorage.setItem('authToken', response);
                         window.location.href = '/Business/Index';
                     },
                     error: function (error) {
-                        debugger;
                         console.log(error);
                         // Handle error here, e.g., display an error message
                     }
