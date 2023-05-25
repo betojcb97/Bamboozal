@@ -83,7 +83,7 @@ namespace Bamboo.Controllers
 
                 foreach (PropertyInfo property in properties)
                 {
-                    if (property.GetValue(productNewInfo) != null && property.Name != "productID")
+                    if (property.GetValue(productNewInfo) != null && property.Name != "productID" && decimal.Parse(property.GetValue(productNewInfo).ToString()) != 0)
                     {
                         property.SetValue(dbProduct, property.GetValue(productNewInfo));
                     }
