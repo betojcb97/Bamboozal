@@ -23,7 +23,7 @@ namespace Bamboo.Controllers
         private IMapper mapper;
         private IHttpContextAccessor httpContextAccessor;
         private LogService logManager;
-        public OrderController(BambooContext db, IMapper mapper, TokenValidator tokenValidator, IHttpContextAccessor httpContextAccessor, LogService logManager)
+        public ProductController(BambooContext db, IMapper mapper, TokenValidator tokenValidator, IHttpContextAccessor httpContextAccessor, LogService logManager)
         {
             this.db = db;
             this.mapper = mapper;

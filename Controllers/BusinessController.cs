@@ -17,7 +17,6 @@ namespace Bamboo.Controllers
     [Route("[controller]")]
     public class BusinessController : Controller
     {
-
         private TokenValidator tokenValidator;
         private BambooContext db;
         private IMapper mapper;
