@@ -1,0 +1,79 @@
+﻿@{
+    ViewBag.Title = "List Logs";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Logs</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="~/js/Util.js"></script>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+
+<body>
+    <div class="page-container d-flex flex-column">
+        <div class="container">
+            <h1>Logs</h1>
+            <div id="alertContainer"></div>
+            <table class="custom-table  table-striped table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Log ID</th>
+                        <th>Log</th>
+                        <th>Date of Creation</th>
+                    </tr>
+                </thead>
+                <tbody id="logsTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+<script>
+
+    $(document).ready(function () {
+        fetchAndFillLogsTable();
+    });
+
+    function fetchAndFillLogsTable() {
+        $.ajax({
+            url: '/Log/ListLogs',
+            type: 'GET',
+            dataType: 'json',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
+            },
+            success: function (data) {
+                let tableBody = $('#logsTableBody');
+                tableBody.empty();
+
+                data.forEach(function (log) {
+                    log.forEach(function (log, index) {
+                        let row =
+                        `<tr data-log-id="${log.logID}" data-product-id="${log.logId}">
+                        <td>${log.logID}</td>
+                        <td>${log.log}</td>
+                        <td>${log.dateOfCreation}</td>
+                        </tr>`;
+                        tableBody.append(row);
+                    });
+                });
+
+            },
+            error: function (xhr, status, error) {
+                if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
+                let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                showAlert('Error: ' + errorMessage);
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

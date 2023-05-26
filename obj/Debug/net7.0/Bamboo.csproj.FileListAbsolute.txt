@@ -199,7 +199,7 @@ C:\Users\alber\Desktop\BambooImplementing\obj\Debug\net7.0\ref\Bamboo.dll
 C:\Users\alber\Desktop\BambooImplementing\bin\Debug\net7.0\BouncyCastle.Cryptography.dll
 C:\Users\alber\Desktop\BambooImplementing\bin\Debug\net7.0\MailKit.dll
 C:\Users\alber\Desktop\BambooImplementing\bin\Debug\net7.0\MimeKit.dll
-C:\Users\alber\Desktop\BambooImplementing\bin\Debug\net7.0\API\credentialsGmail.json
 C:\Users\alber\Desktop\BambooImplementing\bin\Debug\net7.0\Google.Apis.Auth.PlatformServices.dll
 C:\Users\alber\Desktop\BambooImplementing\bin\Debug\net7.0\Google.Apis.Auth.dll
 C:\Users\alber\Desktop\BambooImplementing\bin\Debug\net7.0\Google.Apis.Gmail.v1.dll
+C:\Users\alber\Desktop\BambooImplementing\bin\Debug\net7.0\credentialsGmail.json
