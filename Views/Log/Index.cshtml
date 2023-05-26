@@ -51,18 +51,16 @@
             success: function (data) {
                 let tableBody = $('#logsTableBody');
                 tableBody.empty();
-
                 data.forEach(function (log, index) {
                     let dateOfCreation = formatISODate(log.dateOfCreation);
                     let row =
-                    `<td>${log.logID}</td>
+                    `<tr>
+                    <td>${log.logID}</td>
                     <td>${log.log}</td>
                     <td>${dateOfCreation}</td>
                     </tr>`;
                     tableBody.append(row);
                 });
-
-
             },
             error: function (xhr, status, error) {
                 if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
