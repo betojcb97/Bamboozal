@@ -2,8 +2,10 @@
 using Bamboo.Data;
 using Bamboo.DTO;
 using Bamboo.Models;
+using Bamboo.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Utilities.Net;
 using System.Net;
 using System.Reflection;
 
@@ -18,12 +20,14 @@ namespace Bamboo.Controllers
         private BambooContext db;
         private IMapper mapper;
         private IHttpContextAccessor httpContextAccessor;
-        public AddressController(BambooContext db, IMapper mapper, TokenValidator tokenValidator, IHttpContextAccessor httpContextAccessor)
+        private LogService logManager;
+        public AddressController(BambooContext db, IMapper mapper, TokenValidator tokenValidator, IHttpContextAccessor httpContextAccessor, LogService logManager)
         {
             this.db = db;
             this.mapper = mapper;
             this.tokenValidator = tokenValidator;
             this.httpContextAccessor = httpContextAccessor;
+            this.logManager = logManager;
         }
 
         [HttpPost("AddAddress")]
@@ -35,6 +39,7 @@ namespace Bamboo.Controllers
                 Address address = mapper.Map<Address>(addressDto);
                 db.Addresses.Add(address);
                 db.SaveChanges();
+                logManager.AddLog($"Address: {address.street} id=({address.addressID}) added successfully by: {Util.Util.getLoggedUser(httpContextAccessor, db).userFirstName} id=({Util.Util.getLoggedUser(httpContextAccessor, db).userID})!");
                 return CreatedAtAction(nameof(address), address);
             }
             else { return Unauthorized(); }
@@ -50,6 +55,7 @@ namespace Bamboo.Controllers
                 if (dbAddress == null) { return Ok(); }
                 db.Addresses.Remove(dbAddress);
                 db.SaveChanges();
+                logManager.AddLog($"Address: {dbAddress.street} id=({dbAddress.addressID}) removed successfully by: {Util.Util.getLoggedUser(httpContextAccessor, db).userFirstName} id=({Util.Util.getLoggedUser(httpContextAccessor, db).userID})!");
                 return Ok();
             }
             else { return Unauthorized(); }
@@ -77,6 +83,7 @@ namespace Bamboo.Controllers
 
                 db.Entry(dbAddress).State = EntityState.Modified;
                 db.SaveChanges();
+                logManager.AddLog($"Address: {dbAddress.street} id=({dbAddress.addressID}) edited successfully by: {Util.Util.getLoggedUser(httpContextAccessor, db).userFirstName} id=({Util.Util.getLoggedUser(httpContextAccessor, db).userID})!");
                 return CreatedAtAction(nameof(dbAddress), dbAddress);
             }
             else { return Unauthorized(); }

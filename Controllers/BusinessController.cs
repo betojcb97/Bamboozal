@@ -22,12 +22,14 @@ namespace Bamboo.Controllers
         private BambooContext db;
         private IMapper mapper;
         private IHttpContextAccessor httpContextAccessor;
-        public BusinessController(BambooContext db, IMapper mapper, TokenValidator tokenValidator, IHttpContextAccessor httpContextAccessor)
+        private LogService logManager;
+        public BusinessController(BambooContext db, IMapper mapper, TokenValidator tokenValidator, IHttpContextAccessor httpContextAccessor, LogService logManager)
         {
             this.db = db;
             this.mapper = mapper;
             this.tokenValidator = tokenValidator;
             this.httpContextAccessor = httpContextAccessor;
+            this.logManager = logManager;
         }
 
         [HttpPost("AddBusiness")]
@@ -47,6 +49,7 @@ namespace Bamboo.Controllers
                 }
                 db.Businesses.Add(business);
                 db.SaveChanges();
+                logManager.AddLog($"Business: {business.name} id=({business.businessID}) added successfully by {Util.Util.getLoggedUser(httpContextAccessor,db).userFirstName} id=({Util.Util.getLoggedUser(httpContextAccessor, db).userID})!");
                 return CreatedAtAction(nameof(business), business);
             }
             else { return Unauthorized("Please login to add a business!"); }
@@ -66,6 +69,7 @@ namespace Bamboo.Controllers
                 db.Products.RemoveRange(businessProducts);
                 db.Businesses.Remove(dbBusiness);
                 db.SaveChanges();
+                logManager.AddLog($"Business: {dbBusiness.name} id=({dbBusiness.businessID}) removed successfully by: {Util.Util.getLoggedUser(httpContextAccessor, db).userFirstName} id=({Util.Util.getLoggedUser(httpContextAccessor, db).userID})!");
                 return Ok();
             }
             else { return Unauthorized(); }
@@ -101,6 +105,7 @@ namespace Bamboo.Controllers
 
                 db.Entry(dbBusiness).State = EntityState.Modified;
                 db.SaveChanges();
+                logManager.AddLog($"Business: {dbBusiness.name} id=({dbBusiness.businessID}) edited successfully by: {Util.Util.getLoggedUser(httpContextAccessor, db).userFirstName} id=({Util.Util.getLoggedUser(httpContextAccessor, db).userID})!");
                 return CreatedAtAction(nameof(dbBusiness), dbBusiness);
             }
             else { return Unauthorized(); }

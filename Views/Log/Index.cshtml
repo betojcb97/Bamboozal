@@ -23,7 +23,6 @@
             <table class="custom-table  table-striped table-hover table-bordered">
                 <thead>
                     <tr>
-                        <th></th>
                         <th>Log ID</th>
                         <th>Log</th>
                         <th>Date of Creation</th>
@@ -53,17 +52,16 @@
                 let tableBody = $('#logsTableBody');
                 tableBody.empty();
 
-                data.forEach(function (log) {
-                    log.forEach(function (log, index) {
-                        let row =
-                        `<tr data-log-id="${log.logID}" data-product-id="${log.logId}">
-                        <td>${log.logID}</td>
-                        <td>${log.log}</td>
-                        <td>${log.dateOfCreation}</td>
-                        </tr>`;
-                        tableBody.append(row);
-                    });
+                data.forEach(function (log, index) {
+                    let dateOfCreation = formatISODate(log.dateOfCreation);
+                    let row =
+                    `<td>${log.logID}</td>
+                    <td>${log.log}</td>
+                    <td>${dateOfCreation}</td>
+                    </tr>`;
+                    tableBody.append(row);
                 });
+
 
             },
             error: function (xhr, status, error) {

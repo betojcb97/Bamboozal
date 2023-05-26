@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System;
-
+using Bamboo.Services;
 
 namespace Bamboo.Controllers
 {
@@ -23,13 +23,15 @@ namespace Bamboo.Controllers
         private IMapper mapper;
         private IHttpContextAccessor httpContextAccessor;
         private IWebHostEnvironment hostingEnvironment;
-        public CustomUserController(BambooContext db, IMapper mapper, TokenValidator tokenValidator, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment hostingEnvironment)
+        private LogService logManager;
+        public CustomUserController(BambooContext db, IMapper mapper, TokenValidator tokenValidator, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment hostingEnvironment, LogService logManager)
         {
             this.db = db;
             this.mapper = mapper;
             this.tokenValidator = tokenValidator;
             this.httpContextAccessor = httpContextAccessor;
             this.hostingEnvironment = hostingEnvironment;
+            this.logManager = logManager;
         }
 
         public string GenerateToken(Guid userID)
@@ -106,6 +108,7 @@ namespace Bamboo.Controllers
 
             db.CustomUsers.Add(dbUser);
             db.SaveChanges();
+            logManager.AddLog($"User: {dbUser.userFirstName} id=({dbUser.userID}) added successfully!");
             //string url = "https://bamboo.ngrok.app" + "/ConfirmEmail/" + emailTokenConfirmation;
             //var gmailService = new EmailApi();
             //gmailService.sendEmailAsync(dbUser.userEmail, "Confirm your email for Bamboo", url);
@@ -137,6 +140,7 @@ namespace Bamboo.Controllers
                 dbUser.tokenExpirationDate = tokenExpirationDate;
                 db.Entry(dbUser).State = EntityState.Modified;
                 db.SaveChanges();
+                logManager.AddLog($"User: {dbUser.userFirstName} id=({dbUser.userID}) logged in successfully!");
                 return Json(token);
             }
             else { return Unauthorized(); }
@@ -154,6 +158,7 @@ namespace Bamboo.Controllers
                 if (dbUser == null ) { return Unauthorized(); }
                 db.Entry(dbUser).State = EntityState.Modified;
                 db.SaveChanges();
+                logManager.AddLog($"User: {dbUser.userFirstName} id=({dbUser.userID}) logged out successfully!");
                 return Ok();
             }
             else { return Unauthorized(); }
@@ -184,6 +189,7 @@ namespace Bamboo.Controllers
 
                 db.Entry(loggedUser).State = EntityState.Modified;
                 db.SaveChanges();
+                logManager.AddLog($"User: {loggedUser.userFirstName} id=({loggedUser.userID}) edited successfully!");
                 return Ok();
             }
             else { return Unauthorized(); }
@@ -200,6 +206,7 @@ namespace Bamboo.Controllers
 
                 db.Remove(dbUser);
                 db.SaveChanges();
+                logManager.AddLog($"User: {dbUser.userFirstName} id=({dbUser.userID}) removed successfully!");
                 return Ok();
             }
             else { return Unauthorized(); }

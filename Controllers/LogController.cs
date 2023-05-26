@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 using System.Reflection;
+using System.Linq.Dynamic.Core;
 
 namespace Bamboo.Controllers
 {
@@ -26,20 +27,14 @@ namespace Bamboo.Controllers
             this.httpContextAccessor = httpContextAccessor;
         }
 
-        [HttpPost("AddLog")]
-        public IActionResult AddLog(string logInfo)
-        {
-            Log log = new Log();
-            log.log = logInfo;
-            db.Logs.Add(log);
-            db.SaveChanges();
-            return CreatedAtAction(nameof(log), log);
-        }
-
         [HttpGet("ListLogs")]
-        public IActionResult ListLogs()
+        public IActionResult ListLogs([FromQuery] string? orderBy = "dateOfCreation", [FromQuery] string? ascdesc = "descending")
         {
-            List<Log> logs = db.Logs.ToList();
+            string ordering = orderBy + " " + ascdesc;
+            List<Log> logs = db.Logs
+            .AsQueryable()
+            .OrderBy(ordering)
+            .ToList();
             return Json(logs);
         }
 

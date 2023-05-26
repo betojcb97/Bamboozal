@@ -2,9 +2,11 @@
 using Bamboo.Data;
 using Bamboo.DTO;
 using Bamboo.Models;
+using Bamboo.Services;
 using Bamboo.Util;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Utilities.Net;
 using System.Net;
 using System.Reflection;
 
@@ -18,12 +20,14 @@ namespace Bamboo.Controllers
         private BambooContext db;
         private IMapper mapper;
         private IHttpContextAccessor httpContextAccessor;
-        public CartController(BambooContext db, IMapper mapper, TokenValidator tokenValidator, IHttpContextAccessor httpContextAccessor)
+        private LogService logManager;
+        public CartController(BambooContext db, IMapper mapper, TokenValidator tokenValidator, IHttpContextAccessor httpContextAccessor, LogService logManager)
         {
             this.db = db;
             this.mapper = mapper;
             this.tokenValidator = tokenValidator;
             this.httpContextAccessor = httpContextAccessor;
+            this.logManager = logManager;
         }
 
         [HttpPost("AddCart")]
@@ -54,7 +58,7 @@ namespace Bamboo.Controllers
 
                 db.Carts.Add(cart);
                 db.SaveChanges();
-
+                logManager.AddLog($"Cart: id=({cart.cartID}) added successfully by: {Util.Util.getLoggedUser(httpContextAccessor, db).userFirstName} id=({Util.Util.getLoggedUser(httpContextAccessor, db).userID})!");
                 return CreatedAtAction(nameof(cart), cart);
             }
             else { return Unauthorized(); }
@@ -74,6 +78,7 @@ namespace Bamboo.Controllers
 
                 db.Carts.Remove(dbCart);
                 db.SaveChanges();
+                logManager.AddLog($"Cart: id=({dbCart.cartID}) removed successfully by: {Util.Util.getLoggedUser(httpContextAccessor, db).userFirstName} id=({Util.Util.getLoggedUser(httpContextAccessor, db).userID})!");
                 return Ok();
             }
             else { return Unauthorized(); }
@@ -102,6 +107,7 @@ namespace Bamboo.Controllers
 
                 db.Entry(dbCart).State = EntityState.Modified;
                 db.SaveChanges();
+                logManager.AddLog($"Cart: id=({dbCart.cartID}) edited successfully by: {Util.Util.getLoggedUser(httpContextAccessor, db).userFirstName} id=({Util.Util.getLoggedUser(httpContextAccessor, db).userID})!");
                 return CreatedAtAction(nameof(dbCart), dbCart);
             }
             else { return Unauthorized(); }

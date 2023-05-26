@@ -3,9 +3,11 @@ using Bamboo.API;
 using Bamboo.Data;
 using Bamboo.DTO;
 using Bamboo.Models;
+using Bamboo.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Utilities.Net;
 using System.Net;
 using System.Reflection;
 
@@ -20,12 +22,14 @@ namespace Bamboo.Controllers
         private BambooContext db;
         private IMapper mapper;
         private IHttpContextAccessor httpContextAccessor;
-        public OrderController(BambooContext db, IMapper mapper, TokenValidator tokenValidator, IHttpContextAccessor httpContextAccessor)
+        private LogService logManager;
+        public OrderController(BambooContext db, IMapper mapper, TokenValidator tokenValidator, IHttpContextAccessor httpContextAccessor, LogService logManager)
         {
             this.db = db;
             this.mapper = mapper;
             this.tokenValidator = tokenValidator;
             this.httpContextAccessor = httpContextAccessor;
+            this.logManager = logManager;
         }
 
         [HttpPost("AddOrder/{cartID}")]
@@ -49,6 +53,7 @@ namespace Bamboo.Controllers
                 db.Orders.Add(order);
                 db.Carts.Remove(cart);
                 db.SaveChanges();
+                logManager.AddLog($"Order: id=({order.orderID}) added successfully by: {Util.Util.getLoggedUser(httpContextAccessor, db).userFirstName} id=({Util.Util.getLoggedUser(httpContextAccessor, db).userID})!");
                 return CreatedAtAction(nameof(order), order);
             }
             else { return Unauthorized(); }
@@ -65,6 +70,7 @@ namespace Bamboo.Controllers
                 dbOrder.products.Clear();
                 db.Orders.Remove(dbOrder);
                 db.SaveChanges();
+                logManager.AddLog($"Order: id=({dbOrder.orderID}) removed successfully by: {Util.Util.getLoggedUser(httpContextAccessor, db).userFirstName} id=({Util.Util.getLoggedUser(httpContextAccessor, db).userID})!");
                 return Ok();
             }
             else { return Unauthorized(); }
@@ -92,6 +98,7 @@ namespace Bamboo.Controllers
 
                 db.Entry(dbOrder).State = EntityState.Modified;
                 db.SaveChanges();
+                logManager.AddLog($"Order: id=({dbOrder.orderID}) edited successfully by: {Util.Util.getLoggedUser(httpContextAccessor, db).userFirstName} id=({Util.Util.getLoggedUser(httpContextAccessor, db).userID})!");
                 return CreatedAtAction(nameof(dbOrder), dbOrder);
             }
             else { return Unauthorized(); }

@@ -9,6 +9,8 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Linq.Dynamic.Core;
+using Bamboo.Services;
+using Org.BouncyCastle.Utilities.Net;
 
 namespace Bamboo.Controllers
 {
@@ -20,12 +22,14 @@ namespace Bamboo.Controllers
         private BambooContext db;
         private IMapper mapper;
         private IHttpContextAccessor httpContextAccessor;
-        public ProductController(BambooContext db, IMapper mapper, TokenValidator tokenValidator, IHttpContextAccessor httpContextAccessor)
+        private LogService logManager;
+        public OrderController(BambooContext db, IMapper mapper, TokenValidator tokenValidator, IHttpContextAccessor httpContextAccessor, LogService logManager)
         {
             this.db = db;
             this.mapper = mapper;
             this.tokenValidator = tokenValidator;
             this.httpContextAccessor = httpContextAccessor;
+            this.logManager = logManager;
         }
 
         [HttpPost("AddProduct")]
@@ -45,6 +49,7 @@ namespace Bamboo.Controllers
                 }
                 db.Products.Add(product);
                 db.SaveChanges();
+                logManager.AddLog($"Product: {product.name} id=({product.productID}) added successfully by: {Util.Util.getLoggedUser(httpContextAccessor, db).userFirstName} id=({Util.Util.getLoggedUser(httpContextAccessor, db).userID})!");
                 return CreatedAtAction(nameof(product), product);
             }
             else { return Unauthorized(); }
@@ -62,6 +67,7 @@ namespace Bamboo.Controllers
                 if (!loggedUser.ownerOfBusinessID.Equals(dbProduct.businessID)) return BadRequest("You must be the owner of the business that sells this product to remove it!");
                 db.Products.Remove(dbProduct);
                 db.SaveChanges();
+                logManager.AddLog($"Product: {dbProduct.name} id=({dbProduct.productID}) removed successfully by: {Util.Util.getLoggedUser(httpContextAccessor, db).userFirstName} id=({Util.Util.getLoggedUser(httpContextAccessor, db).userID})!");
                 return Ok();
             }
             else { return Unauthorized(); }
@@ -97,6 +103,7 @@ namespace Bamboo.Controllers
 
                 db.Entry(dbProduct).State = EntityState.Modified;
                 db.SaveChanges();
+                logManager.AddLog($"Product: {dbProduct.name} id=({dbProduct.productID}) edited successfully by: {Util.Util.getLoggedUser(httpContextAccessor, db).userFirstName} id=({Util.Util.getLoggedUser(httpContextAccessor, db).userID})!");
                 return CreatedAtAction(nameof(dbProduct), dbProduct);
             }
             else { return Unauthorized(); }
