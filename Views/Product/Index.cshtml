@@ -11,6 +11,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="~/js/Util.js"></script>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -23,33 +24,25 @@
             <h1>Products</h1>
             <div class="form-group">
                 <label for="businessIDFilter" style="font-size: 15px; margin-right: 10px; margin-left: 10px;">Select a business</label>
-                <select id="businessIDFilter" name="businessIDFilter">
+                <select class="businessIDFilter" id="businessIDFilter" name="businessIDFilter">
                     <option value="" selected>All</option>
                 </select>
             </div>
-            <button type="button" class="btnAdd" data-toggle="modal" data-target="#addProductModal">Add Product</button>
-            <button type="button" class="btnEdit" data-toggle="modal" data-target="#editProductModal">Edit Product</button>
-            <button type="button" class="btnRemove" data-toggle="modal" data-target="#removeProductModal">Remove Product</button>
-            <button type="button" class="btnFunct" data-toggle="modal" data-target="#cartProductModal">Add Product to Cart</button>
+            <button type="button" class="btnAdd" onclick="$('#addProductModal').modal('show');">Add Product</button>
+            <button type="button" class="btnEdit" onclick="openEditModal()">Edit Product</button>
+            <button type="button" class="btnRemove" onclick="removeProduct()">Remove Product</button>
+            <button type="button" class="btnFunct" onclick="addProductToCart()">Add Product to Cart</button>
+            <label for="orderBy" style="font-size: 15px; margin-right: 10px; margin-left: 10px;">Order by</label>
+            <select class="filter" id="orderBy">
+                <option value="name" selected>Name</option>
+                <option value="price">Price</option>
+            </select>
+            <select class="filter" id="ordering">
+                <option value="ascending" selected>Ascending</option>
+                <option value="descending">Descending</option>
+            </select>
             <div id="alertContainer"></div>
-            <table class="custom-table  table-striped table-hover table-bordered">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th onclick="orderBy='name';fetchAndFillProductsTable(selectedBusinessId)">Name <i class="fas fa-sort"></i></th>
-                        <th>Description</th>
-                        <th onclick="orderBy='price';fetchAndFillProductsTable(selectedBusinessId)">Price <i class="fas fa-sort"></i></th>
-                        <th>Cost</th>
-                        <th>Tax</th>
-                        <th>Discount</th>
-                        <th>Image</th>
-                        <th>Business</th>
-                        <th>Active</th>
-                    </tr>
-                </thead>
-                <tbody id="productsTableBody">
-                </tbody>
-            </table>
+            <div class="row" id="productsContainer"></div>
         </div>
     </div>
 
@@ -106,13 +99,13 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="closeBtnAdd" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="sendBtnAdd">Send</button>
+                    <button type="button" class="btn btn-secondary" id="closeBtnAdd" onclick="$('#addProductModal').modal('hide');">Close</button>
+                    <button type="button" class="btn btn-primary" id="sendBtnAdd" onclick="addProduct()">Send</button>
                 </div>
             </div>
         </div>
     </div>
-  
+
     <div class="modal fade" id="editProductModal" tabindex="-1" role="dialog" aria-labelledby="editProductModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -164,291 +157,313 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="closeBtnEdit" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="sendBtnEdit">Send</button>
+                    <button type="button" class="btn btn-secondary" id="closeBtnEdit" onclick="$('#editProductModal').modal('hide');">Close</button>
+                    <button type="button" class="btn btn-primary" id="sendBtnEdit" onclick="editProduct()">Send</button>
                 </div>
             </div>
         </div>
     </div>
 
-<script>
+    <script>
 
-    let selectedProductId;
-    let selectedProductsIds = [];
-    let selectedBusinessId = '';
-    let orderBy = 'name';
-    let ordering = 'ascending';
-    const decimals = ["price", "cost", "tax", "discount"];
+        let selectedProductId;
+        let selectedProductsIds = [];
+        let selectedBusinessId = '';
+        let orderBy = 'name';
+        let ordering = 'ascending';
+        const decimals = ["price", "cost", "tax", "discount"];
 
-    $(document).ready(function () {
-        fetchBusinesses();
-        fetchAndFillProductsTable(selectedBusinessId);
-        $('#businessIDFilter').change(function(){
+        $(document).ready(function () {
+            fetchBusinesses();
+            fetchAndFillProductsTable();
+        });
+
+        $('#businessIDFilter').change(function () {
             selectedBusinessId = $(this).val();
-            fetchAndFillProductsTable(selectedBusinessId);
+            fetchAndFillProductsTable();
         });
-    });
 
-    $('#sendBtnAdd').on('click', function (event) {
-        assureLogin();
-        let form = $('#addProductForm')[0];
-        if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-        form.classList.add('was-validated');
-        if (form.checkValidity() === true) {
-            let formData = $('#addProductForm').serializeArray();
-            let jsonData = {};
-            formData.forEach(function (item) {
-                if (item.name === "businessID" && item.value === "") {
-                    jsonData[item.name] = null;
-                } else if (item.name === "isActive") {
-                    jsonData[item.name] = item.value === "on" ? true : false;
-                } else if (decimals.includes(item.name)) {
-                    if (item.value === "") {
-                        jsonData[item.name] = 0;
+        $('#orderBy').change(function(){
+            orderBy = $(this).val();
+            fetchAndFillProductsTable();
+        });
+
+        $('#ordering').change(function () {
+            ordering = $(this).val();
+            fetchAndFillProductsTable();
+        });
+
+        function addProduct() {
+            assureLogin();
+            let form = $('#addProductForm')[0];
+            if (form.checkValidity() === true) {
+                form.classList.add('was-validated');
+                let formData = $('#addProductForm').serializeArray();
+                let jsonData = {};
+                formData.forEach(function (item) {
+                    if (item.name === "businessID" && item.value === "") {
+                        jsonData[item.name] = null;
+                    } else if (item.name === "isActive") {
+                        jsonData[item.name] = item.value === "on" ? true : false;
+                    } else if (decimals.includes(item.name)) {
+                        if (item.value === "") {
+                            jsonData[item.name] = 0;
+                        }
+                        else {
+                            jsonData[item.name] = parseFloat(item.value);
+                        }
+                    } else if (item.value === "") {
+                        jsonData[item.name] = null;
+                    } else {
+                        jsonData[item.name] = item.value;
                     }
-                    else {
-                        jsonData[item.name] = parseFloat(item.value);
-                    }
-                } else if (item.value === "") {
-                    jsonData[item.name] = null;
-                } else {
-                    jsonData[item.name] = item.value;
-                }
-            });
-            event.preventDefault();
-            $.ajax({
-                url: '/Product/AddProduct',
-                type: 'POST',
-                data: JSON.stringify(jsonData), 
-                contentType: 'application/json',
-                beforeSend: function (xhr) {
+                });
+                event.preventDefault();
+                $.ajax({
+                    url: '/Product/AddProduct',
+                    type: 'POST',
+                    data: JSON.stringify(jsonData),
+                    contentType: 'application/json',
+                    beforeSend: function (xhr) {
                         xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
-                },
-                success: function (response) {
-                    showAlert("Product added successfully!");
-                    fetchAndFillProductsTable(selectedBusinessId);
-                    $('#closeBtnAdd').click();
-                },
-                error: function (xhr, status, error) {
-                    if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
-                    let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
-                    showAlert("Error adding product! "+errorMessage);
-                    $('#closeBtnAdd').click();
-                }
-            });
-        }
-    });
-
-    $('button[data-target="#removeProductModal"]').on('click', function () {
-        assureLogin();
-        let selectedRow = $('input.product-checkbox:checked').closest('tr');
-        if (selectedRow.length === 0) {
-            alert('Please select a product to remove.');
-            return false;
-        }
-        if (selectedRow.length > 1) {
-            alert('Please select only one product to remove.');
-            return false;
-        }
-        selectedProductId = selectedRow.attr('data-product-id');
-        $.ajax({
-            url: '/Product/RemoveProduct/' + selectedProductId,
-            type: 'POST',
-            contentType: 'application/json',
-            beforeSend: function (xhr) {
-                    xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
-            },
-            success: function (response) {
-                showAlert("Product removed successfully!");
-                fetchAndFillProductsTable(selectedBusinessId);
-            },
-            error: function (xhr, status, error) {
-                if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
-                let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
-                showAlert("Error removing product! " + errorMessage);
+                    },
+                    success: function (response) {
+                        showAlert("Product added successfully!");
+                        fetchAndFillProductsTable(selectedBusinessId);
+                        $('#closeBtnAdd').click();
+                    },
+                    error: function (xhr, status, error) {
+                        if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
+                        let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                        showAlert("Error adding product! " + errorMessage);
+                        $('#closeBtnAdd').click();
+                    }
+                });
             }
-        });
-    });
-
-    $('button[data-target="#editProductModal"]').on('click', function () {
-        assureLogin();
-        let selectedRow = $('input.product-checkbox:checked').closest('tr');
-        if (selectedRow.length === 0) {
-            alert('Please select a product to edit.');
-            return false;
-        }
-        if (selectedRow.length > 1) {
-            alert('Please select only one product to edit.');
-            return false;
-        }
-        selectedProductId = selectedRow.attr('data-product-id');
-    });
-
-    $('button[data-target="#cartProductModal"]').on('click', function () {
-        assureLogin();
-        let selectedRows = $('input.product-checkbox:checked').closest('tr');
-        if (selectedRows.length === 0) {
-            alert('Please select a product to add to cart.');
-            return false;
-        }
-        if (selectedRows.length >= 1) {
-            selectedRows.toArray().forEach(function (row) {
-                let productId = $(row).attr('data-product-id');
-                selectedProductsIds.push(productId);
-            });
-        }
-        let userId = null;
-        let data = {
-            userID: userId,
-            productsIds: selectedProductsIds
         };
-        $.ajax({
-            url: '/Cart/AddCart',  
-            type: 'POST',
-            data: JSON.stringify(data),
-            contentType: 'application/json',
-            beforeSend: function (xhr) {
-                    xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
-            },
-            success: function (response) {
-                showAlert("Cart added successfully!");
-                window.location.href = '/Cart/Index';
-            },
-            error: function (xhr, textStatus, errorThrown) {
-                if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
-                let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
-                showAlert("Error adding cart! "+errorMessage);
-            }
-        });
-    });
 
-    $('#sendBtnEdit').on('click', function (event) {
-        assureLogin();
-        let form = $('#editProductForm')[0];
-        if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-        form.classList.add('was-validated');
-        if (form.checkValidity() === true) {
-            let formData = $('#editProductForm').serializeArray();
-            let jsonData = {};
-            formData.forEach(function (item) {
-                if (item.name === "businessID" && item.value === "") {
-                    jsonData[item.name] = null;
-                } else if (item.name === "isActive") {
-                    jsonData[item.name] = item.value === "on" ? true : false;
-                } else if (decimals.includes(item.name)){
-                    if (item.value === ""){
-                        jsonData[item.name] = 0;
-                    }
-                    else{
-                        jsonData[item.name] = parseFloat(item.value);
-                    }
-                } else if (item.value === "") {
-                    jsonData[item.name] = null;
-                } else {
-                    jsonData[item.name] = item.value;
-                }
-            });
-            event.preventDefault();
+        function removeProduct() {
+            assureLogin();
+            if (selectedProductsIds.length !== 1) {
+                showAlert('Please select exactly one product to edit.');
+                return;
+            }
             $.ajax({
-                url: '/Product/EditProduct/' + selectedProductId,
+                url: '/Product/RemoveProduct/' + selectedProductsIds[0],
                 type: 'POST',
-                data: JSON.stringify(jsonData),
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
-                        xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
+                    xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
                 },
                 success: function (response) {
-                    showAlert("Product updated successfully!");
-                    fetchAndFillProductsTable(selectedBusinessId); 
-                    $('#closeBtnEdit').click();
+                    showAlert("Product removed successfully!");
+                    fetchAndFillProductsTable(selectedBusinessId);
                 },
                 error: function (xhr, status, error) {
                     if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                     let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
-                    showAlert("Error updating product! " + errorMessage);
-                    $('#closeBtnEdit').click();
+                    showAlert("Error removing product! " + errorMessage);
+                }
+            });
+        };
+
+        function addProductToCart() {
+            debugger;
+            assureLogin();
+            if (selectedProductsIds.length === 0) {
+                alert('Please select a product to add to cart.');
+                return false;
+            }
+            let userId = null;
+            let data = {
+                userID: userId,
+                productsIds: selectedProductsIds
+            };
+            $.ajax({
+                url: '/Cart/AddCart',
+                type: 'POST',
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
+                },
+                success: function (response) {
+                    showAlert("Cart added successfully!");
+                    window.location.href = '/Cart/Index';
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
+                    let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                    showAlert("Error adding cart! " + errorMessage);
+                }
+            });
+        };
+
+        function openEditModal() {
+            if (selectedProductsIds.length !== 1) {
+                showAlert('Please select exactly one product to edit.');
+                return;
+            }
+            let editProductModal = $('#editProductModal');
+            $.ajax({
+                url: '/Product/ListProductInfo/'+selectedProductsIds[0],
+                type: 'GET',
+                dataType: 'json',
+                success: function(data){
+                    $('#editProductForm input[name="name"]').val(data.name);
+                    $('#editProductForm textarea[name="description"]').val(data.description);
+                    $('#editProductForm input[name="price"]').val(data.price);
+                    $('#editProductForm input[name="cost"]').val(data.cost);
+                    $('#editProductForm input[name="tax"]').val(data.tax);
+                    $('#editProductForm input[name="discount"]').val(data.discount);
+                    $('#editProductForm input[name="imageUrl"]').val(data.imageUrl);
+                    $('#editProductForm select[name="businessID"]').val(data.businessID);
+                    $('#editProductForm input[name="isActive"]').prop('checked', data.isActive);
+                }
+            });
+            $('#editProductModal').modal('show');
+        }
+
+        function editProduct() {
+            debugger;
+            assureLogin();
+            let form = $('#editProductForm')[0];
+            if (form.checkValidity() === true) {
+                form.classList.add('was-validated');
+                let formData = $('#editProductForm').serializeArray();
+                let jsonData = {};
+                formData.forEach(function (item) {
+                    if (item.name === "businessID" && item.value === "") {
+                        jsonData[item.name] = null;
+                    } else if (item.name === "isActive") {
+                        jsonData[item.name] = item.value === "on" ? true : false;
+                    } else if (decimals.includes(item.name)) {
+                        if (item.value === "") {
+                            jsonData[item.name] = 0;
+                        }
+                        else {
+                            jsonData[item.name] = parseFloat(item.value);
+                        }
+                    } else if (item.value === "") {
+                        jsonData[item.name] = null;
+                    } else {
+                        jsonData[item.name] = item.value;
+                    }
+                });
+                event.preventDefault();
+                $.ajax({
+                    url: '/Product/EditProduct/' + selectedProductsIds[0],
+                    type: 'POST',
+                    data: JSON.stringify(jsonData),
+                    contentType: 'application/json',
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
+                    },
+                    success: function (response) {
+                        showAlert("Product updated successfully!");
+                        fetchAndFillProductsTable(selectedBusinessId);
+                        $('#closeBtnEdit').click();
+                    },
+                    error: function (xhr, status, error) {
+                        debugger;
+                        if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
+                        let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                        showAlert("Error updating product! " + errorMessage);
+                        $('#closeBtnEdit').click();
+                    }
+                });
+            }
+        };
+
+        function fetchBusinesses() {
+            $.ajax({
+                url: '/Business/ListBusinesses',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    let businessDropdowns = $('select[name="businessID"]');
+                    let businessDropdownsFilter = $('select[name="businessIDFilter"]');
+                    data.forEach(function (business) {
+                        businessDropdowns.append(`<option value="${business.businessID}">${business.name}</option>`);
+                        businessDropdownsFilter.append(`<option value="${business.businessID}">${business.name}</option>`);
+                    });
+                    businessDropdowns.append(`<option value="null">Null</option>`);
+                },
+                error: function (xhr, status, error) {
+                    if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
+                    let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                    showAlert('Error: ' + errorMessage);
                 }
             });
         }
-    });
 
-    function fetchBusinesses() {
-        $.ajax({
-            url: '/Business/ListBusinesses',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                let businessDropdowns = $('select[name="businessID"]');
-                let businessDropdownsFilter = $('select[name="businessIDFilter"]');
-                data.forEach(function (business) {
-                    businessDropdowns.append(`<option value="${business.businessID}">${business.name}</option>`);
-                    businessDropdownsFilter.append(`<option value="${business.businessID}">${business.name}</option>`);
-                });
-                businessDropdowns.append(`<option value="null">Null</option>`);
-            },
-            error: function (xhr, status, error) {
-                if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
-                let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
-                showAlert('Error: ' + errorMessage);
-            }
-        });
-    }
+        function fetchAndFillProductsTable() {
+            debugger;
+            let url = '/Product/ListProducts';
+            if (selectedBusinessId !== '') { url += 'OfBusiness/' + selectedBusinessId; }
+            url += "?ascdesc=" + ordering + "&orderBy=" + orderBy;
 
-    function fetchAndFillProductsTable(businessID) {
-        let url = '/Product/ListProducts';
-        if (businessID !== ''){ url+='OfBusiness/'+businessID; }
-        url += "?ascdesc=" + ordering + "&orderBy=" + orderBy
-        $.ajax({
-            url: url,
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                let tableBody = $('#productsTableBody');
-                tableBody.empty();
-
-                data.forEach(function (product) {
-                    let isActive = product.isActive ? 'Yes' : 'No';
-                    let image = product.imageUrl ? `<a href="${product.imageUrl}" target="_blank"><img src="${product.imageUrl}" alt="Image" width="100" height="100"></a>` : 'N/A';
-
-                    tableBody.append(
-                        `<tr data-product-id="${product.productID}">
-                            <td><input type="checkbox" class="product-checkbox"></td>
-                            <td>${product.name}</td>
-                            <td>${product.description}</td>
-                            <td>${product.price}</td>
-                            <td>${product.cost}</td>
-                            <td>${product.tax}</td>
-                            <td>${product.discount}</td>
-                            <td>${image}</td>
-                            <td>${product.businessDto.name}</td>
-                            <td>${isActive}</td>
-                        </tr>`
-                    );
-                });
-            },
-            error: function (xhr, status, error) {
-                if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
-                let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
-                showAlert('Error: ' + errorMessage);
-            }
-        });
-        toggleOrdering();
-    }
-
-    function toggleOrdering(){
-        if (ordering === "ascending"){
-            ordering = "descending";
-            return;
+            $.ajax({
+                url: url,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    let productsContainer = $('#productsContainer');
+                    productsContainer.empty();
+                    data.forEach(function (product) {
+                        let isActive = product.isActive ? 'Yes' : 'No';
+                        let image = product.imageUrl ? `<a href="${product.imageUrl}" target="_blank" ><img class="card-img-top" src="${product.imageUrl}" alt="Card image cap" width="100" height="100"></a>` : '';
+                        productsContainer.append(
+                            `<div class="product-card-container">
+                                <div class="card product-card" data-product-id="${product.productID}">
+                                    <form class="product-card-form">
+                                        ${image}
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center">
+                                                <input type="checkbox" class="product-checkbox mr-2">
+                                                <h5 class="card-title mb-0">${product.name}</h5>
+                                            </div>
+                                            <p class="card-text">(${product.description})</p>
+                                            <p class="cardinfo">$${product.price}</p>
+                                            <p class="cardinfo" style="color: red;">Tax: $${product.tax}</p>
+                                            <p class="cardinfo" style="color: green;">Discount: $${product.discount}</p>
+                                            <p class="cardinfo">Business: ${product.businessDto.name}</p>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>`
+                        );
+                    });
+                },
+                error: function (xhr, status, error) {
+                    if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
+                    let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                    showAlert('Error: ' + errorMessage);
+                }
+            });
         }
-        ordering = "ascending";
-    }
 
-</script>
+        $(document).on('change', '.product-checkbox', function () {
+            let productCard = $(this).closest('.product-card');
+            let productId = productCard.data('product-id');
+
+            if ($(this).is(':checked')) {
+                selectedProductId = productId;
+                if (!selectedProductsIds.includes(productId)) {
+                    selectedProductsIds.push(productId);
+                }
+            } else {
+                if (selectedProductId === productId) {
+                    selectedProductId = null;
+                }
+                let index = selectedProductsIds.indexOf(productId);
+                if (index !== -1) {
+                    selectedProductsIds.splice(index, 1);
+                }
+            }
+            console.log(selectedProductsIds);
+        });
+
+    </script>
 </body>
 </html>

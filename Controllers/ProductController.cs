@@ -89,7 +89,7 @@ namespace Bamboo.Controllers
 
                 foreach (PropertyInfo property in properties)
                 {
-                    if (property.GetValue(productNewInfo) != null && property.Name != "productID" && decimal.Parse(property.GetValue(productNewInfo).ToString()) != 0)
+                    if (property.GetValue(productNewInfo) != null && property.Name != "productID")
                     {
                         property.SetValue(dbProduct, property.GetValue(productNewInfo));
                     }
@@ -136,6 +136,15 @@ namespace Bamboo.Controllers
             .Select(p => mapper.Map<ReadProductDto>(p))
             .ToList();
             return Json(readProductsDtos);
+        }
+
+        [HttpGet("ListProductInfo/{productID}")]
+        public IActionResult ListProductInfo(string productID)
+        {
+            Product dbProduct = db.Products.Where(p => p.productID.ToString().Equals(productID)).FirstOrDefault();
+            if (dbProduct == null) return NotFound();
+            ReadProductDto dbProductDto = mapper.Map< ReadProductDto > (dbProduct);
+            return Json(dbProduct);
         }
 
         [HttpGet("Index")]

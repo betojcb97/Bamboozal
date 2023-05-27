@@ -5,12 +5,14 @@
     }
 }
 
+/*#region MAIN CSS*/
 html {
     font-size: 14px;
     background: linear-gradient(180deg, rgba(255,255,255,0.6587009803921569) 0%, rgba(39,205,221,0.15730042016806722) 68%);
 }
 
 body {
+    width: 100%;
     margin: 0;
     padding-bottom: 20px;
     font-family: 'Century Gothic', sans-serif;
@@ -22,6 +24,7 @@ body {
 }
 
 .content-container {
+    width: 100%;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -53,44 +56,35 @@ body {
     vertical-align: bottom;
 }
 
-@keyframes glowing {
-    0% {
-        border-color: gold;
-    }
-    25% {
-        border-color: mediumpurple;
-    }
-    50% {
-        border-color: gold;
-    }
-    75% {
-        border-color: mediumpurple;
-    }
-    100% {
-        border-color: gold;
-    }
-}
-
-#businessIDFilter {
-    border: 3px solid;
-    animation: glowing 3s linear infinite;
-    width: 30vw !important;
-    font-size: 15px;
-    border-radius: 10px;
-    padding-left: 20px;
-    font-weight: bold;
-    font-size: 15px;
+.nav-item {
+    border: 1px solid black;
+    padding-left: 2px;
+    padding-right: 2px;
+    margin-bottom: 0px;
     margin-right: 10px;
+    border-radius: 15px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    font-size: 15px;
+    background: linear-gradient(0deg, rgba(208,208,208,1) 12%, rgba(255,255,255,0.7567401960784313) 45%);
 }
 
-#businessIDFilter:hover {
-    border: 3px solid;
-    animation: glowing 3s linear infinite;
-    width: 30vw !important;
-    font-size: 15px;
-    border-radius: 10px;
-    padding-left: 20px;
+.nav-link {
+    color: black !important;
+}
+
+.nav-link:hover {
     background: linear-gradient(180deg, rgba(93,93,93,1) 0%, rgba(181,181,181,1) 35%, rgba(236,236,236,1) 100%);
+    border-radius: 15px;
+}
+
+.navbar-logo {
+    border: 3px solid black;
+    border-radius: 15px;
+    width: 60px;
+    height: 60px;
+    animation: glowing 3s linear infinite;
 }
 
 
@@ -126,37 +120,6 @@ h1 {
     color: black;
     font-size: 3em;
     padding: 0px 0px;
-}
-
-.nav-item {
-    border: 1px solid black;
-    padding-left: 2px;
-    padding-right: 2px;
-    margin-bottom: 0px;
-    margin-right: 10px;
-    border-radius: 15px;
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    font-size: 15px;
-    background: linear-gradient(0deg, rgba(208,208,208,1) 12%, rgba(255,255,255,0.7567401960784313) 45%);
-}
-
-.nav-link {
-    color: black !important;
-}
-
-.nav-link:hover {
-    background: linear-gradient(180deg, rgba(93,93,93,1) 0%, rgba(181,181,181,1) 35%, rgba(236,236,236,1) 100%);
-    border-radius: 15px;
-}
-
-.navbar-logo {
-    border: 3px solid black;
-    border-radius: 15px;
-    width: 60px;
-    height: 60px;
-    animation: glowing 3s linear infinite;
 }
 
 .btnAdd {
@@ -231,6 +194,47 @@ h1 {
     border-radius: 10px;
 }
 
+.alert-message {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    padding: 10px;
+    background-color: #d4e9f7;
+    color: #000000;
+    border: 1px solid #3282b8;
+    border-radius: 4px;
+    opacity: 1;
+    animation: glow 1s ease-in-out infinite, fadeOut 2s forwards 8s;
+}
+
+.filter {
+    border: 1px solid; /* Adds a 3px solid border */
+    font-size: 15px; /* Sets the font size to 15 pixels */
+    border-radius: 10px; /* Rounds the corners with a border radius of 10 pixels */
+    padding-left: 10px; /* Adds left padding of 20 pixels */
+}
+
+/* #endregion MAIN CSS*/
+
+/*#region ANIMATION CSS*/
+@keyframes glowing {
+    0% {
+        border-color: gold;
+    }
+    25% {
+        border-color: mediumpurple;
+    }
+    50% {
+        border-color: gold;
+    }
+    75% {
+        border-color: mediumpurple;
+    }
+    100% {
+        border-color: gold;
+    }
+}
+
 @keyframes glow {
     0% {
         box-shadow: 0 0 5px #3282b8;
@@ -254,55 +258,89 @@ h1 {
         opacity: 0;
     }
 }
+/*#endregion ANIMATION CSS*/
 
-.alert-message {
-    position: fixed;
-    top: 80px;
-    right: 20px;
-    padding: 10px;
-    background-color: #d4e9f7;
-    color: #000000;
-    border: 1px solid #3282b8;
-    border-radius: 4px;
-    opacity: 1;
-    animation: glow 1s ease-in-out infinite, fadeOut 2s forwards 8s;
+/*#region Products*/
+
+/* Styling for the businessIDFilter element */
+.businessIDFilter {
+    border: 3px solid; /* Adds a 3px solid border */
+    animation: glowing 3s linear infinite; /* Applies a glowing animation effect that lasts for 3 seconds and repeats infinitely */
+    width: 30vw !important; /* Sets the width to 30% of the viewport width, with !important to override other styles */
+    font-size: 15px; /* Sets the font size to 15 pixels */
+    border-radius: 10px; /* Rounds the corners with a border radius of 10 pixels */
+    padding-left: 20px; /* Adds left padding of 20 pixels */
+    font-weight: bold; /* Sets the font weight to bold */
+    margin-right: 10px; /* Adds right margin of 10 pixels */
 }
 
+/* Styling for the businessIDFilter element when hovered */
+.businessIDFilter:hover {
+    border: 3px solid; /* Adds a 3px solid border */
+    animation: glowing 3s linear infinite; /* Applies a glowing animation effect that lasts for 3 seconds and repeats infinitely */
+    width: 30vw !important; /* Sets the width to 30% of the viewport width, with !important to override other styles */
+    font-size: 15px; /* Sets the font size to 15 pixels */
+    border-radius: 10px; /* Rounds the corners with a border radius of 10 pixels */
+    padding-left: 20px; /* Adds left padding of 20 pixels */
+    background: linear-gradient(180deg, rgba(93,93,93,1) 0%, rgba(181,181,181,1) 35%, rgba(236,236,236,1) 100%); /* Applies a linear gradient background */
+}
+
+/* Styling for the productsContainer element */
 #productsContainer {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    gap: 10px; 
-    padding: 10px; 
+    display: grid; /* Displays the element as a grid */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Defines the grid columns to automatically fill and have a minimum width of 200 pixels */
+    gap: 15px; /* Sets the gap (spacing) between grid items to x pixels */
+    padding: 15px; /* Adds padding of x pixels */
+    grid-auto-rows: 400px; /* Sets the height of grid rows to x pixels */
 }
 
+/* Styling for the product-card-container class */
 .product-card-container {
-    box-sizing: border-box;
-    
+    box-sizing: border-box; /* Includes borders and padding in the total width and height of the element */
 }
 
+/* Styling for the product-card class */
 .product-card {
-    width: 400px;
-    height: 300px;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    font-size: 10px;
-    background: linear-gradient(180deg, rgba(236,236,236,1) 0%, rgba(181,181,181,0.5922492937853108) 49%, rgba(93,93,93,0.7391419491525424) 100%);
+    width: 100%; /* Sets the width to 100% of the parent container */
+    height: 100%; /* Sets the height to 100% of the parent container */
+    padding: 20px; /* Adds padding of 20 pixels */
+    border: 2px solid black; /* Adds a xpx solid border with the color y */
+    border-radius: 15px; /* Rounds the corners with a border radius of x pixels */
+    box-shadow: 0 0 15px rgba(0,0,0,0.3); /* Adds a box shadow with a slight blur */
+    font-size: 10px; /* Sets the font size to 10 pixels */
+    background: linear-gradient(180deg, rgba(236,236,236,0.6951155462184874) 0%, rgba(167,233,229,0.44021358543417366) 49%, rgba(119,144,219,0.4542191876750701) 100%); /* Applies a linear gradient background */
+    box-sizing: border-box; /* Includes borders and padding in the total width and height of the element */
+    overflow: hidden; /* Prevents content from overflowing */
 }
 
+/* Styling for the card-title class within the card-body */
 .card-body .card-title {
-    font-size: 18px;
-    color: #333;
+    font-size: 18px; /* Sets the font size to x pixels */
+    color: #333; /* Sets the text color to x */
+    word-wrap: break-word; /* Allows long words to break into multiple lines */
 }
 
+/* Styling for the card-text class within the card-body */
 .card-body .card-text {
-    font-size: 15px;
-    color: #666;
-    margin: 1px;
+    font-size: 15px; /* Sets the font size to x pixels */
+    color: #666; /* Sets the text color to x */
+    margin: 1px; /* Sets a margin of x pixel */
+    word-wrap: break-word; /* Allows long words to break into multiple lines */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
+/* Styling for the cardinfo class within the card-body */
+.card-body .cardinfo {
+    font-size: 15px; /* Sets the font size to x pixels */
+    margin-top: 1px; /* Sets a top margin of x pixel */
+    margin-bottom: 1px; /* Sets a bottom margin of x pixel */
+}
 
+/*#endregion */
+
+/*#region Table*/
 .custom-table {
     width: 90%;
     background-color: transparent;
@@ -355,14 +393,17 @@ h1 {
 }
 
 .custom-table thead.thead-dark th {
-    color: #fff;
-    background-color: #343a40;
-    border-color: #454d55;
+color: #fff;
+background-color: #343a40;
+border-color: #454d55;
 }
 
 .custom-table thead.thead-dark,
 .custom-table thead.thead-dark th,
 .custom-table thead.thead-dark td {
-    border-color: #454d55;
+border-color: #454d55;
 }
+
+/*#endregion */
+
 

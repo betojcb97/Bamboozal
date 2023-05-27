@@ -63,3 +63,11 @@ function assureLogin() {
     authToken = localStorage.getItem('authToken');
     if (authToken === null || authToken === '') { window.location.href = '/CustomUser/LoginPage'; }
 }
+
+function toggleOrdering() {
+    if (ordering === "ascending") {
+        ordering = "descending";
+        return;
+    }
+    ordering = "ascending";
+}
