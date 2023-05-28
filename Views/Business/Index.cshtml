@@ -19,9 +19,9 @@
     <div class="page-container d-flex flex-column">
         <div class="container">
             <h1>Businesses</h1>
-            <button type="button" class="btnAdd" data-toggle="modal" data-target="#addBusinessModal" >Add Business</button>
-            <button type="button" class="btnEdit" data-toggle="modal" data-target="#editBusinessModal">Edit Business</button>
-            <button type="button" class="btnRemove" data-toggle="modal" data-target="#removeBusinessModal">Remove Business</button>
+            <button type="button" class="btnAdd" data-toggle="modal" onclick="assureLogin();$('#addBusinessModal').modal('show');">Add Business</button>
+            <button type="button" class="btnEdit" data-toggle="modal" onclick="assureLogin();openEditModal()">Edit Business</button>
+            <button type="button" class="btnRemove" data-toggle="modal" onclick="assureLogin();removeBusiness()">Remove Business</button>
             <div id="alertContainer"></div>
             <table class="custom-table  table-striped table-hover table-bordered">
                 <thead>
@@ -85,8 +85,8 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="closeBtnAdd" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="sendBtnAdd">Send</button>
+                    <button type="button" class="btn btn-secondary" id="closeBtnAdd" onclick="$('#addBusinessModal').modal('hide');">Close</button>
+                    <button type="button" class="btn btn-primary" id="sendBtnAdd" onclick="addBusiness()">Send</button>
                 </div>
             </div>
         </div>
@@ -138,8 +138,8 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="closeBtnEdit" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="sendBtnEdit">Send</button>
+                    <button type="button" class="btn btn-secondary" id="closeBtnEdit" onclick="$('#editBusinessModal').modal('hide');">Close</button>
+                    <button type="button" class="btn btn-primary" id="sendBtnEdit" onclick="editBusiness()">Send</button>
                 </div>
             </div>
         </div>
@@ -151,21 +151,17 @@
 <script>
 
     let selectedBusinessId;
+    let selectedBusinessesIds = [];
 
     $(document).ready(function () {
-        fetchAddresses();
-        fetchAndFillBusinessTable();
+        fillAddressesDropdown();
+        fillBusinessTable();
     });
 
-    $('#sendBtnAdd').on('click', function (event) {
-        assureLogin();
+    function addBusiness() {
         let form = $('#addBusinessForm')[0];
-        if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-        form.classList.add('was-validated');
         if (form.checkValidity() === true) {
+            form.classList.add('was-validated');
             let formData = $('#addBusinessForm').serializeArray();
             let jsonData = {};
             formData.forEach(function (item) {
@@ -191,7 +187,8 @@
                 success: function (response, textStatus, xhr) {
                     if (xhr.status === 201) {  
                         showAlert("Business added successfully!");
-                        fetchAndFillBusinessTable();
+                        fillBusinessTable();
+                        $('#closeBtnAdd').click();
                     } else if (xhr.status === 406) {
                         showAlert("Business already exists!");
                     }
@@ -205,16 +202,32 @@
                 }
             });
         }
-    });
+    };
 
-    $('#sendBtnEdit').on('click', function (event) {
-        let form = $('#editBusinessForm')[0];
-        if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
+    function openEditModal(){
+        if (selectedBusinessesIds.length !== 1) {
+            showAlert('Please select exactly one business to edit.');
+            return;
         }
-        form.classList.add('was-validated');
+        fetchBusiness(selectedBusinessesIds[0]).then(data => {
+            $('#editBusinessForm input[name="name"]').val(data.name);
+            $('#editBusinessForm textarea[name="description"]').val(data.description);
+            $('#editBusinessForm input[name="email"]').val(data.email);
+            $('#editBusinessForm input[name="phone"]').val(data.phone);
+            $('#editBusinessForm select[name="addressID"]').val(data.addressID);
+            $('#editBusinessForm input[name="isActive"]').prop('checked', data.isActive);
+            $('#editBusinessForm input[name="logoUrl"]').val(data.logoUrl);
+
+            $('#editBusinessModal').modal('show');
+        }).catch(error => {
+            console.error(error);
+        });
+    };
+
+    function editBusiness() {
+        let form = $('#editBusinessForm')[0];
         if (form.checkValidity() === true) {
+            form.classList.add('was-validated');
             let formData = $('#editBusinessForm').serializeArray();
             let jsonData = {};
             formData.forEach(function (item) {
@@ -239,7 +252,7 @@
                 },
                 success: function (response) {
                     showAlert("Business updated successfully!");
-                    fetchAndFillBusinessTable();
+                    fillBusinessTable();
                     $('#closeBtnEdit').click();
                 },
                 error: function (xhr, status, error) {
@@ -250,35 +263,15 @@
                 }
             });
         }
-    });
+    };
 
-    $('button[data-target="#editBusinessModal"]').on('click', function () {
-        let selectedRow = $('input.business-checkbox:checked').closest('tr');
-        if (selectedRow.length === 0) {
-            showAlert('Please select a business to edit.');
-            return false;
+    function removeBusiness() {
+        if (selectedBusinessesIds.length !== 1) {
+            showAlert('Please select exactly one business to remove.');
+            return;
         }
-        if (selectedRow.length > 1) {
-            showAlert('Please select only one business to edit.');
-            return false;
-        }
-        selectedBusinessId = selectedRow.attr('data-business-id');
-    });
-
-    $('button[data-target="#removeBusinessModal"]').on('click', function () {
-        assureLogin();
-        let selectedRow = $('input.business-checkbox:checked').closest('tr');
-        if (selectedRow.length === 0) {
-            showAlert('Please select a business to remove.');
-            return false;
-        }
-        if (selectedRow.length > 1) {
-            showAlert('Please select only one business to remove.');
-            return false;
-        }
-        selectedBusinessId = selectedRow.attr('data-business-id');
         $.ajax({
-            url: '/Business/RemoveBusiness/' + selectedBusinessId,
+            url: '/Business/RemoveBusiness/' + selectedBusinessesIds[0],
             type: 'POST',
             contentType: 'application/json',
             beforeSend: function (xhr) {
@@ -286,7 +279,7 @@
             },
             success: function (response) {
                 showAlert("Business removed successfully!");
-                fetchAndFillBusinessTable();
+                fillBusinessTable();
             },
             error: function (xhr, status, error) {
                 if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
@@ -294,79 +287,81 @@
                 showAlert("Error removing business! " + errorMessage);
             }
         });
+    };
+
+    function fillAddressesDropdown() {
+        debugger;
+        fetchAddresses().then(data => {
+            let addressDropdowns = $('select[name="addressID"]');
+            data.forEach(function (address) {
+                addressDropdowns.append(`<option value="${address.addressID}">${address.street}</option>`);
+            });
+            addressDropdowns.append(`<option value="null">Null</option>`);
+        });
+    };
+
+    function fillBusinessTable() {
+        fetchBusinesses().then(data => {
+            let tableBody = $('#businessesTableBody');
+            tableBody.empty();
+
+            data.forEach(function (business) {
+                let isActive = business.isActive ? 'Yes' : 'No';
+                let address = '';
+                if (business.addressDto) {
+                    if (business.addressDto.street) {
+                        address += `${business.addressDto.street}`;
+                    }
+                    if (business.addressDto.city) {
+                        address += `, ${business.addressDto.city}`;
+                    }
+                    if (business.addressDto.postalCode) {
+                        address += `, ${business.addressDto.postalCode}`;
+                    }
+                }
+                if (address === '') {
+                    address = 'N/A';
+                }
+
+                let email = `<a href="mailto:${business.email}">${business.email}</a>`;
+                let phone = `<a href="tel:${business.phone}">${business.phone}</a>`;
+                let logo = business.logoUrl ? `<a href="${business.logoUrl}" target="_blank" ><img src="${business.logoUrl}" alt="Image" width="100" height="100"></a>` : 'N/A';
+
+                tableBody.append(
+                    `<tr data-business-id="${business.businessID}">
+                        <td><input type="checkbox" class="business-checkbox"></td>
+                        <td>${business.name}</td>
+                        <td>${business.description}</td>
+                        <td>${email}</td>
+                        <td>${phone}</td>
+                        <td>${address}</td>
+                        <td>${isActive}</td>
+                        <td>${logo}</td>
+                    </tr>`
+                );
+            });
+        });
+    };
+
+    $(document).on('change', '.business-checkbox', function () {
+        let row = $(this).closest('tr');
+        let businessId = row.data('business-id');
+
+        if ($(this).is(':checked')) {
+            selectedBusinessId = businessId;
+            if (!selectedBusinessesIds.includes(businessId)) {
+                selectedBusinessesIds.push(businessId);
+            }
+        } else {
+            if (selectedBusinessId === businessId) {
+                selectedBusinessId = null;
+            }
+            let index = selectedBusinessesIds.indexOf(businessId);
+            if (index !== -1) {
+                selectedBusinessesIds.splice(index, 1);
+            }
+        }
+        console.log(selectedBusinessesIds);
     });
-
-    function fetchAddresses() {
-        $.ajax({
-            url: '/Address/ListAddresses',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                let addressDropdowns = $('select[name="addressID"]');
-                data.forEach(function (address) {
-                    addressDropdowns.append(`<option value="${address.addressID}">${address.street}</option>`);
-                });
-                addressDropdowns.append(`<option value="null">Null</option>`);
-            },
-            error: function (xhr, status, error) {
-                if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
-                let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
-                showAlert('Error: ' + errorMessage);
-            }
-        });
-    }
-
-    function fetchAndFillBusinessTable() {
-        $.ajax({
-            url: '/Business/ListBusinesses',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                let tableBody = $('#businessesTableBody');
-                tableBody.empty();
-
-                data.forEach(function (business) {
-                    let isActive = business.isActive ? 'Yes' : 'No';
-                    let address = '';
-                    if (business.addressDto) {
-                        if (business.addressDto.street) {
-                            address += `${business.addressDto.street}`;
-                        }
-                        if (business.addressDto.city) {
-                            address += `, ${business.addressDto.city}`;
-                        }
-                        if (business.addressDto.postalCode) {
-                            address += `, ${business.addressDto.postalCode}`;
-                        }
-                    }
-                    if (address === '') {
-                        address = 'N/A';
-                    }
-
-                    let email = `<a href="mailto:${business.email}">${business.email}</a>`;
-                    let phone = `<a href="tel:${business.phone}">${business.phone}</a>`;
-                    let logo = business.logoUrl ? `<a href="${business.logoUrl}" target="_blank" ><img src="${business.logoUrl}" alt="Image" width="100" height="100"></a>` : 'N/A';
-
-                    tableBody.append(
-                        `<tr data-business-id="${business.businessID}">
-                            <td><input type="checkbox" class="business-checkbox"></td>
-                            <td>${business.name}</td>
-                            <td>${business.description}</td>
-                            <td>${email}</td>
-                            <td>${phone}</td>
-                            <td>${address}</td>
-                            <td>${isActive}</td>
-                            <td>${logo}</td>
-                        </tr>`
-                    );
-                });
-            },
-            error: function (xhr, status, error) {
-                if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
-                let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
-                showAlert('Error: ' + errorMessage);
-            }
-        });
-    }
 
 </script>

@@ -123,6 +123,15 @@ namespace Bamboo.Controllers
             return Json(readBusinessDtos);
         }
 
+        [HttpGet("ListBusinessInfo/{businessID}")]
+        public IActionResult ListBusinessInfo(string businessID)
+        {
+            Business dbBusiness = db.Businesses.Where(p => p.businessID.ToString().Equals(businessID)).FirstOrDefault();
+            if (dbBusiness == null) return NotFound();
+            ReadBusinessDto dbBusinessDto = mapper.Map<ReadBusinessDto>(dbBusiness);
+            return Json(dbBusiness);
+        }
+
         [HttpGet("Index")]
         public IActionResult Index()
         {

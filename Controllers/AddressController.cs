@@ -46,12 +46,12 @@ namespace Bamboo.Controllers
         }
 
         [HttpPost("RemoveAddress/{addressID}")]
-        public IActionResult RemoveAddress(Guid addressID)
+        public IActionResult RemoveAddress(string addressID)
         {
             bool authorized = tokenValidator.ValidateToken();
             if (authorized)
             {
-                Address dbAddress = db.Addresses.Where(a => a.addressID.Equals(addressID)).FirstOrDefault();
+                Address dbAddress = db.Addresses.Where(a => a.addressID.ToString().Equals(addressID)).FirstOrDefault();
                 if (dbAddress == null) { return Ok(); }
                 db.Addresses.Remove(dbAddress);
                 db.SaveChanges();
@@ -62,12 +62,12 @@ namespace Bamboo.Controllers
         }
 
         [HttpPost("EditAddress/{addressID}")]
-        public IActionResult EditAddress(Guid addressID, [FromBody] EditAddressDto addressDto)
+        public IActionResult EditAddress(string addressID, [FromBody] EditAddressDto addressDto)
         {
             bool authorized = tokenValidator.ValidateToken();
             if (authorized)
             {
-                Address dbAddress = db.Addresses.Where(a => a.addressID.Equals(addressID)).FirstOrDefault();
+                Address dbAddress = db.Addresses.Where(a => a.addressID.ToString().Equals(addressID)).FirstOrDefault();
                 if (dbAddress == null) return NotFound();
                 Address addressNewInfo = mapper.Map<Address>(addressDto);
 
@@ -94,6 +94,15 @@ namespace Bamboo.Controllers
         {
             List<ReadAddressDto> readAddressDtos = mapper.Map<List<ReadAddressDto>>(db.Addresses.ToList());
             return Json(readAddressDtos);
+        }
+
+        [HttpGet("ListAddressInfo/{addressID}")]
+        public IActionResult ListAddressInfo(string addressID)
+        {
+            Address dbAddress = db.Addresses.Where(p => p.addressID.ToString().Equals(addressID)).FirstOrDefault();
+            if (dbAddress == null) return NotFound();
+            ReadAddressDto dbAddressDto = mapper.Map<ReadAddressDto>(dbAddress);
+            return Json(dbAddress);
         }
 
         [HttpGet("Index")]

@@ -9,9 +9,7 @@ namespace Bamboo.DTO
 
         public Guid? userID { get; set; }
 
-        public List<Guid>? productsIds { get; set; }
-
-        public List<ReadProductDto>? productsDto { get; set; }
+        public List<Dictionary<Guid, int>> productsIdsAndQuantities { get; set; }
 
         public DateTime? dateOfCreation { get; set; }
 

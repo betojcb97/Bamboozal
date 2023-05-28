@@ -21,9 +21,9 @@
     <div class="page-container d-flex flex-column">
         <div class="container">
             <h1>Addresses</h1>
-            <button type="button" class="btnAdd" data-toggle="modal" data-target="#addAddressModal" >Add Address</button>
-            <button type="button" class="btnEdit" data-toggle="modal" data-target="#editAddressModal">Edit Address</button>
-            <button type="button" class="btnRemove" data-toggle="modal" data-target="#removeAddressModal">Remove Address</button>
+            <button type="button" class="btnAdd" data-toggle="modal" onclick="assureLogin();$('#addAddressModal').modal('show');">Add Address</button>
+            <button type="button" class="btnEdit" data-toggle="modal" onclick="assureLogin();openEditModal();">Edit Address</button>
+            <button type="button" class="btnRemove" data-toggle="modal" onclick="assureLogin();removeAddress();">Remove Address</button>
             <div id="alertContainer"></div>
             <table class="custom-table  table-striped table-hover table-bordered">
                 <thead>
@@ -85,7 +85,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" id="closeBtnAdd" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="sendBtnAdd">Send</button>
+                    <button type="button" class="btn btn-primary" id="sendBtnAdd" onclick="addAddress()">Send</button>
                 </div>
             </div>
         </div>
@@ -129,8 +129,8 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="closeBtnEdit" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="sendBtnEdit">Send</button>
+                    <button type="button" class="btn btn-secondary" id="closeBtnEdit" onclick="$('#editAddressModal').modal('hide');">Close</button>
+                    <button type="button" class="btn btn-primary" id="sendBtnEdit" onclick="editAddress()">Send</button>
                 </div>
             </div>
         </div>
@@ -139,20 +139,16 @@
 <script>
 
     let selectedAddressId;
+    let selectedAddressesIds = [];
 
     $(document).ready(function () {
         fetchAndFillAddressesTable();
     });
 
-    $('#sendBtnAdd').on('click', function (event) {
-        assureLogin();
+    function addAddress() {
         let form = $('#addAddressForm')[0];
-        if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-        form.classList.add('was-validated');
         if (form.checkValidity() === true) {
+            form.classList.add('was-validated');
             let formData = $('#addAddressForm').serializeArray();
             let jsonData = {};
             formData.forEach(function (item) {
@@ -173,11 +169,11 @@
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
-                        xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
+                    xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
                 },
                 success: function (response) {
                     showAlert("Address added successfully!");
-                    fetchAndFillAddressesTable();
+                    fillAddressesTable();
                     $('#closeBtnAdd').click();
                 },
                 error: function (xhr, status, error) {
@@ -188,61 +184,31 @@
                 }
             });
         }
-    });
+    };
 
-    $('button[data-target="#editAddressModal"]').on('click', function () {
-        let selectedRow = $('input.address-checkbox:checked').closest('tr');
-        if (selectedRow.length === 0) {
-            alert('Please select a address to edit.');
-            return false;
+    function openEditModal(){
+        if (selectedAddressesIds.length !== 1){
+            showAlert('Please select exactly one address to edit.');
+            return;
         }
-        if (selectedRow.length > 1) {
-            alert('Please select only one address to edit.');
-            return false;
-        }
-        selectedAddressId = selectedRow.attr('data-address-id');
-    });
+        fetchAddress(selectedAddressesIds[0]).then(data => {
+            $('#editAddressForm input[name="street"]').val(data.street);
+            $('#editAddressForm input[name="number"]').val(data.number);
+            $('#editAddressForm input[name="city"]').val(data.city);
+            $('#editAddressForm input[name="country"]').val(data.country);
+            $('#editAddressForm input[name="state"]').val(data.state);
+            $('#editAddressForm input[name="postalCode"]').val(data.postalCode);
 
-    $('button[data-target="#removeAddressModal"]').on('click', function () {
-        assureLogin();
-        let selectedRow = $('input.address-checkbox:checked').closest('tr');
-        if (selectedRow.length === 0) {
-            alert('Please select a address to remove.');
-            return false;
-        }
-        if (selectedRow.length > 1) {
-            alert('Please select only one address to remove.');
-            return false;
-        }
-        selectedAddressId = selectedRow.attr('data-address-id');
-        $.ajax({
-            url: '/Address/RemoveAddress/' + selectedAddressId,
-            type: 'POST',
-            contentType: 'application/json',
-            beforeSend: function (xhr) {
-                    xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
-            },
-            success: function (response) {
-                showAlert("Address removed successfully!");
-                fetchAndFillAddressesTable();
-            },
-            error: function (xhr, status, error) {
-                if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
-                let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
-                showAlert("Error removing address! " + errorMessage);
-            }
+            $('#editAddressModal').modal('show');
+        }).catch(error => {
+            console.error(error);
         });
-    });
+    };
 
-    $('#sendBtnEdit').on('click', function (event) {
-        assureLogin();
+    function editAddress() {
         let form = $('#editAddressForm')[0];
-        if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-        form.classList.add('was-validated');
         if (form.checkValidity() === true) {
+            form.classList.add('was-validated');
             let formData = $('#editAddressForm').serializeArray();
             let jsonData = {};
             formData.forEach(function (item) {
@@ -263,11 +229,11 @@
                 data: JSON.stringify(jsonData),
                 contentType: 'application/json',
                 beforeSend: function (xhr) {
-                        xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
+                    xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
                 },
                 success: function (response) {
                     showAlert("Address updated successfully!");
-                    fetchAndFillAddressesTable();
+                    fillAddressesTable();
                     $('#closeBtnEdit').click();
                 },
                 error: function (xhr, status, error) {
@@ -279,38 +245,73 @@
             });
         }
         $('#editAddressModal').modal('hide');
-    });
+    };
 
-    function fetchAndFillAddressesTable() {
+    function removeAddress(){
+        if (selectedAddressesIds.length !==1){
+            showAlert('Please select exactly one product to remove.');
+            return;
+        }
         $.ajax({
-            url: '/Address/ListAddresses',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                let tableBody = $('#addressesTableBody');
-                tableBody.empty();
-
-                data.forEach(function (address) {
-                    tableBody.append(
-                        `<tr data-address-id="${address.addressID}">
-                            <td><input type="checkbox" class="address-checkbox"></td>
-                            <td>${address.street}</td>
-                            <td>${address.number}</td>
-                            <td>${address.city}</td>
-                            <td>${address.state}</td>
-                            <td>${address.country}</td>
-                            <td>${address.postalCode}</td>
-                        </tr>`
-                    );
-                });
+            url: '/Address/RemoveAddress/' + selectedAddressesIds[0],
+            type: 'POST',
+            contentType: 'application/json',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
+            },
+            success: function (response) {
+                showAlert("Address removed successfully!");
+                fillAddressesTable();
             },
             error: function (xhr, status, error) {
                 if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                 let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
-                showAlert('Error: ' + errorMessage);
+                showAlert("Error removing address! " + errorMessage);
             }
         });
-    }
+    };
+
+    function fetchAndFillAddressesTable() {
+        fetchAddresses().then(data => {
+            let tableBody = $('#addressesTableBody');
+            tableBody.empty();
+
+            data.forEach(function (address) {
+                tableBody.append(
+                    `<tr data-address-id="${address.addressID}">
+                        <td><input type="checkbox" class="address-checkbox"></td>
+                        <td>${address.street}</td>
+                        <td>${address.number}</td>
+                        <td>${address.city}</td>
+                        <td>${address.state}</td>
+                        <td>${address.country}</td>
+                        <td>${address.postalCode}</td>
+                    </tr>`
+                );
+            });
+        });
+    };
+
+    $(document).on('change','.address-checkbox', function(){
+        let row = $(this).closest('tr');
+        let addressId = row.data('address-id');
+
+        if ($(this).is(':checked')) {
+            selectedAddressId = addressId;
+            if (!selectedAddressesIds.includes(addressId)) {
+                selectedAddressesIds.push(addressId);
+            }
+        } else {
+            if (selectedAddressId === addressId) {
+                selectedAddressId = null;
+            }
+            let index = selectedAddressesIds.indexOf(addressId);
+            if (index !== -1) {
+                selectedAddressesIds.splice(index, 1);
+            }
+        }
+        console.log(selectedAddressesIds);
+    });
 
 </script>
 </body>

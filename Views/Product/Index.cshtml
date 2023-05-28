@@ -28,10 +28,10 @@
                     <option value="" selected>All</option>
                 </select>
             </div>
-            <button type="button" class="btnAdd" onclick="$('#addProductModal').modal('show');">Add Product</button>
-            <button type="button" class="btnEdit" onclick="openEditModal()">Edit Product</button>
-            <button type="button" class="btnRemove" onclick="removeProduct()">Remove Product</button>
-            <button type="button" class="btnFunct" onclick="addProductToCart()">Add Product to Cart</button>
+            <button type="button" class="btnAdd" onclick="assureLogin();$('#addProductModal').modal('show');">Add Product</button>
+            <button type="button" class="btnEdit" onclick="assureLogin();openEditModal()">Edit Product</button>
+            <button type="button" class="btnRemove" onclick="assureLogin();removeProduct()">Remove Product</button>
+            <button type="button" class="btnFunct" onclick="assureLogin();addProductToCart()">Add Product to Cart</button>
             <label for="orderBy" style="font-size: 15px; margin-right: 10px; margin-left: 10px;">Order by</label>
             <select class="filter" id="orderBy">
                 <option value="name" selected>Name</option>
@@ -174,8 +174,8 @@
         const decimals = ["price", "cost", "tax", "discount"];
 
         $(document).ready(function () {
-            fetchBusinesses();
-            fetchAndFillProductsTable();
+            fillBusinessesDropdown();
+            fillProductsTable();
         });
 
         $('#businessIDFilter').change(function () {
@@ -194,7 +194,6 @@
         });
 
         function addProduct() {
-            assureLogin();
             let form = $('#addProductForm')[0];
             if (form.checkValidity() === true) {
                 form.classList.add('was-validated');
@@ -229,7 +228,7 @@
                     },
                     success: function (response) {
                         showAlert("Product added successfully!");
-                        fetchAndFillProductsTable(selectedBusinessId);
+                        fillProductsTable(selectedBusinessId);
                         $('#closeBtnAdd').click();
                     },
                     error: function (xhr, status, error) {
@@ -243,9 +242,8 @@
         };
 
         function removeProduct() {
-            assureLogin();
             if (selectedProductsIds.length !== 1) {
-                showAlert('Please select exactly one product to edit.');
+                showAlert('Please select exactly one product to remove.');
                 return;
             }
             $.ajax({
@@ -257,7 +255,7 @@
                 },
                 success: function (response) {
                     showAlert("Product removed successfully!");
-                    fetchAndFillProductsTable(selectedBusinessId);
+                    fillProductsTable(selectedBusinessId);
                 },
                 error: function (xhr, status, error) {
                     if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
@@ -268,8 +266,6 @@
         };
 
         function addProductToCart() {
-            debugger;
-            assureLogin();
             if (selectedProductsIds.length === 0) {
                 alert('Please select a product to add to cart.');
                 return false;
@@ -304,29 +300,25 @@
                 showAlert('Please select exactly one product to edit.');
                 return;
             }
-            let editProductModal = $('#editProductModal');
-            $.ajax({
-                url: '/Product/ListProductInfo/'+selectedProductsIds[0],
-                type: 'GET',
-                dataType: 'json',
-                success: function(data){
-                    $('#editProductForm input[name="name"]').val(data.name);
-                    $('#editProductForm textarea[name="description"]').val(data.description);
-                    $('#editProductForm input[name="price"]').val(data.price);
-                    $('#editProductForm input[name="cost"]').val(data.cost);
-                    $('#editProductForm input[name="tax"]').val(data.tax);
-                    $('#editProductForm input[name="discount"]').val(data.discount);
-                    $('#editProductForm input[name="imageUrl"]').val(data.imageUrl);
-                    $('#editProductForm select[name="businessID"]').val(data.businessID);
-                    $('#editProductForm input[name="isActive"]').prop('checked', data.isActive);
-                }
+
+            fetchProduct(selectedProductsIds[0]).then(data => {
+                $('#editProductForm input[name="name"]').val(data.name);
+                $('#editProductForm textarea[name="description"]').val(data.description);
+                $('#editProductForm input[name="price"]').val(data.price);
+                $('#editProductForm input[name="cost"]').val(data.cost);
+                $('#editProductForm input[name="tax"]').val(data.tax);
+                $('#editProductForm input[name="discount"]').val(data.discount);
+                $('#editProductForm input[name="imageUrl"]').val(data.imageUrl);
+                $('#editProductForm select[name="businessID"]').val(data.businessID);
+                $('#editProductForm input[name="isActive"]').prop('checked', data.isActive);
+
+                $('#editProductModal').modal('show');
+            }).catch(error => {
+                console.error(error);
             });
-            $('#editProductModal').modal('show');
-        }
+        };
 
         function editProduct() {
-            debugger;
-            assureLogin();
             let form = $('#editProductForm')[0];
             if (form.checkValidity() === true) {
                 form.classList.add('was-validated');
@@ -361,7 +353,7 @@
                     },
                     success: function (response) {
                         showAlert("Product updated successfully!");
-                        fetchAndFillProductsTable(selectedBusinessId);
+                        fillProductsTable(selectedBusinessId);
                         $('#closeBtnEdit').click();
                     },
                     error: function (xhr, status, error) {
@@ -375,73 +367,51 @@
             }
         };
 
-        function fetchBusinesses() {
-            $.ajax({
-                url: '/Business/ListBusinesses',
-                type: 'GET',
-                dataType: 'json',
-                success: function (data) {
-                    let businessDropdowns = $('select[name="businessID"]');
-                    let businessDropdownsFilter = $('select[name="businessIDFilter"]');
-                    data.forEach(function (business) {
-                        businessDropdowns.append(`<option value="${business.businessID}">${business.name}</option>`);
-                        businessDropdownsFilter.append(`<option value="${business.businessID}">${business.name}</option>`);
-                    });
-                    businessDropdowns.append(`<option value="null">Null</option>`);
-                },
-                error: function (xhr, status, error) {
-                    if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
-                    let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
-                    showAlert('Error: ' + errorMessage);
-                }
+        function fillBusinessesDropdown() {
+            fetchBusinesses().then(data => {
+                let businessDropdowns = $('select[name="businessID"]');
+                let businessDropdownsFilter = $('select[name="businessIDFilter"]');
+                data.forEach(function (business) {
+                    businessDropdowns.append(`<option value="${business.businessID}">${business.name}</option>`);
+                    businessDropdownsFilter.append(`<option value="${business.businessID}">${business.name}</option>`);
+                });
+                businessDropdowns.append(`<option value="null">Null</option>`);
+            }).catch(error => {
+                console.error(error);
             });
-        }
+        };
 
-        function fetchAndFillProductsTable() {
-            debugger;
-            let url = '/Product/ListProducts';
-            if (selectedBusinessId !== '') { url += 'OfBusiness/' + selectedBusinessId; }
-            url += "?ascdesc=" + ordering + "&orderBy=" + orderBy;
-
-            $.ajax({
-                url: url,
-                type: 'GET',
-                dataType: 'json',
-                success: function (data) {
-                    let productsContainer = $('#productsContainer');
-                    productsContainer.empty();
-                    data.forEach(function (product) {
-                        let isActive = product.isActive ? 'Yes' : 'No';
-                        let image = product.imageUrl ? `<a href="${product.imageUrl}" target="_blank" ><img class="card-img-top" src="${product.imageUrl}" alt="Card image cap" width="100" height="100"></a>` : '';
-                        productsContainer.append(
-                            `<div class="product-card-container">
-                                <div class="card product-card" data-product-id="${product.productID}">
-                                    <form class="product-card-form">
-                                        ${image}
-                                        <div class="card-body">
-                                            <div class="d-flex align-items-center">
-                                                <input type="checkbox" class="product-checkbox mr-2">
-                                                <h5 class="card-title mb-0">${product.name}</h5>
-                                            </div>
-                                            <p class="card-text">(${product.description})</p>
-                                            <p class="cardinfo">$${product.price}</p>
-                                            <p class="cardinfo" style="color: red;">Tax: $${product.tax}</p>
-                                            <p class="cardinfo" style="color: green;">Discount: $${product.discount}</p>
-                                            <p class="cardinfo">Business: ${product.businessDto.name}</p>
+        function fillProductsTable() {
+            let productsContainer = $('#productsContainer');
+            fetchProducts(selectedBusinessId, orderBy, ordering).then(data => {
+                data.forEach(function (product) {
+                    let isActive = product.isActive ? 'Yes' : 'No';
+                    let image = product.imageUrl ? `<a href="${product.imageUrl}" target="_blank" ><img class="card-img-top" src="${product.imageUrl}" alt="Card image cap" width="100" height="100"></a>` : '';
+                    productsContainer.append(
+                        `<div class="product-card-container">
+                            <div class="card product-card" data-product-id="${product.productID}">
+                                <form class="product-card-form">
+                                    ${image}
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <input type="checkbox" class="product-checkbox mr-2">
+                                            <h5 class="card-title mb-0">${product.name}</h5>
                                         </div>
-                                    </form>
-                                </div>
-                            </div>`
-                        );
-                    });
-                },
-                error: function (xhr, status, error) {
-                    if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
-                    let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
-                    showAlert('Error: ' + errorMessage);
-                }
+                                        <p class="card-text">(${product.description})</p>
+                                        <p class="cardinfo">$${product.price}</p>
+                                        <p class="cardinfo" style="color: red;">Tax: $${product.tax}</p>
+                                        <p class="cardinfo" style="color: green;">Discount: $${product.discount}</p>
+                                        <p class="cardinfo">Business: ${product.businessDto.name}</p>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>`
+                    );
+                });
+            }).catch(error => {
+                console.error(error);
             });
-        }
+        };
 
         $(document).on('change', '.product-checkbox', function () {
             let productCard = $(this).closest('.product-card');
@@ -461,7 +431,6 @@
                     selectedProductsIds.splice(index, 1);
                 }
             }
-            console.log(selectedProductsIds);
         });
 
     </script>

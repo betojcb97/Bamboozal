@@ -9,20 +9,12 @@ namespace Bamboo.Profiles
     {
         public OrderProfile()
         {
-            CreateMap<AddOrderDto, Order>()
-                .ForMember(dest => dest.products, opt => opt.Ignore())
-                .ForMember(dest => dest.productsIds, opt => opt.MapFrom(src => src.productsIds));
+            CreateMap<AddOrderDto, Order>();
 
             CreateMap<Order, ReadOrderDto>()
-                .ForMember(dest => dest.productsIds, opt => opt.MapFrom(src => src.products.Select(p => p.productID)))
-                .ForMember(dest => dest.productsDto, opt => opt.MapFrom(src => src.products))
-                .ForMember(dest => dest.userDto, opt => opt.MapFrom(src => src.user))
-                .ForMember(dest => dest.businessDto, opt => opt.MapFrom(src => src.business));
+                .ForMember(dest => dest.userDto, opt => opt.MapFrom(src => src.user));
 
-            CreateMap<EditOrderDto, Order>()
-                .ForMember(dest => dest.products, opt => opt.Ignore())
-                .ForMember(dest => dest.productsIds, opt => opt.MapFrom(src => src.productsIds));
-
+            CreateMap<EditOrderDto, Order>();
         }
     }
 }

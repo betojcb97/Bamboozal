@@ -40,21 +40,8 @@ namespace Bamboo.Controllers
                 Cart cart = new Cart
                 {
                     userID = loggedUser.userID,
-                    productsIds = cartDto.productsIds?.ToList(),
-                    products = new List<Product>(),
+                    productsIdsAndQuantities = cartDto.productsIdsAndQuantities.ToList(),
                 };
-
-                if (cartDto.productsIds != null)
-                {
-                    foreach (var productId in cartDto.productsIds)
-                    {
-                        var product = db.Products.FirstOrDefault(p => p.productID == productId);
-                        if (product != null)
-                        {
-                            cart.products.Add(product);
-                        }
-                    }
-                }
 
                 db.Carts.Add(cart);
                 db.SaveChanges();
@@ -71,10 +58,8 @@ namespace Bamboo.Controllers
             bool authorized = tokenValidator.ValidateToken();
             if (authorized)
             {
-                Cart dbCart = db.Carts.Include(c => c.products).Where(a => a.cartID.Equals(cartID)).FirstOrDefault();
+                Cart dbCart = db.Carts.Where(a => a.cartID.Equals(cartID)).FirstOrDefault();
                 if (dbCart == null) { return Ok(); }
-
-                dbCart.products.Clear();
 
                 db.Carts.Remove(dbCart);
                 db.SaveChanges();
@@ -118,8 +103,8 @@ namespace Bamboo.Controllers
         {
             CustomUser dbUser = Util.Util.getLoggedUser(httpContextAccessor, db);
             if (dbUser == null) return Json(null);
-            List<ReadCartDto> readCartDtos = mapper.Map<List<ReadCartDto>>(db.Carts.Where(c => c.userID.Equals(dbUser.userID)).ToList());
-            return Json(readCartDtos);
+            ReadCartDto readCartDto = mapper.Map<ReadCartDto>(db.Carts.Where(c => c.userID.Equals(dbUser.userID)).ToList());
+            return Json(readCartDto);
         }
 
         [HttpGet("Index")]

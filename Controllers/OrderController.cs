@@ -42,13 +42,7 @@ namespace Bamboo.Controllers
                 Order order = new Order
                 {
                     userID = cart.userID,
-                    products = new List<Product>(cart.products),
-                    total = cart.products.Sum(p => p.price - p.discount), 
-                    subtotal = cart.products.Sum(p => p.price),
-                    discount = cart.products.Sum(p => p.discount),
-                    cost = cart.products.Sum(p => p.cost),
-                    businessID = cart.products.First().businessID,
-                    
+                    productsIdsAndQuantities = cart.productsIdsAndQuantities,
                 };
                 db.Orders.Add(order);
                 db.Carts.Remove(cart);
@@ -67,7 +61,6 @@ namespace Bamboo.Controllers
             {
                 Order dbOrder = db.Orders.Where(a => a.orderID.Equals(OrderID)).FirstOrDefault();
                 if (dbOrder == null) { return Ok(); }
-                dbOrder.products.Clear();
                 db.Orders.Remove(dbOrder);
                 db.SaveChanges();
                 logManager.AddLog($"Order: id=({dbOrder.orderID}) removed successfully by: {Util.Util.getLoggedUser(httpContextAccessor, db).userFirstName} id=({Util.Util.getLoggedUser(httpContextAccessor, db).userID})!");

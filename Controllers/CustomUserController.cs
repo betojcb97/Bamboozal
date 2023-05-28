@@ -233,6 +233,14 @@ namespace Bamboo.Controllers
             else { return Unauthorized(); }
         }
 
+        [HttpGet("CheckToken")]
+        public IActionResult CheckToken()
+        {
+            bool authorized = tokenValidator.ValidateToken();
+            if(authorized) { return Ok(); }
+            return Unauthorized();
+        }
+
         [HttpGet("LoginPage")]
         public IActionResult LoginPage()
         {
