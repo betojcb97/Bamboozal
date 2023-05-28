@@ -312,39 +312,16 @@ h1 {
     box-sizing: border-box; /* Includes borders and padding in the total width and height of the element */
     overflow: hidden; /* Prevents content from overflowing */
 }
-.quantity-container {
+
+.add-to-cart-btn {
+    border-radius: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 80px; /* Adjust the width as needed */
     background-color: lightblue;
-    border: 1px solid black;
-    border-radius: 10px;
-    margin-bottom: 5px;
-    margin-left: auto; /* This centers the whole container in its parent */
-    margin-right: auto; /* This centers the whole container in its parent */
-}
-
-.product-quantity {
-    width: 20px;
-    border: none; /* Remove the border */
-    text-align: center;
-    background-color: transparent;
-    align-self: center; /* Centers vertically in flex container */
-    margin-left: 15px;
-}
-
-.quantity-decrement,
-.quantity-increment {
-    width: 20px;
-    height: 20px;
-    border-radius: 10px;
-    background-color: blue; /* Set the background color to blue */
-    color: white; /* Set the text color to white */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+    width: 80%; /* Adjust the width as desired */
+    margin: 0 auto; /* Centers the button horizontally */
+    font-weight: bold;
 }
 
 
@@ -353,6 +330,7 @@ h1 {
     font-size: 18px; /* Sets the font size to x pixels */
     color: #333; /* Sets the text color to x */
     word-wrap: break-word; /* Allows long words to break into multiple lines */
+    text-align: center; /* Add this line to center the title */
 }
 
 /* Styling for the card-text class within the card-body */
