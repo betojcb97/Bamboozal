@@ -28,9 +28,6 @@
                     <option value="" selected>All</option>
                 </select>
             </div>
-            <button type="button" class="btnAdd" onclick="assureLogin();$('#addProductModal').modal('show');">Add Product</button>
-            <button type="button" class="btnEdit" onclick="assureLogin();openEditModal()">Edit Product</button>
-            <button type="button" class="btnRemove" onclick="assureLogin();removeProduct()">Remove Product</button>
             <button type="button" class="btnFunct" onclick="assureLogin();addProductToCart()">Add Product to Cart</button>
             <label for="orderBy" style="font-size: 15px; margin-right: 10px; margin-left: 10px;">Order by</label>
             <select class="filter" id="orderBy">
@@ -206,78 +203,6 @@
             fetchAndFillProductsTable();
         });
 
-        function addProduct() {
-            let form = $('#addProductForm')[0];
-            if (form.checkValidity() === true) {
-                form.classList.add('was-validated');
-                let formData = $('#addProductForm').serializeArray();
-                let jsonData = {};
-                formData.forEach(function (item) {
-                    if (item.name === "businessID" && item.value === "") {
-                        jsonData[item.name] = null;
-                    } else if (item.name === "isActive") {
-                        jsonData[item.name] = item.value === "on" ? true : false;
-                    } else if (decimals.includes(item.name)) {
-                        if (item.value === "") {
-                            jsonData[item.name] = 0;
-                        }
-                        else {
-                            jsonData[item.name] = parseFloat(item.value);
-                        }
-                    } else if (item.value === "") {
-                        jsonData[item.name] = null;
-                    } else {
-                        jsonData[item.name] = item.value;
-                    }
-                });
-                event.preventDefault();
-                $.ajax({
-                    url: '/Product/AddProduct',
-                    type: 'POST',
-                    data: JSON.stringify(jsonData),
-                    contentType: 'application/json',
-                    beforeSend: function (xhr) {
-                        xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
-                    },
-                    success: function (response) {
-                        showAlert("Product added successfully!");
-                        fillProductsTable(selectedBusinessId);
-                        $('#closeBtnAdd').click();
-                    },
-                    error: function (xhr, status, error) {
-                        if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
-                        let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
-                        showAlert("Error adding product! " + errorMessage);
-                        $('#closeBtnAdd').click();
-                    }
-                });
-            }
-        };
-
-        function removeProduct() {
-            if (selectedProductsIds.length !== 1) {
-                showAlert('Please select exactly one product to remove.');
-                return;
-            }
-            $.ajax({
-                url: '/Product/RemoveProduct/' + selectedProductsIds[0],
-                type: 'POST',
-                contentType: 'application/json',
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
-                },
-                success: function (response) {
-                    showAlert("Product removed successfully!");
-                    fillProductsTable(selectedBusinessId);
-                },
-                error: function (xhr, status, error) {
-                    if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
-                    let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
-                    showAlert("Error removing product! " + errorMessage);
-                }
-            });
-        };
-
         function addProductToCart() {
             debugger;
             if (selectedProductsIds.length === 0) {
@@ -313,87 +238,12 @@
             });
         };
 
-        function openEditModal() {
-            if (selectedProductsIds.length !== 1) {
-                showAlert('Please select exactly one product to edit.');
-                return;
-            }
-
-            fetchProduct(selectedProductsIds[0]).then(data => {
-                $('#editProductForm input[name="name"]').val(data.name);
-                $('#editProductForm textarea[name="description"]').val(data.description);
-                $('#editProductForm input[name="price"]').val(data.price);
-                $('#editProductForm input[name="cost"]').val(data.cost);
-                $('#editProductForm input[name="tax"]').val(data.tax);
-                $('#editProductForm input[name="discount"]').val(data.discount);
-                $('#editProductForm input[name="imageUrl"]').val(data.imageUrl);
-                $('#editProductForm select[name="businessID"]').val(data.businessID);
-                $('#editProductForm input[name="isActive"]').prop('checked', data.isActive);
-
-                $('#editProductModal').modal('show');
-            }).catch(error => {
-                console.error(error);
-            });
-        };
-
-        function editProduct() {
-            let form = $('#editProductForm')[0];
-            if (form.checkValidity() === true) {
-                form.classList.add('was-validated');
-                let formData = $('#editProductForm').serializeArray();
-                let jsonData = {};
-                formData.forEach(function (item) {
-                    if (item.name === "businessID" && item.value === "") {
-                        jsonData[item.name] = null;
-                    } else if (item.name === "isActive") {
-                        jsonData[item.name] = item.value === "on" ? true : false;
-                    } else if (decimals.includes(item.name)) {
-                        if (item.value === "") {
-                            jsonData[item.name] = 0;
-                        }
-                        else {
-                            jsonData[item.name] = parseFloat(item.value);
-                        }
-                    } else if (item.value === "") {
-                        jsonData[item.name] = null;
-                    } else {
-                        jsonData[item.name] = item.value;
-                    }
-                });
-                event.preventDefault();
-                $.ajax({
-                    url: '/Product/EditProduct/' + selectedProductsIds[0],
-                    type: 'POST',
-                    data: JSON.stringify(jsonData),
-                    contentType: 'application/json',
-                    beforeSend: function (xhr) {
-                        xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
-                    },
-                    success: function (response) {
-                        showAlert("Product updated successfully!");
-                        fillProductsTable(selectedBusinessId);
-                        $('#closeBtnEdit').click();
-                    },
-                    error: function (xhr, status, error) {
-                        debugger;
-                        if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
-                        let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
-                        showAlert("Error updating product! " + errorMessage);
-                        $('#closeBtnEdit').click();
-                    }
-                });
-            }
-        };
-
         function fillBusinessesDropdown() {
             fetchBusinesses().then(data => {
-                let businessDropdowns = $('select[name="businessID"]');
                 let businessDropdownsFilter = $('select[name="businessIDFilter"]');
                 data.forEach(function (business) {
-                    businessDropdowns.append(`<option value="${business.businessID}">${business.name}</option>`);
                     businessDropdownsFilter.append(`<option value="${business.businessID}">${business.name}</option>`);
                 });
-                businessDropdowns.append(`<option value="null">Null</option>`);
             }).catch(error => {
                 console.error(error);
             });
