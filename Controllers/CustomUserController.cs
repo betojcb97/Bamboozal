@@ -241,6 +241,13 @@ namespace Bamboo.Controllers
             return Unauthorized();
         }
 
+        [HttpGet("GetOwnerOfBusinessID")]
+        public IActionResult GetOwnerOfBusinessID()
+        {
+            CustomUser loggedUser = Util.Util.getLoggedUser(httpContextAccessor, db);
+            return Json(loggedUser.ownerOfBusinessID);
+        }
+
         [HttpGet("LoginPage")]
         public IActionResult LoginPage()
         {

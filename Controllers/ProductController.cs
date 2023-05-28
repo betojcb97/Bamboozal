@@ -153,5 +153,11 @@ namespace Bamboo.Controllers
             return View();
         }
 
+        [HttpGet("BusinessProducts")]
+        public IActionResult BusinessProducts()
+        {
+            return View();
+        }
+
     }
 }

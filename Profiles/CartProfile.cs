@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using Bamboo.Profiles;
 using Bamboo.Models;
 using Bamboo.DTO;
+using System.Text.Json;
 
 namespace Bamboo.Profiles
 {
@@ -9,13 +9,17 @@ namespace Bamboo.Profiles
     {
         public CartProfile()
         {
-            CreateMap<AddCartDto, Cart>();
+            CreateMap<AddCartDto, Cart>()
+                .ForMember(dest => dest.productsIdsAndQuantities,
+                           opt => opt.MapFrom(src => JsonSerializer.Serialize(src.productsIdsAndQuantities, new JsonSerializerOptions())));
 
-            CreateMap<Cart, ReadCartDto>();
+            CreateMap<EditCartDto, Cart>()
+                .ForMember(dest => dest.productsIdsAndQuantities,
+                           opt => opt.MapFrom(src => JsonSerializer.Serialize(src.productsIdsAndQuantities, new JsonSerializerOptions())));
 
-            CreateMap<EditCartDto, Cart>();
+            CreateMap<Cart, ReadCartDto>()
+                .ForMember(dest => dest.productsIdsAndQuantities,
+                           opt => opt.MapFrom(src => src.productsIdsAndQuantities));
         }
     }
 }
-
-

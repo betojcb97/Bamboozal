@@ -7,8 +7,10 @@ using Bamboo.Util;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Utilities.Net;
+using System.Dynamic;
 using System.Net;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Bamboo.Controllers
 {
@@ -37,11 +39,12 @@ namespace Bamboo.Controllers
             CustomUser loggedUser = Util.Util.getLoggedUser(httpContextAccessor,db);
             if (authorized)
             {
-                Cart cart = new Cart
+                Cart cart = new Cart(db)
                 {
                     userID = loggedUser.userID,
-                    productsIdsAndQuantities = cartDto.productsIdsAndQuantities.ToList(),
+                    productsIdsAndQuantities = cartDto.productsIdsAndQuantities,
                 };
+                cart.CalculateSums();
 
                 db.Carts.Add(cart);
                 db.SaveChanges();
@@ -80,11 +83,13 @@ namespace Bamboo.Controllers
                 if (dbCart == null) return NotFound();
                 Cart CartNewInfo = mapper.Map<Cart>(cartDto);
 
+                dbCart.productsIdsAndQuantities = CartNewInfo.productsIdsAndQuantities;
+
                 PropertyInfo[] properties = CartNewInfo.GetType().GetProperties();
 
                 foreach (PropertyInfo property in properties)
                 {
-                    if (property.GetValue(CartNewInfo) != null && property.Name != "CartID")
+                    if (property.GetValue(CartNewInfo) != null && property.Name != "CartID" && property.Name != "ProductsIdsAndQuantitiesList")
                     {
                         property.SetValue(dbCart, property.GetValue(CartNewInfo));
                     }
@@ -103,9 +108,46 @@ namespace Bamboo.Controllers
         {
             CustomUser dbUser = Util.Util.getLoggedUser(httpContextAccessor, db);
             if (dbUser == null) return Json(null);
-            ReadCartDto readCartDto = mapper.Map<ReadCartDto>(db.Carts.Where(c => c.userID.Equals(dbUser.userID)).ToList());
-            return Json(readCartDto);
+            List<Cart> carts = db.Carts.Where(c => c.userID.Equals(dbUser.userID)).ToList();
+
+            List<ReadCartDto> readCartDtos = new List<ReadCartDto>();
+
+            foreach (var cart in carts)
+            {
+                cart.CalculateSums();
+
+                ReadCartDto cartDto = new ReadCartDto
+                {
+                    cartID = cart.cartID,
+                    userID = cart.userID,
+                    productsIdsAndQuantities = cart.productsIdsAndQuantities,
+                    dateOfCreation = cart.dateOfCreation,
+                    total = cart.total,
+                    subtotal = cart.subtotal,
+                    tax = cart.tax,
+                    discount = cart.discount
+                };
+
+                readCartDtos.Add(cartDto);
+            }
+
+            dynamic response = new ExpandoObject();
+            response.cartsDto = readCartDtos;
+            List<ReadProductDto> productsDto = new List<ReadProductDto>();
+            foreach (var cart in readCartDtos)
+            {
+                foreach (var productQuantities in cart.productsIdsAndQuantities)
+                {
+                    foreach (var productId in productQuantities.Keys)
+                    {
+                        productsDto.Add(mapper.Map<ReadProductDto>(db.Products.Where(p => p.productID.ToString().Equals(productId)).FirstOrDefault()));
+                    }
+                }
+            }
+            response.products = productsDto;
+            return Json(response);
         }
+
 
         [HttpGet("Index")]
         public IActionResult Index()

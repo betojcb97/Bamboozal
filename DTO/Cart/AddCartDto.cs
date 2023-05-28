@@ -5,8 +5,6 @@ namespace Bamboo.DTO
 {
     public class AddCartDto
     {
-        public Guid? userID { get; set; }
-
-        public List<Dictionary<Guid, int>> productsIdsAndQuantities { get; set; }
+        public List<Dictionary<string, int>> productsIdsAndQuantities { get; set; }
     }
 }

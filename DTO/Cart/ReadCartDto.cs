@@ -9,7 +9,17 @@ namespace Bamboo.DTO
 
         public Guid? userID { get; set; }
 
-        public List<Dictionary<Guid, int>> productsIdsAndQuantities { get; set; }
+        public decimal total { get; set; }
+
+        public decimal cost { get; set; }
+
+        public decimal tax { get; set; }
+
+        public decimal subtotal { get; set; }
+
+        public decimal discount { get; set; }
+
+        public List<Dictionary<string, int>> productsIdsAndQuantities { get; set; }
 
         public DateTime? dateOfCreation { get; set; }
 

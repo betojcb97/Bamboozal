@@ -26,14 +26,18 @@
                 <thead>
                     <tr>
                         <th></th>
-                        <th>Cart ID</th>
-                        <th>User ID</th>
                         <th>Date of Creation</th>
-                        <th>Product</th>
+                        <th>Total</th>
+                        <th>Subtotal</th>
+                        <th>Tax</th>
+                        <th>Discount</th>
+                        <th>Product ID</th>
+                        <th>Product Name</th>
                         <th>Description</th>
                         <th>Price</th>
                         <th>Tax</th>
                         <th>Discount</th>
+                        <th>Quantity</th>
                     </tr>
                 </thead>
                 <tbody id="cartsTableBody">
@@ -160,29 +164,39 @@
             dataType: 'json',
             beforeSend: function (xhr) {
                 xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
-            },
-            success: function (data) {
+            }, 
+            success: function (response) {
                 let tableBody = $('#cartsTableBody');
                 tableBody.empty();
+                response.cartsDto.forEach(function (cart) {
+                    cart.productsIdsAndQuantities.forEach(function (dict, index) {
+                        for (let productId in dict) {
+                            let quantity = dict[productId];
 
-                data.forEach(function (cart) {
-                    cart.productsDto.forEach(function (product, index) {
-                        let row =
-                        `<tr data-cart-id="${cart.cartID}" data-product-id="${product.productId}">
-                        ${index === 0 ? `<td rowspan="${cart.productsDto.length}"><input type="checkbox" class="cart-checkbox" value="${cart.cartID}"></td>
-                        <td rowspan="${cart.productsDto.length}">${cart.cartID}</td>
-                        <td rowspan="${cart.productsDto.length}">${cart.userID}</td>
-                        <td rowspan="${cart.productsDto.length}">${cart.dateOfCreation}</td>` : ""}
-                        <td>${product.name}</td>
-                        <td>${product.description}</td>
-                        <td>${product.price}</td>
-                        <td>${product.tax}</td>
-                        <td>${product.discount}</td>
-                        </tr>`;
-                        tableBody.append(row);
+                            let product = response.products.find(p => p.productID === productId);
+
+                            let dateOfCreation = formatISODate(cart.dateOfCreation);
+
+                            let row =
+                                `<tr data-cart-id="${cart.cartID}" data-product-id="${productId}">
+                                ${index === 0 ? `<td rowspan="${cart.productsIdsAndQuantities.length}"><input type="checkbox" class="cart-checkbox" value="${cart.cartID}"></td>
+                                <td rowspan="${cart.productsIdsAndQuantities.length}">${dateOfCreation}</td>
+                                <td rowspan="${cart.productsIdsAndQuantities.length}">${cart.total}</td>
+                                <td rowspan="${cart.productsIdsAndQuantities.length}">${cart.subtotal}</td>
+                                <td rowspan="${cart.productsIdsAndQuantities.length}">${cart.tax}</td>
+                                <td rowspan="${cart.productsIdsAndQuantities.length}">${cart.discount}</td>` : ""}
+                                <td>${product.productID}</td>
+                                <td>${product.name}</td>
+                                <td>${product.description}</td>
+                                <td>${product.price}</td>
+                                <td>${product.tax}</td>
+                                <td>${product.discount}</td>
+                                <td>${quantity}</td>
+                                </tr>`;
+                            tableBody.append(row);
+                        }
                     });
                 });
-
             },
             error: function (xhr, status, error) {
                 if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
@@ -190,7 +204,8 @@
                 showAlert('Error: ' + errorMessage);
             }
         });
-    }
+    };
+
 
 </script>
 </body>

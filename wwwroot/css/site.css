@@ -84,7 +84,7 @@ body {
     border-radius: 15px;
     width: 60px;
     height: 60px;
-    animation: glowing 3s linear infinite;
+    animation: glowing 1s linear infinite;
 }
 
 
@@ -312,6 +312,41 @@ h1 {
     box-sizing: border-box; /* Includes borders and padding in the total width and height of the element */
     overflow: hidden; /* Prevents content from overflowing */
 }
+.quantity-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80px; /* Adjust the width as needed */
+    background-color: lightblue;
+    border: 1px solid black;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    margin-left: auto; /* This centers the whole container in its parent */
+    margin-right: auto; /* This centers the whole container in its parent */
+}
+
+.product-quantity {
+    width: 20px;
+    border: none; /* Remove the border */
+    text-align: center;
+    background-color: transparent;
+    align-self: center; /* Centers vertically in flex container */
+    margin-left: 15px;
+}
+
+.quantity-decrement,
+.quantity-increment {
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    background-color: blue; /* Set the background color to blue */
+    color: white; /* Set the text color to white */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
 
 /* Styling for the card-title class within the card-body */
 .card-body .card-title {

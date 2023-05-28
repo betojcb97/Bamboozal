@@ -2,27 +2,17 @@
 using Bamboo.Data;
 using Bamboo.Services;
 using Microsoft.Extensions.Hosting;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json;
 
 namespace Bamboo.Models
 {
     public class Cart
     {
-        private TokenValidator tokenValidator;
-        private BambooContext db;
-        private IMapper mapper;
-        private IHttpContextAccessor httpContextAccessor;
-        private LogService logManager;
-        public Cart(BambooContext db, IMapper mapper, TokenValidator tokenValidator, IHttpContextAccessor httpContextAccessor, LogService logManager)
-        {
-            this.db = db;
-            this.mapper = mapper;
-            this.tokenValidator = tokenValidator;
-            this.httpContextAccessor = httpContextAccessor;
-            this.logManager = logManager;
-        }
+        private readonly BambooContext db;
 
         [Key]
         public Guid cartID { get; set; }
@@ -39,15 +29,31 @@ namespace Bamboo.Models
 
         public decimal discount { get; set; }
 
+        public string productsIdsAndQuantitiesSerialized { get; set; }
+
         [NotMapped]
-        public List<Dictionary<Guid,int>> productsIdsAndQuantities { get; set; }
+        public List<Dictionary<string, int>> productsIdsAndQuantities
+        {
+            get
+            {
+                return productsIdsAndQuantitiesSerialized == null ? null : JsonSerializer.Deserialize<List<Dictionary<string, int>>>(productsIdsAndQuantitiesSerialized);
+            }
+            set
+            {
+                productsIdsAndQuantitiesSerialized = JsonSerializer.Serialize(value);
+            }
+        }
 
         public DateTime? dateOfCreation { get; set; }
 
-        public Cart()
+        public Cart(BambooContext db)
         {
+            this.db = db;
             cartID = Guid.NewGuid();
             dateOfCreation = DateTime.Now;
+        }
+        public void CalculateSums()
+        {
             decimal subtotalSum = 0;
             decimal costSum = 0;
             decimal taxSum = 0;
@@ -56,7 +62,7 @@ namespace Bamboo.Models
             {
                 foreach (var item in dict)
                 {
-                    Product product = db.Products.FirstOrDefault(p => p.productID.Equals(item.Key));
+                    Product product = db.Products.FirstOrDefault(p => p.productID.ToString().Equals(item.Key));
                     if (product != null)
                     {
                         decimal price = product.price;
@@ -79,3 +85,4 @@ namespace Bamboo.Models
         }
     }
 }
+

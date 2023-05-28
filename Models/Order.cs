@@ -41,7 +41,7 @@ namespace Bamboo.Models
         public virtual CustomUser user { get; set; }
 
         [NotMapped]
-        public List<Dictionary<Guid, int>> productsIdsAndQuantities { get; set; }
+        public List<Dictionary<string, int>> productsIdsAndQuantities { get; set; }
 
         public Guid? deliveryAddressID { get; set; }
 
@@ -50,6 +50,10 @@ namespace Bamboo.Models
         public Order()
         {
             orderID = Guid.NewGuid();
+        }
+
+        public void CalculateSums()
+        {
             decimal subtotalSum = 0;
             decimal costSum = 0;
             decimal taxSum = 0;
@@ -58,7 +62,7 @@ namespace Bamboo.Models
             {
                 foreach (var item in dict)
                 {
-                    Product product = db.Products.FirstOrDefault(p => p.productID.Equals(item.Key));
+                    Product product = db.Products.FirstOrDefault(p => p.productID.ToString().Equals(item.Key));
                     if (product != null)
                     {
                         decimal price = product.price;

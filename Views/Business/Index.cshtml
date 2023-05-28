@@ -22,6 +22,7 @@
             <button type="button" class="btnAdd" data-toggle="modal" onclick="assureLogin();$('#addBusinessModal').modal('show');">Add Business</button>
             <button type="button" class="btnEdit" data-toggle="modal" onclick="assureLogin();openEditModal()">Edit Business</button>
             <button type="button" class="btnRemove" data-toggle="modal" onclick="assureLogin();removeBusiness()">Remove Business</button>
+            <button type="button" class="btnFunct" onclick="redirectToProducts();">Business Products</button>
             <div id="alertContainer"></div>
             <table class="custom-table  table-striped table-hover table-bordered">
                 <thead>
@@ -157,6 +158,10 @@
         fillAddressesDropdown();
         fillBusinessTable();
     });
+
+    function redirectToProducts(){
+        window.location.href = '/Product/BusinessProducts';
+    };
 
     function addBusiness() {
         let form = $('#addBusinessForm')[0];

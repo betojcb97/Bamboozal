@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "List Products";
+    ViewBag.Title = "List Business Products";
 }
 
 <!DOCTYPE html>
@@ -22,16 +22,9 @@
     <div class="page-container d-flex flex-column">
         <div class="container">
             <h1>Products</h1>
-            <div class="form-group">
-                <label for="businessIDFilter" style="font-size: 15px; margin-right: 10px; margin-left: 10px;">Select a business</label>
-                <select class="businessIDFilter" id="businessIDFilter" name="businessIDFilter">
-                    <option value="" selected>All</option>
-                </select>
-            </div>
             <button type="button" class="btnAdd" onclick="assureLogin();$('#addProductModal').modal('show');">Add Product</button>
             <button type="button" class="btnEdit" onclick="assureLogin();openEditModal()">Edit Product</button>
             <button type="button" class="btnRemove" onclick="assureLogin();removeProduct()">Remove Product</button>
-            <button type="button" class="btnFunct" onclick="assureLogin();addProductToCart()">Add Product to Cart</button>
             <label for="orderBy" style="font-size: 15px; margin-right: 10px; margin-left: 10px;">Order by</label>
             <select class="filter" id="orderBy">
                 <option value="name" selected>Name</option>
@@ -42,7 +35,24 @@
                 <option value="descending">Descending</option>
             </select>
             <div id="alertContainer"></div>
-            <div class="row" id="productsContainer"></div>
+            <table class="custom-table  table-striped table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th onclick="orderBy='name';fillProductsTable(selectedBusinessId)">Name <i class="fas fa-sort"></i></th>
+                        <th>Description</th>
+                        <th onclick="orderBy='price';fillProductsTable(selectedBusinessId)">Price <i class="fas fa-sort"></i></th>
+                        <th>Cost</th>
+                        <th>Tax</th>
+                        <th>Discount</th>
+                        <th>Image</th>
+                        <th>Business</th>
+                        <th>Active</th>
+                    </tr>
+                </thead>
+                <tbody id="productsTableBody">
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -174,37 +184,47 @@
         const decimals = ["price", "cost", "tax", "discount"];
 
         $(document).ready(function () {
+            getOwnerOfBuinessID()
+                .then(function (data) {
+                    selectedBusinessId = data;
+                    return fillProductsTable(); 
+                })
+                .catch(function (error) {
+                    console.error(error);
+                });
             fillBusinessesDropdown();
-            fillProductsTable();
-        });
-
-        $(document).on('click', '.quantity-decrement', function () {
-            let qtyInput = $(this).siblings('.product-quantity');
-            let qty = parseInt(qtyInput.val()) - 1;
-            if (qty < 0) qty = 0;
-            qtyInput.val(qty);
-        });
-
-        $(document).on('click', '.quantity-increment', function () {
-            let qtyInput = $(this).siblings('.product-quantity');
-            let qty = parseInt(qtyInput.val()) + 1;
-            qtyInput.val(qty);
-        });
-
-        $('#businessIDFilter').change(function () {
-            selectedBusinessId = $(this).val();
-            fetchAndFillProductsTable();
         });
 
         $('#orderBy').change(function(){
             orderBy = $(this).val();
-            fetchAndFillProductsTable();
+            fillProductsTable();
         });
 
         $('#ordering').change(function () {
             ordering = $(this).val();
-            fetchAndFillProductsTable();
+            fillProductsTable();
         });
+
+        function getOwnerOfBuinessID(){
+            return new Promise((resolve,reject) => {
+                $.ajax({
+                    url: '/CustomUser/GetOwnerOfBusinessID',
+                    type: 'GET',
+                    contentType: 'application/json',
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
+                    },
+                    success: function (response) {
+                        resolve(response);
+                    },
+                    error: function (xhr, status, error) {
+                        let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
+                        showAlert('Error: ' + errorMessage);
+                        reject(errorMessage);
+                    }
+                });
+            });
+        };
 
         function addProduct() {
             let form = $('#addProductForm')[0];
@@ -278,41 +298,6 @@
             });
         };
 
-        function addProductToCart() {
-            debugger;
-            if (selectedProductsIds.length === 0) {
-                alert('Please select a product to add to cart.');
-                return false;
-            }
-            let productsIdsAndQuantitiesList = selectedProductsIds.map(id => {
-                let quantity = $(`[data-product-id=${id}] .product-quantity`).val();
-                let productDict = {};
-                productDict[id] = parseInt(quantity);
-                return productDict;
-            });
-            let data = {
-                productsIdsAndQuantities: productsIdsAndQuantitiesList
-            };
-            $.ajax({
-                url: '/Cart/AddCart',
-                type: 'POST',
-                data: JSON.stringify(data),
-                contentType: 'application/json',
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
-                },
-                success: function (response) {
-                    showAlert("Cart added successfully!");
-                    window.location.href = '/Cart/Index';
-                },
-                error: function (xhr, textStatus, errorThrown) {
-                    if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
-                    let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
-                    showAlert("Error adding cart! " + errorMessage);
-                }
-            });
-        };
-
         function openEditModal() {
             if (selectedProductsIds.length !== 1) {
                 showAlert('Please select exactly one product to edit.');
@@ -371,7 +356,7 @@
                     },
                     success: function (response) {
                         showAlert("Product updated successfully!");
-                        fillProductsTable(selectedBusinessId);
+                        fillProductsTable();
                         $('#closeBtnEdit').click();
                     },
                     error: function (xhr, status, error) {
@@ -385,13 +370,40 @@
             }
         };
 
+        function fillProductsTable() {
+            let tableBody = $('#productsTableBody');
+            tableBody.empty();
+            fetchProducts(selectedBusinessId, orderBy, ordering).then(data => {
+                data.forEach(function (product) {
+                    let isActive = product.isActive ? 'Yes' : 'No';
+                    let image = product.imageUrl ? `<a href="${product.imageUrl}" target="_blank"><img src="${product.imageUrl}" alt="Image" width="100" height="100"></a>` : 'N/A';
+
+                    tableBody.append(
+                        `<tr data-product-id="${product.productID}">
+                            <td><input type="checkbox" class="product-checkbox"></td>
+                            <td>${product.name}</td>
+                            <td>${product.description}</td>
+                            <td>${product.price}</td>
+                            <td>${product.cost}</td>
+                            <td>${product.tax}</td>
+                            <td>${product.discount}</td>
+                            <td>${image}</td>
+                            <td>${product.businessDto.name}</td>
+                            <td>${isActive}</td>
+                        </tr>`
+                    );
+                });
+            }).catch(error => {
+                console.error(error);
+            });
+            toggleOrdering();
+        };
+
         function fillBusinessesDropdown() {
             fetchBusinesses().then(data => {
                 let businessDropdowns = $('select[name="businessID"]');
-                let businessDropdownsFilter = $('select[name="businessIDFilter"]');
                 data.forEach(function (business) {
                     businessDropdowns.append(`<option value="${business.businessID}">${business.name}</option>`);
-                    businessDropdownsFilter.append(`<option value="${business.businessID}">${business.name}</option>`);
                 });
                 businessDropdowns.append(`<option value="null">Null</option>`);
             }).catch(error => {
@@ -399,46 +411,16 @@
             });
         };
 
-        function fillProductsTable() {
-            let productsContainer = $('#productsContainer');
-            fetchProducts(selectedBusinessId, orderBy, ordering).then(data => {
-                data.forEach(function (product) {
-                    let isActive = product.isActive ? 'Yes' : 'No';
-                    let image = product.imageUrl ? `<a href="${product.imageUrl}" target="_blank" ><img class="card-img-top" src="${product.imageUrl}" alt="Card image cap" width="100" height="100"></a>` : '';
-                    productsContainer.append(
-                        `<div class="product-card-container">
-                            <div class="card product-card" data-product-id="${product.productID}">
-                                <form class="product-card-form">
-                                ${image}
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center">
-                                        <input type="checkbox" class="product-checkbox mr-2">
-                                        <h5 class="card-title mb-0">${product.name}</h5>
-                                        </div>
-                                            <div class="quantity-container">
-                                            <button type="button" class="quantity-decrement"><i class="fas fa-minus-circle fa-lg"></i></button>
-                                            <input type="number" class="product-quantity" value="0" min="0" readonly>
-                                            <button type="button" class="quantity-increment"><i class="fas fa-plus-circle fa-lg"></i></button>
-                                        </div>
-                                        <p class="cardinfo">$${product.price}</p>
-                                        <p class="cardinfo" style="color: red;">Tax: $${product.tax}</p>
-                                        <p class="cardinfo" style="color: green;">Discount: $${product.discount}</p>
-                                        <p class="card-text">(${product.description})</p>
-                                        <p class="cardinfo">Business: ${product.businessDto.name}</p>
-                                    </div>
-                                    </form>
-                            </div>
-                        </div>`
-                    );
-
-                });
-            }).catch(error => {
-                console.error(error);
-            });
-        };
+        function toggleOrdering() {
+            if (ordering === "ascending") {
+                ordering = "descending";
+                return;
+            }
+            ordering = "ascending";
+        }
 
         $(document).on('change', '.product-checkbox', function () {
-            let productCard = $(this).closest('.product-card');
+            let productCard = $(this).closest('tr');
             let productId = productCard.data('product-id');
 
             if ($(this).is(':checked')) {
@@ -455,6 +437,7 @@
                     selectedProductsIds.splice(index, 1);
                 }
             }
+            console.log(selectedProductsIds);
         });
 
     </script>
