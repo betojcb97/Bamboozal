@@ -89,7 +89,7 @@ namespace Bamboo.Controllers
         [HttpPost("AddUser")]
         public IActionResult AddCustomUser([FromBody] AddCustomUserDto userDto)
         {
-            CustomUser dbUser = new CustomUser();
+            CustomUser dbUser = new CustomUser(userDto.ownerOfBusinessID);
             CustomUser userNewInfo = mapper.Map<CustomUser>(userDto);
 
             PropertyInfo[] properties = userNewInfo.GetType().GetProperties();
