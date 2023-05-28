@@ -49,10 +49,14 @@ namespace Bamboo.Models
 
         public string? emailTokenConfirmation { get; set; }
 
+        public string? role { get; set; }
+
         public CustomUser() : base()
         {
             userID = Guid.NewGuid();
             dateOfRegister = DateTime.Now;
+            if (ownerOfBusinessID.HasValue) { role = "BusinessOwner"; }
+            else { role = "Consumer"; }
         }
     }
 }

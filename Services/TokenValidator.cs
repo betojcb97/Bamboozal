@@ -21,6 +21,7 @@ public class TokenValidator
             string token = "";
             try { token = httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString().Split(' ')[1]; } catch { return false; }
             CustomUser dbUser = db.CustomUsers.Where(u => u.token.Equals(token)).FirstOrDefault();
+            if (dbUser.role == "Admin") { return true; }
             if (dbUser == null || dbUser.tokenExpirationDate < DateTime.Now || dbUser.tokenExpirationDate == null)
             {
                 return false;
