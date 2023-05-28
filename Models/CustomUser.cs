@@ -51,13 +51,10 @@ namespace Bamboo.Models
 
         public string? role { get; set; }
 
-        public CustomUser(Guid? ownerOfBusinessID = null) : base()
+        public CustomUser() : base()
         {
-            this.ownerOfBusinessID = ownerOfBusinessID;
             userID = Guid.NewGuid();
             dateOfRegister = DateTime.Now;
-            role = ownerOfBusinessID.HasValue ? "BusinessOwner" : "Consumer";
         }
-
     }
 }

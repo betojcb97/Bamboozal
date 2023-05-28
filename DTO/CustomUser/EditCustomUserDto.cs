@@ -26,5 +26,7 @@ namespace Bamboo.DTO
         public Guid? ownerOfBusinessID { get; set; }
 
         public DateTime? dateOfBirth { get; set; }
+
+        public string? role { get; set; }
     }
 }

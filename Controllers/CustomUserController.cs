@@ -89,7 +89,8 @@ namespace Bamboo.Controllers
         [HttpPost("AddUser")]
         public IActionResult AddCustomUser([FromBody] AddCustomUserDto userDto)
         {
-            CustomUser dbUser = new CustomUser(userDto.ownerOfBusinessID);
+            CustomUser dbUser = new CustomUser();
+            dbUser.role = userDto.ownerOfBusinessID.HasValue ? "BusinessOwner" : "Consumer";
             CustomUser userNewInfo = mapper.Map<CustomUser>(userDto);
 
             PropertyInfo[] properties = userNewInfo.GetType().GetProperties();
@@ -219,7 +220,7 @@ namespace Bamboo.Controllers
             if (authorized)
             {
                 string token = Request.Headers["Authorization"].ToString().Split(' ')[1];
-                ReadCustomUserDto dbUserDto = mapper.Map<ReadCustomUserDto>( db.CustomUsers.Where(u => u.token.Equals(token)).FirstOrDefault());
+                ReadCustomUserDto dbUserDto = mapper.Map<ReadCustomUserDto>( db.CustomUsers.Where(u => u.token.Equals(token) && u.role != "Admin").FirstOrDefault());
                 if (dbUserDto.ownerOfBusinessID.HasValue)
                 {
                     ReadBusinessDto dbBusiness = mapper.Map<ReadBusinessDto>(db.Businesses.Where(b => b.businessID.Equals(dbUserDto.ownerOfBusinessID)).FirstOrDefault());

@@ -27,17 +27,24 @@
     </div>
 </div>
 
-<div style="margin-left: 10px; margin-bottom: 10px;">
-    If you want to try out without registering a new user use our standard login with Admin privileges:
-    <div>Username: Admin</div>
-    <div>Password: aA@1234567*</div>
-    To simulate a regular user login with:
-    <div>Username: Consumer</div>
-    <div>Password: aA@1234567*</div>
-    To simulate a business owner user login with:
-    <div>Username: BusinessOwner</div>
-    <div>Password: aA@1234567*</div>
+<div class="login-info-container">
+    <div class="login-info">
+        If you want to try out without registering a new user use our standard login with Admin privileges:
+        <div>Username: Admin</div>
+        <div>Password: aA@1234567*</div>
+    </div>
+    <div class="login-info">
+        To simulate a regular user login with:
+        <div>Username: Consumer</div>
+        <div>Password: aA@1234567*</div>
+    </div>
+    <div class="login-info">
+        To simulate a business owner user login with:
+        <div>Username: BusinessOwner</div>
+        <div>Password: aA@1234567*</div>
+    </div>
 </div>
+
 
 <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -84,8 +91,8 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="businessID">Business ID</label>
-                        <select class="form-control" id="businessID" name="businessID">
+                        <label for="ownerOfBusinessID">Business ID</label>
+                        <select class="form-control" id="ownerOfBusinessID" name="ownerOfBusinessID">
                         </select>
                     </div>
                     <div class="form-group">
@@ -186,7 +193,7 @@
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
-                    let businessDropdowns = $('select[name="businessID"]');
+                    let businessDropdowns = $('select[name="ownerOfBusinessID"]');
                     data.forEach(function (business) {
                         businessDropdowns.append(`<option value="${business.businessID}">${business.name}</option>`);
                     });

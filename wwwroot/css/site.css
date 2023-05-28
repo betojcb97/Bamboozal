@@ -214,6 +214,15 @@ h1 {
     padding-left: 10px; /* Adds left padding of 20 pixels */
 }
 
+.login-info-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.login-info {
+    margin: 10px;
+}
+
 /* #endregion MAIN CSS*/
 
 /*#region ANIMATION CSS*/

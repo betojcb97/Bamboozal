@@ -16,5 +16,7 @@ namespace Bamboo.DTO
         public virtual ReadBusinessDto? businessDto { get; set; }
         public DateTime? dateOfBirth { get; set; }
         public DateTime? dateOfRegister { get; set; }
+
+        public string? role { get; set; }
     }
 }
