@@ -32,36 +32,54 @@ namespace Bamboo.Controllers
             this.logManager = logManager;
         }
 
-        [HttpPost("AddCart")]
-        public IActionResult AddCart([FromBody] AddCartDto cartDto)
+        [HttpPost("AddProductToCart/{productID}")]
+        public IActionResult AddProductToCart(string productID)
         {
-            bool authorized = tokenValidator.ValidateToken();
             CustomUser loggedUser = Util.Util.getLoggedUser(httpContextAccessor,db);
-            if (authorized)
+            Dictionary<string, int> productsIdsAndQuantities = new Dictionary<string, int>();
+            productsIdsAndQuantities.Add(productID, 1);
+            Cart dbCart = db.Carts.Where(c => c.userID == loggedUser.userID).FirstOrDefault();
+            if (dbCart == null)
             {
                 Cart cart = new Cart(db)
                 {
                     userID = loggedUser.userID,
-                    productsIdsAndQuantities = cartDto.productsIdsAndQuantities,
+                    productsIdsAndQuantities = productsIdsAndQuantities,
                 };
                 cart.CalculateSums();
-
                 db.Carts.Add(cart);
                 db.SaveChanges();
                 logManager.AddLog($"Cart: id=({cart.cartID}) added successfully by: {Util.Util.getLoggedUser(httpContextAccessor, db).userFirstName} id=({Util.Util.getLoggedUser(httpContextAccessor, db).userID})!");
                 return CreatedAtAction(nameof(cart), cart);
             }
-            else { return Unauthorized(); }
+            else
+            {
+                var newProductsIdsAndQuantities = new Dictionary<string, int>(dbCart.productsIdsAndQuantities);
+                if (newProductsIdsAndQuantities.ContainsKey(productID))
+                {
+                    newProductsIdsAndQuantities[productID] += 1;
+                }
+                else
+                {
+                    newProductsIdsAndQuantities.Add(productID, 1);
+                }
+                dbCart.productsIdsAndQuantities = newProductsIdsAndQuantities;
+                dbCart.CalculateSums();
+                db.Entry(dbCart).State = EntityState.Modified;
+                db.SaveChanges();
+                logManager.AddLog($"Cart: id=({dbCart.cartID}) modified successfully by: {Util.Util.getLoggedUser(httpContextAccessor, db).userFirstName} id=({Util.Util.getLoggedUser(httpContextAccessor, db).userID})!");
+                return CreatedAtAction(nameof(dbCart), dbCart);
+            }
         }
 
 
         [HttpPost("RemoveCart/{cartID}")]
-        public IActionResult RemoveCart(Guid cartID)
+        public IActionResult RemoveCart(string cartID)
         {
             bool authorized = tokenValidator.ValidateToken();
             if (authorized)
             {
-                Cart dbCart = db.Carts.Where(a => a.cartID.Equals(cartID)).FirstOrDefault();
+                Cart dbCart = db.Carts.Where(a => a.cartID.ToString().Equals(cartID)).FirstOrDefault();
                 if (dbCart == null) { return Ok(); }
 
                 db.Carts.Remove(dbCart);
@@ -103,47 +121,36 @@ namespace Bamboo.Controllers
             else { return Unauthorized(); }
         }
 
-        [HttpGet("ListCarts")]
-        public IActionResult ListCarts()
+        [HttpGet("ListCart")]
+        public IActionResult ListCart()
         {
             CustomUser dbUser = Util.Util.getLoggedUser(httpContextAccessor, db);
             if (dbUser == null) return Json(null);
-            List<Cart> carts = db.Carts.Where(c => c.userID.Equals(dbUser.userID)).ToList();
+            Cart cart = db.Carts.Where(c => c.userID.Equals(dbUser.userID)).FirstOrDefault();
 
-            List<ReadCartDto> readCartDtos = new List<ReadCartDto>();
+            cart.CalculateSums();
 
-            foreach (var cart in carts)
+            ReadCartDto cartDto = new ReadCartDto
             {
-                cart.CalculateSums();
-
-                ReadCartDto cartDto = new ReadCartDto
-                {
-                    cartID = cart.cartID,
-                    userID = cart.userID,
-                    productsIdsAndQuantities = cart.productsIdsAndQuantities,
-                    dateOfCreation = cart.dateOfCreation,
-                    total = cart.total,
-                    subtotal = cart.subtotal,
-                    tax = cart.tax,
-                    discount = cart.discount
-                };
-
-                readCartDtos.Add(cartDto);
-            }
+                cartID = cart.cartID,
+                userID = cart.userID,
+                productsIdsAndQuantities = cart.productsIdsAndQuantities,
+                dateOfCreation = cart.dateOfCreation,
+                total = cart.total,
+                subtotal = cart.subtotal,
+                tax = cart.tax,
+                discount = cart.discount
+            };   
 
             dynamic response = new ExpandoObject();
-            response.cartsDto = readCartDtos;
+            response.cartDto = cartDto;
             List<ReadProductDto> productsDto = new List<ReadProductDto>();
-            foreach (var cart in readCartDtos)
+
+            foreach (var productId in cart.productsIdsAndQuantities.Keys)
             {
-                foreach (var productQuantities in cart.productsIdsAndQuantities)
-                {
-                    foreach (var productId in productQuantities.Keys)
-                    {
-                        productsDto.Add(mapper.Map<ReadProductDto>(db.Products.Where(p => p.productID.ToString().Equals(productId)).FirstOrDefault()));
-                    }
-                }
+                productsDto.Add(mapper.Map<ReadProductDto>(db.Products.Where(p => p.productID.ToString().Equals(productId)).FirstOrDefault()));
             }
+            
             response.products = productsDto;
             return Json(response);
         }

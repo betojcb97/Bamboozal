@@ -32,11 +32,13 @@ namespace Bamboo.Models
         public string productsIdsAndQuantitiesSerialized { get; set; }
 
         [NotMapped]
-        public List<Dictionary<string, int>> productsIdsAndQuantities
+        public Dictionary<string, int> productsIdsAndQuantities
         {
             get
             {
-                return productsIdsAndQuantitiesSerialized == null ? null : JsonSerializer.Deserialize<List<Dictionary<string, int>>>(productsIdsAndQuantitiesSerialized);
+                return productsIdsAndQuantitiesSerialized == null
+                    ? null
+                    : JsonSerializer.Deserialize<Dictionary<string, int>>(productsIdsAndQuantitiesSerialized);
             }
             set
             {
@@ -58,25 +60,24 @@ namespace Bamboo.Models
             decimal costSum = 0;
             decimal taxSum = 0;
             decimal discountSum = 0;
-            foreach (var dict in productsIdsAndQuantities)
+
+            foreach (var item in productsIdsAndQuantities)
             {
-                foreach (var item in dict)
+                Product product = db.Products.FirstOrDefault(p => p.productID.ToString().Equals(item.Key));
+                if (product != null)
                 {
-                    Product product = db.Products.FirstOrDefault(p => p.productID.ToString().Equals(item.Key));
-                    if (product != null)
-                    {
-                        decimal price = product.price;
-                        decimal tax = product.tax;
-                        decimal cost = product.cost;
-                        decimal discount = product.discount;
-                        int quantity = item.Value;
-                        subtotalSum += price * quantity;
-                        discountSum += discount * quantity;
-                        taxSum += tax * quantity;
-                        costSum += cost * quantity;
-                    }
+                    decimal price = product.price;
+                    decimal tax = product.tax;
+                    decimal cost = product.cost;
+                    decimal discount = product.discount;
+                    int quantity = item.Value;
+                    subtotalSum += price * quantity;
+                    discountSum += discount * quantity;
+                    taxSum += tax * quantity;
+                    costSum += cost * quantity;
                 }
             }
+
             total = subtotalSum - discountSum;
             subtotal = subtotalSum;
             cost = costSum;

@@ -21,7 +21,7 @@ namespace Bamboo.DTO
 
         public Guid? businessID { get; set; }
 
-        public List<Dictionary<Guid, int>> productsIdsAndQuantities { get; set; }
+        public Dictionary<Guid, int> productsIdsAndQuantities { get; set; }
 
         public Guid? deliveryAddressID { get; set; }
     }

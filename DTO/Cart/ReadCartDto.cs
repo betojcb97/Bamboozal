@@ -19,7 +19,7 @@ namespace Bamboo.DTO
 
         public decimal discount { get; set; }
 
-        public List<Dictionary<string, int>> productsIdsAndQuantities { get; set; }
+        public Dictionary<string, int> productsIdsAndQuantities { get; set; }
 
         public DateTime? dateOfCreation { get; set; }
 

@@ -25,7 +25,7 @@ namespace Bamboo.DTO
 
         public virtual ReadBusinessDto businessDto { get; set; }
 
-        public List<Dictionary<Guid, int>> productsIdsAndQuantities { get; set; }
+        public Dictionary<Guid, int> productsIdsAndQuantities { get; set; }
 
         public Guid? deliveryAddressID { get; set; }
     }

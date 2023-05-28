@@ -43,128 +43,8 @@
         </div>
     </div>
 
-    <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addProductModalLabel">Add Product</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="addProductForm">
-                        <div class="form-group">
-                            <label for="name">Name</label>
-                            <input type="text" class="form-control" id="name" name="name" maxlength="50" required>
-                            <div class="invalid-feedback">The name of the product must be provided and not exceed 50 characters.</div>
-                        </div>
-                        <div class="form-group">
-                            <label for="description">Description</label>
-                            <textarea class="form-control" id="description" name="description"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="price">Price</label>
-                            <input type="number" class="form-control" id="price" name="price" maxlength="70" step="0.01" required>
-                            <div class="invalid-feedback">The price of the product must be provided.</div>
-                        </div>
-                        <div class="form-group">
-                            <label for="cost">Cost</label>
-                            <input type="number" class="form-control" id="cost" name="cost" maxlength="70" step="0.01">
-                        </div>
-                        <div class="form-group">
-                            <label for="tax">Tax</label>
-                            <input type="number" class="form-control" id="tax" name="tax" maxlength="70" step="0.01">
-                        </div>
-                        <div class="form-group">
-                            <label for="discount">Discount</label>
-                            <input type="number" class="form-control" id="discount" name="discount" maxlength="70" step="0.01">
-                        </div>
-                        <div class="form-group">
-                            <label for="imageUrl">ImageUrl</label>
-                            <input type="text" class="form-control" id="imageUrl" name="imageUrl" maxlength="20">
-                        </div>
-                        <div class="form-group">
-                            <label for="businessID">Business ID</label>
-                            <select class="form-control" id="businessID" name="businessID" required>
-                            </select>
-                        </div>
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="isActive" name="isActive">
-                            <label class="form-check-label" for="isActive">Active</label>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="closeBtnAdd" onclick="$('#addProductModal').modal('hide');">Close</button>
-                    <button type="button" class="btn btn-primary" id="sendBtnAdd" onclick="addProduct()">Send</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="editProductModal" tabindex="-1" role="dialog" aria-labelledby="editProductModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="editProductForm">
-                        <div class="form-group">
-                            <label for="name">Name</label>
-                            <input type="text" class="form-control" id="name" name="name" maxlength="50">
-                        </div>
-                        <div class="form-group">
-                            <label for="description">Description</label>
-                            <textarea class="form-control" id="description" name="description"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="price">Price</label>
-                            <input type="number" class="form-control" id="price" name="price" maxlength="70" step="0.01">
-                        </div>
-                        <div class="form-group">
-                            <label for="cost">Cost</label>
-                            <input type="number" class="form-control" id="cost" name="cost" maxlength="70" step="0.01">
-                        </div>
-                        <div class="form-group">
-                            <label for="tax">Tax</label>
-                            <input type="number" class="form-control" id="tax" name="tax" maxlength="70" step="0.01">
-                        </div>
-                        <div class="form-group">
-                            <label for="discount">Discount</label>
-                            <input type="number" class="form-control" id="discount" name="discount" maxlength="70" step="0.01">
-                        </div>
-                        <div class="form-group">
-                            <label for="imageUrl">ImageUrl</label>
-                            <input type="text" class="form-control" id="imageUrl" name="imageUrl" maxlength="20">
-                        </div>
-                        <div class="form-group">
-                            <label for="businessID">Business ID</label>
-                            <select class="form-control" id="businessID" name="businessID">
-                            </select>
-                        </div>
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="isActive" name="isActive">
-                            <label class="form-check-label" for="isActive">Active</label>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="closeBtnEdit" onclick="$('#editProductModal').modal('hide');">Close</button>
-                    <button type="button" class="btn btn-primary" id="sendBtnEdit" onclick="editProduct()">Send</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
 
-        let selectedProductId;
-        let selectedProductsIds = [];
         let selectedBusinessId = '';
         let orderBy = 'name';
         let ordering = 'ascending';
@@ -175,51 +55,27 @@
             fillProductsTable();
         });
 
-        $(document).on('click', '.quantity-decrement', function () {
-            let qtyInput = $(this).siblings('.product-quantity');
-            let qty = parseInt(qtyInput.val()) - 1;
-            if (qty < 0) qty = 0;
-            qtyInput.val(qty);
-        });
-
-        $(document).on('click', '.quantity-increment', function () {
-            let qtyInput = $(this).siblings('.product-quantity');
-            let qty = parseInt(qtyInput.val()) + 1;
-            qtyInput.val(qty);
-        });
-
         $('#businessIDFilter').change(function () {
             selectedBusinessId = $(this).val();
-            fetchAndFillProductsTable();
+            fillProductsTable();
         });
 
         $('#orderBy').change(function(){
             orderBy = $(this).val();
-            fetchAndFillProductsTable();
+            fillProductsTable();
         });
 
         $('#ordering').change(function () {
             ordering = $(this).val();
-            fetchAndFillProductsTable();
+            fillProductsTable();
         });
 
-        function addProductToCart() {
-            debugger;
-            if (selectedProductsIds.length === 0) {
-                alert('Please select a product to add to cart.');
-                return false;
-            }
-            let productsIdsAndQuantitiesList = selectedProductsIds.map(id => {
-                let quantity = $(`[data-product-id=${id}] .product-quantity`).val();
-                let productDict = {};
-                productDict[id] = parseInt(quantity);
-                return productDict;
-            });
+        function addProductToCart(productID) {
             let data = {
-                productsIdsAndQuantities: productsIdsAndQuantitiesList
+                productId: productID
             };
             $.ajax({
-                url: '/Cart/AddCart',
+                url: '/Cart/AddProductToCart/'+productID,
                 type: 'POST',
                 data: JSON.stringify(data),
                 contentType: 'application/json',
@@ -227,7 +83,8 @@
                     xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
                 },
                 success: function (response) {
-                    showAlert("Cart added successfully!");
+                    showAlert("Product added to cart!");
+                    debugger;
                     window.location.href = '/Cart/Index';
                 },
                 error: function (xhr, textStatus, errorThrown) {
@@ -251,6 +108,7 @@
 
         function fillProductsTable() {
             let productsContainer = $('#productsContainer');
+            productsContainer.empty();
             fetchProducts(selectedBusinessId, orderBy, ordering).then(data => {
                 data.forEach(function (product) {
                     let isActive = product.isActive ? 'Yes' : 'No';
@@ -262,25 +120,19 @@
                                 ${image}
                                 <div class="card-body">
                                     <div class="d-flex align-items-center">
-                                        <input type="checkbox" class="product-checkbox mr-2">
                                         <h5 class="card-title mb-0">${product.name}</h5>
-                                        </div>
-                                            <div class="quantity-container">
-                                            <button type="button" class="quantity-decrement"><i class="fas fa-minus-circle fa-lg"></i></button>
-                                            <input type="number" class="product-quantity" value="0" min="0" readonly>
-                                            <button type="button" class="quantity-increment"><i class="fas fa-plus-circle fa-lg"></i></button>
-                                        </div>
-                                        <p class="cardinfo">$${product.price}</p>
-                                        <p class="cardinfo" style="color: red;">Tax: $${product.tax}</p>
-                                        <p class="cardinfo" style="color: green;">Discount: $${product.discount}</p>
-                                        <p class="card-text">(${product.description})</p>
-                                        <p class="cardinfo">Business: ${product.businessDto.name}</p>
                                     </div>
-                                    </form>
+                                    <button class="add-to-cart-btn" onclick="assureLogin();addProductToCart('${product.productID}')">Add to cart</button>
+                                    <p class="cardinfo">$${product.price}</p>
+                                    <p class="cardinfo" style="color: red;">Tax: $${product.tax}</p>
+                                    <p class="cardinfo" style="color: green;">Discount: $${product.discount}</p>
+                                    <p class="card-text">(${product.description})</p>
+                                    <p class="cardinfo">Business: ${product.businessDto.name}</p>
+                                </div>
+                                </form>
                             </div>
                         </div>`
                     );
-
                 });
             }).catch(error => {
                 console.error(error);

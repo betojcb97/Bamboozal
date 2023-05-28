@@ -31,7 +31,6 @@
                         <th>Subtotal</th>
                         <th>Tax</th>
                         <th>Discount</th>
-                        <th>Product ID</th>
                         <th>Product Name</th>
                         <th>Description</th>
                         <th>Price</th>
@@ -159,43 +158,39 @@
 
     function fetchAndFillCartsTable() {
         $.ajax({
-            url: '/Cart/ListCarts',
+            url: '/Cart/ListCart',
             type: 'GET',
             dataType: 'json',
             beforeSend: function (xhr) {
                 xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('authToken'));
-            }, 
+            },
             success: function (response) {
                 let tableBody = $('#cartsTableBody');
+                let cart = response.cartDto;
+
                 tableBody.empty();
-                response.cartsDto.forEach(function (cart) {
-                    cart.productsIdsAndQuantities.forEach(function (dict, index) {
-                        for (let productId in dict) {
-                            let quantity = dict[productId];
 
-                            let product = response.products.find(p => p.productID === productId);
+                Object.keys(cart.productsIdsAndQuantities).forEach(function (productId, index) {
+                    let quantity = cart.productsIdsAndQuantities[productId];
+                    let product = response.products.find(p => p.productID === productId);
+                    let dateOfCreation = formatISODate(cart.dateOfCreation);
 
-                            let dateOfCreation = formatISODate(cart.dateOfCreation);
-
-                            let row =
-                                `<tr data-cart-id="${cart.cartID}" data-product-id="${productId}">
-                                ${index === 0 ? `<td rowspan="${cart.productsIdsAndQuantities.length}"><input type="checkbox" class="cart-checkbox" value="${cart.cartID}"></td>
-                                <td rowspan="${cart.productsIdsAndQuantities.length}">${dateOfCreation}</td>
-                                <td rowspan="${cart.productsIdsAndQuantities.length}">${cart.total}</td>
-                                <td rowspan="${cart.productsIdsAndQuantities.length}">${cart.subtotal}</td>
-                                <td rowspan="${cart.productsIdsAndQuantities.length}">${cart.tax}</td>
-                                <td rowspan="${cart.productsIdsAndQuantities.length}">${cart.discount}</td>` : ""}
-                                <td>${product.productID}</td>
-                                <td>${product.name}</td>
-                                <td>${product.description}</td>
-                                <td>${product.price}</td>
-                                <td>${product.tax}</td>
-                                <td>${product.discount}</td>
-                                <td>${quantity}</td>
-                                </tr>`;
-                            tableBody.append(row);
-                        }
-                    });
+                    let row =
+                        `<tr data-cart-id="${cart.cartID}" data-product-id="${productId}">
+                        ${index === 0 ? `<td rowspan="${Object.keys(cart.productsIdsAndQuantities).length}"><input type="checkbox" class="cart-checkbox" value="${cart.cartID}"></td>
+                        <td rowspan="${Object.keys(cart.productsIdsAndQuantities).length}">${dateOfCreation}</td>
+                        <td rowspan="${Object.keys(cart.productsIdsAndQuantities).length}">${cart.total}</td>
+                        <td rowspan="${Object.keys(cart.productsIdsAndQuantities).length}">${cart.subtotal}</td>
+                        <td rowspan="${Object.keys(cart.productsIdsAndQuantities).length}">${cart.tax}</td>
+                        <td rowspan="${Object.keys(cart.productsIdsAndQuantities).length}">${cart.discount}</td>` : ""}
+                        <td>${product.name}</td>
+                        <td>${product.description}</td>
+                        <td>${product.price}</td>
+                        <td>${product.tax}</td>
+                        <td>${product.discount}</td>
+                        <td>${quantity}</td>
+                        </tr>`;
+                    tableBody.append(row);
                 });
             },
             error: function (xhr, status, error) {
@@ -205,7 +200,6 @@
             }
         });
     };
-
 
 </script>
 </body>

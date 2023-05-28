@@ -5,6 +5,6 @@ namespace Bamboo.DTO
 {
     public class AddCartDto
     {
-        public List<Dictionary<string, int>> productsIdsAndQuantities { get; set; }
+        public Dictionary<string, int> productsIdsAndQuantities { get; set; }
     }
 }
