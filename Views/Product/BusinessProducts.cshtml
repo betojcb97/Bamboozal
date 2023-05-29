@@ -360,7 +360,6 @@
                         $('#closeBtnEdit').click();
                     },
                     error: function (xhr, status, error) {
-                        debugger;
                         if (xhr.status === 401) { window.location.href = '/CustomUser/LoginPage'; }
                         let errorMessage = xhr.status + ': ' + xhr.statusText + " -" + xhr.responseText;
                         showAlert("Error updating product! " + errorMessage);

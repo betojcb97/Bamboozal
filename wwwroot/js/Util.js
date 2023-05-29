@@ -60,7 +60,6 @@ function createModal(modalLabel, modalId, formId, sendBtnId, attributes) {
 }
 
 function assureLogin() {
-    debugger;
     authToken = localStorage.getItem('authToken');
     if (authToken === null || authToken === '') { window.location.href = '/CustomUser/LoginPage'; }
     $.ajax({

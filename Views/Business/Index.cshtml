@@ -295,7 +295,6 @@
     };
 
     function fillAddressesDropdown() {
-        debugger;
         fetchAddresses().then(data => {
             let addressDropdowns = $('select[name="addressID"]');
             data.forEach(function (address) {
