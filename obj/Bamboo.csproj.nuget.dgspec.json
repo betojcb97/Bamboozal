@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\alber\\Desktop\\BambooImplementing\\Bamboo.csproj": {}
+    "C:\\Users\\alber\\Desktop\\BambooStaging\\Bamboo.csproj": {}
   },
   "projects": {
-    "C:\\Users\\alber\\Desktop\\BambooImplementing\\Bamboo.csproj": {
+    "C:\\Users\\alber\\Desktop\\BambooStaging\\Bamboo.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\alber\\Desktop\\BambooImplementing\\Bamboo.csproj",
+        "projectUniqueName": "C:\\Users\\alber\\Desktop\\BambooStaging\\Bamboo.csproj",
         "projectName": "Bamboo",
-        "projectPath": "C:\\Users\\alber\\Desktop\\BambooImplementing\\Bamboo.csproj",
+        "projectPath": "C:\\Users\\alber\\Desktop\\BambooStaging\\Bamboo.csproj",
         "packagesPath": "C:\\Users\\alber\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\alber\\Desktop\\BambooImplementing\\obj\\",
+        "outputPath": "C:\\Users\\alber\\Desktop\\BambooStaging\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\alber\\AppData\\Roaming\\NuGet\\NuGet.Config",
