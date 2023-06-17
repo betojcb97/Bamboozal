@@ -9,85 +9,85 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Bamboo
 build_property.RootNamespace = Bamboo
-build_property.ProjectDir = C:\Users\alber\Desktop\BambooStaging\
+build_property.ProjectDir = C:\Users\alber\Desktop\Bamboo\
 build_property.RazorLangVersion = 7.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\alber\Desktop\BambooStaging
+build_property.MSBuildProjectDirectory = C:\Users\alber\Desktop\Bamboo
 build_property._RazorSourceGeneratorDebug = 
 
-[C:/Users/alber/Desktop/BambooStaging/Views/Address/Index.cshtml]
+[C:/Users/alber/Desktop/Bamboo/Views/Address/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRkcmVzc1xJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/alber/Desktop/BambooStaging/Views/Business/Index.cshtml]
+[C:/Users/alber/Desktop/Bamboo/Views/Business/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQnVzaW5lc3NcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/alber/Desktop/BambooStaging/Views/Cart/Index.cshtml]
+[C:/Users/alber/Desktop/Bamboo/Views/Cart/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FydFxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/alber/Desktop/BambooStaging/Views/CustomUser/Index.cshtml]
+[C:/Users/alber/Desktop/Bamboo/Views/CustomUser/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3VzdG9tVXNlclxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/alber/Desktop/BambooStaging/Views/CustomUser/LoginPage.cshtml]
+[C:/Users/alber/Desktop/Bamboo/Views/CustomUser/LoginPage.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3VzdG9tVXNlclxMb2dpblBhZ2UuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/alber/Desktop/BambooStaging/Views/CustomUser/LogoutPage.cshtml]
+[C:/Users/alber/Desktop/Bamboo/Views/CustomUser/LogoutPage.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3VzdG9tVXNlclxMb2dvdXRQYWdlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/alber/Desktop/BambooStaging/Views/Home/Index.cshtml]
+[C:/Users/alber/Desktop/Bamboo/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/alber/Desktop/BambooStaging/Views/Home/Privacy.cshtml]
+[C:/Users/alber/Desktop/Bamboo/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/alber/Desktop/BambooStaging/Views/Log/Index.cshtml]
+[C:/Users/alber/Desktop/Bamboo/Views/Log/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9nXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/alber/Desktop/BambooStaging/Views/Order/Index.cshtml]
+[C:/Users/alber/Desktop/Bamboo/Views/Order/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/alber/Desktop/BambooStaging/Views/Product/BusinessProducts.cshtml]
+[C:/Users/alber/Desktop/Bamboo/Views/Product/BusinessProducts.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdFxCdXNpbmVzc1Byb2R1Y3RzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/alber/Desktop/BambooStaging/Views/Product/Index.cshtml]
+[C:/Users/alber/Desktop/Bamboo/Views/Product/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdFxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/alber/Desktop/BambooStaging/Views/Shared/Error.cshtml]
+[C:/Users/alber/Desktop/Bamboo/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/alber/Desktop/BambooStaging/Views/Shared/_ValidationScriptsPartial.cshtml]
+[C:/Users/alber/Desktop/Bamboo/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/alber/Desktop/BambooStaging/Views/User/Index.cshtml]
+[C:/Users/alber/Desktop/Bamboo/Views/User/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/alber/Desktop/BambooStaging/Views/User/Login.cshtml]
+[C:/Users/alber/Desktop/Bamboo/Views/User/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/alber/Desktop/BambooStaging/Views/_ViewImports.cshtml]
+[C:/Users/alber/Desktop/Bamboo/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/alber/Desktop/BambooStaging/Views/_ViewStart.cshtml]
+[C:/Users/alber/Desktop/Bamboo/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/alber/Desktop/BambooStaging/Views/Shared/_Layout.cshtml]
+[C:/Users/alber/Desktop/Bamboo/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-4ofvtmqs4h
